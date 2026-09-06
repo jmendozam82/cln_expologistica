@@ -2,6 +2,10 @@
 
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
+import { Resend } from 'resend';
+import { RegistrationEmail } from '@/emails/RegistrationEmail';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function submitRegistration(formData: FormData) {
   try {
@@ -18,7 +22,7 @@ export async function submitRegistration(formData: FormData) {
       throw new Error('Faltan campos requeridos.');
     }
 
-    // 2. Asegurar que la tabla existe (Create Table if Not Exists)
+    // 2. Asegurar que la tabla existe
     await sql`
       CREATE TABLE IF NOT EXISTS registrations (
         id SERIAL PRIMARY KEY,
@@ -37,6 +41,18 @@ export async function submitRegistration(formData: FormData) {
       INSERT INTO registrations (ticket_type, is_member, nombre, email, empresa, cargo)
       VALUES (${ticketType}, ${isMember}, ${nombre}, ${email}, ${empresa}, ${cargo})
     `;
+
+    // 4. Enviar correo de confirmación con Resend
+    if (process.env.RESEND_API_KEY) {
+      await resend.emails.send({
+        from: 'CLN Eventos <registro@nilogistic.com>',
+        to: email,
+        subject: '¡Registro Exitoso! - CLN Evento de Cierre 2026',
+        react: RegistrationEmail({ nombre, ticketType }),
+      });
+    } else {
+      console.warn('RESEND_API_KEY no configurada. No se envió el correo.');
+    }
 
     revalidatePath('/registro');
 
