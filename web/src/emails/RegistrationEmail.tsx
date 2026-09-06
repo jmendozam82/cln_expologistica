@@ -5,6 +5,7 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Preview,
   Section,
   Text,
@@ -49,7 +50,13 @@ export const RegistrationEmail = ({
           <Section style={headerBanner}>
             <Row>
               <Column>
-                <Text style={logoText}>CLN EVENTO DE CIERRE 2026</Text>
+                <Img 
+                  src="https://expologistic-cln2026.nilogistic.com/logo-horizontal.jpg" 
+                  width="180" 
+                  height="auto"
+                  alt="CLN Evento 2026" 
+                  style={logoImage} 
+                />
               </Column>
               <Column align="right">
                 <span style={badge}>Confirmación de acceso</span>
@@ -192,12 +199,11 @@ const headerBanner = {
   padding: '28px 34px',
 };
 
-const logoText = {
-  color: '#ffffff',
-  fontSize: '22px',
-  fontWeight: 'bold',
-  margin: 0,
-  letterSpacing: '1px',
+const logoImage = {
+  display: 'block',
+  maxWidth: '100%',
+  border: 0,
+  borderRadius: '8px',
 };
 
 const badge = {
