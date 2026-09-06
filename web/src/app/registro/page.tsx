@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { submitRegistration } from "../actions/register";
 
 export default function RegistroPage() {
   const [ticketType, setTicketType] = useState<"congreso" | "vip" | "piso" | null>(null);
@@ -25,13 +26,27 @@ export default function RegistroPage() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Aquí se conectará con el Server Action / Vercel Postgres
-    // await submitRegistration(new FormData(e.target as HTMLFormElement));
-    
-    setTimeout(() => {
+    try {
+      const form = e.target as HTMLFormElement;
+      const formData = new FormData(form);
+      
+      // Agregar valores controlados por estado al FormData
+      if (ticketType) formData.append('ticketType', ticketType);
+      formData.append('isMember', isMember.toString());
+      
+      const result = await submitRegistration(formData);
+      
+      if (result.success) {
+        setIsSuccess(true);
+      } else {
+        alert(result.message || "Ocurrió un error");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error de conexión");
+    } finally {
       setIsSubmitting(false);
-      setIsSuccess(true);
-    }, 1500);
+    }
   };
 
   if (isSuccess) {
