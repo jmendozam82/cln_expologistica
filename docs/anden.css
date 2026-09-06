@@ -1,0 +1,233 @@
+/* ============================================================================
+   SISTEMA ANDÉN  ·  Expo Logística 2026 — lenguaje gráfico estándar
+   ----------------------------------------------------------------------------
+   "Andén" = la plataforma logística donde la carga se ordena y alinea.
+   Es el sistema de tarjetas/paneles claros derivado de la Tabla de Tarifas
+   del home. Todo va anidado bajo .anden para no afectar otras páginas.
+   Reutilizable en cualquier vista: envuelve el contenido en <div class="anden">.
+   ============================================================================ */
+
+.anden {
+  --navy:   #002B49;
+  --teal:   #005F6B;
+  --cyan:   #00AAD2;
+  --orange: #FF5E00;
+  --ink:    #203442;
+  --muted:  #526678;
+  --line:   rgba(0,43,73,.12);
+  --soft:   #F4FAFC;
+  --panel:  #EAF2FB;   /* celeste claro — paneles destacados */
+  --panel2: #DCE9F6;   /* celeste medio */
+  --paper:  #FBFDFE;
+
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--sp-font-ui, Inter), Arial, Helvetica, sans-serif;
+  overflow: hidden;
+}
+.anden * { box-sizing: border-box; }
+.anden :where(h1,h2,h3,h4,p) { margin: 0; }
+.anden a { text-decoration: none; }
+[x-cloak] { display: none !important; }
+
+/* ---- Layout ---------------------------------------------------------------- */
+.anden-shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+.anden-section { padding: clamp(64px, 8vw, 104px) 0; background: #fff; }
+.anden-section--soft {
+  background:
+    radial-gradient(70% 78% at 92% 4%, rgba(0,170,210,.10), transparent 52%),
+    linear-gradient(180deg, #fff 0%, var(--soft) 100%);
+}
+.anden-section--ink { background: var(--navy); color: #fff; }
+.anden-section--tight { padding: clamp(34px, 4vw, 54px) 0; }
+
+/* ---- Encabezados ----------------------------------------------------------- */
+.anden-kicker {
+  display: inline-flex; align-items: center; gap: 10px; margin-bottom: 14px;
+  color: var(--teal); font-size: 12px; font-weight: 900;
+  letter-spacing: .08em; text-transform: uppercase;
+}
+.anden-kicker::before {
+  content: ""; width: 28px; height: 2px;
+  background: linear-gradient(90deg, var(--orange), var(--cyan));
+}
+.anden-section--ink .anden-kicker { color: #8EDDE8; }
+
+.anden-head { max-width: 860px; margin-bottom: clamp(30px, 4vw, 46px); }
+.anden-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+.anden-head.center .anden-kicker::before { display: none; }
+
+.anden-title {
+  color: var(--navy); font-size: clamp(34px, 4.6vw, 60px);
+  font-weight: 700; line-height: 1.06; letter-spacing: -.015em;
+}
+.anden-title em { font-style: normal; color: var(--cyan); }
+.anden-section--ink .anden-title { color: #fff; }
+.anden-section--ink .anden-title em { color: #8EDDE8; }
+
+.anden-lead { margin-top: 18px; max-width: 640px; color: var(--muted);
+  font-size: clamp(16px, 1.6vw, 19px); font-weight: 500; line-height: 1.7; }
+.anden-section--ink .anden-lead { color: rgba(255,255,255,.84); }
+.anden-copy { margin-top: 14px; max-width: 720px; color: var(--muted);
+  font-size: 16px; line-height: 1.7; }
+
+/* ---- Tarjeta base (la pieza central del sistema) --------------------------- */
+.anden-card {
+  position: relative; background: #fff;
+  border: 1px solid rgba(0,43,73,.10); border-radius: 16px;
+  padding: clamp(22px, 2.4vw, 30px);
+  box-shadow: 0 14px 34px rgba(0,43,73,.055);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.anden-card--hover:hover { transform: translateY(-3px);
+  box-shadow: 0 22px 50px rgba(0,43,73,.10); border-color: rgba(0,95,107,.22); }
+.anden-num  { font-size: 13px; font-weight: 900; letter-spacing: .10em; color: var(--cyan); }
+.anden-bignum { color: var(--orange); font-weight: 900; font-size: clamp(40px,4.4vw,58px); line-height: .9; }
+.anden-dot  { display: inline-flex; width: 11px; height: 11px; border-radius: 999px;
+  background: var(--cyan); box-shadow: 0 0 0 6px rgba(0,170,210,.10); }
+.anden-card h3 { margin-top: 12px; color: var(--navy); font-size: 20px; font-weight: 700; line-height: 1.2; }
+.anden-card p  { margin-top: 8px; color: var(--muted); font-size: 15px; line-height: 1.58; }
+
+.anden-cards { display: grid; gap: clamp(14px, 1.6vw, 20px); }
+.anden-cards--4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+.anden-cards--3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+.anden-cards--2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+
+/* ---- Panel celeste (#EAF2FB) ----------------------------------------------- */
+.anden-panel {
+  background: var(--panel); border: 1px solid rgba(0,43,73,.10);
+  border-radius: 18px; padding: clamp(22px, 2.4vw, 30px);
+}
+.anden-panel__row {
+  display: grid; grid-template-columns: 96px 1fr; gap: 16px; align-items: baseline;
+  padding: 13px 0; border-bottom: 1px solid rgba(0,43,73,.10);
+}
+.anden-panel__row:first-child { padding-top: 0; }
+.anden-panel__row:last-child  { padding-bottom: 0; border-bottom: 0; }
+.anden-panel__row span { color: var(--teal); font-size: 10px; font-weight: 900;
+  letter-spacing: .12em; text-transform: uppercase; }
+.anden-panel__row strong { color: var(--navy); font-size: 14px; font-weight: 800; line-height: 1.4; }
+
+/* ---- Banda de cifras (#EAF2FB) --------------------------------------------- */
+.anden-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  background: var(--panel); border: 1px solid rgba(0,43,73,.10);
+  border-radius: 20px; padding: clamp(22px, 2.4vw, 30px) 12px;
+}
+.anden-stats .stat { text-align: center; padding: 8px 16px; border-right: 1px solid rgba(0,43,73,.12); }
+.anden-stats .stat:last-child { border-right: 0; }
+.anden-stats .stat b { display: block; color: var(--navy); font-weight: 700;
+  font-size: clamp(38px, 4.4vw, 58px); line-height: .95; }
+.anden-stats .stat span { display: block; margin-top: 9px; color: #3C5365;
+  font-size: 13px; font-weight: 800; line-height: 1.35; }
+
+/* ---- Badge (estilo Early Bird) --------------------------------------------- */
+.anden-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 9px 16px; border-radius: 999px;
+  background: rgba(255,94,0,.10); border: 1px solid rgba(255,94,0,.30);
+}
+.anden-badge::before { content: ""; width: 9px; height: 9px; border-radius: 999px;
+  background: var(--orange); box-shadow: 0 0 16px rgba(255,94,0,.6); }
+.anden-badge strong { color: #C2470A; font-size: 12px; font-weight: 900;
+  letter-spacing: .06em; text-transform: uppercase; }
+
+/* ---- Imagen enmarcada (firma: sombra cyan desplazada) ---------------------- */
+.anden-photo {
+  position: relative; margin: 0; overflow: hidden; border-radius: 18px;
+  background: var(--panel); border: 1px solid rgba(0,43,73,.08);
+  box-shadow: 0 18px 44px rgba(0,43,73,.10);
+}
+.anden-photo--offset { box-shadow: 22px 22px 0 rgba(0,170,210,.16), 0 18px 44px rgba(0,43,73,.10); }
+.anden-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.anden-photo--wide { aspect-ratio: 2 / 1; }
+@media (max-width: 620px) { .anden-photo--wide { aspect-ratio: 4 / 3; } }
+.anden-photo--ratio { aspect-ratio: 4 / 3; }
+
+/* ---- Botones --------------------------------------------------------------- */
+.anden-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  min-height: 48px; padding: 13px 22px; border-radius: 999px;
+  border: 1px solid var(--navy); color: var(--navy);
+  font-size: 14px; font-weight: 700; line-height: 1; white-space: nowrap;
+  transition: transform .18s ease, background .18s ease, color .18s ease, box-shadow .18s ease;
+}
+.anden-btn:hover { transform: translateY(-2px); }
+.anden-btn--primary {
+  border-color: transparent; color: var(--navy);
+  background: linear-gradient(135deg, #FF7A26, var(--orange));
+  box-shadow: 0 16px 40px rgba(255,94,0,.24);
+}
+.anden-btn--ghost { background: transparent; }
+.anden-section--ink .anden-btn--ghost { border-color: rgba(255,255,255,.34); color: #fff; }
+.anden-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+
+/* ---- Galería + Lightbox ---------------------------------------------------- */
+.anden-gallery-grid {
+  display: grid; grid-template-columns: 1.16fr .84fr .84fr;
+  grid-auto-rows: clamp(200px, 17vw, 270px); gap: 14px;
+}
+.anden-gallery-grid .anden-photo { cursor: zoom-in; border-radius: 14px; box-shadow: none; }
+.anden-gallery-grid .anden-photo:first-child { grid-row: span 2; }
+.anden-gallery-grid .anden-photo:nth-child(6) { grid-column: span 2; }
+.anden-gallery-grid .anden-photo img { transition: transform .55s ease, filter .55s ease; }
+.anden-gallery-grid .anden-photo:hover img,
+.anden-gallery-grid .anden-photo:focus-visible img { transform: scale(1.04); filter: saturate(1.06); }
+.anden-gallery-grid .anden-photo::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 42%;
+  background: linear-gradient(180deg, transparent, rgba(0,43,73,.62)); z-index: 1; pointer-events: none;
+}
+.anden-gallery-grid figcaption {
+  position: absolute; left: 14px; bottom: 12px; z-index: 2; max-width: calc(100% - 28px);
+  color: #fff; font-size: 12px; font-weight: 900; line-height: 1.25;
+}
+
+.anden-lightbox {
+  position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center;
+  padding: 32px; background: rgba(0,43,73,.95); backdrop-filter: blur(4px);
+}
+.anden-lightbox img { max-width: 92vw; max-height: 84vh; border-radius: 10px; box-shadow: 0 24px 70px rgba(0,0,0,.55); }
+.anden-lightbox button {
+  position: absolute; display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 999px; background: rgba(255,255,255,.14); color: #fff;
+  cursor: pointer; transition: background .15s;
+}
+.anden-lightbox button:hover { background: rgba(255,255,255,.28); }
+.anden-lightbox .lb-close { top: 20px; right: 24px; width: 44px; height: 44px; font-size: 22px; }
+.anden-lightbox .lb-nav { top: 50%; width: 48px; height: 48px; transform: translateY(-50%); font-size: 26px; }
+.anden-lightbox .lb-prev { left: 24px; }
+.anden-lightbox .lb-next { right: 24px; }
+.anden-lightbox .lb-cap {
+  position: absolute; left: 50%; bottom: 22px; width: min(760px, calc(100vw - 48px));
+  transform: translateX(-50%); color: #fff; font-size: 14px; font-weight: 800; text-align: center;
+}
+
+/* ---- Utilidades de grid genéricas ------------------------------------------ */
+.anden-split { display: grid; grid-template-columns: minmax(0,1fr) minmax(300px,.78fr);
+  gap: clamp(30px, 5vw, 70px); align-items: start; }
+.anden-split--center { align-items: center; }
+
+/* ---- Responsive ------------------------------------------------------------ */
+@media (max-width: 980px) {
+  .anden-cards--4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .anden-split, .anden-cards--3 { grid-template-columns: 1fr; }
+  .anden-gallery-grid { grid-template-columns: repeat(2, minmax(0,1fr)); grid-auto-rows: 240px; }
+  .anden-gallery-grid .anden-photo:first-child,
+  .anden-gallery-grid .anden-photo:nth-child(6) { grid-column: span 2; grid-row: span 1; }
+}
+@media (max-width: 620px) {
+  .anden-stats { grid-template-columns: repeat(2, 1fr); gap: 0; }
+  .anden-stats .stat:nth-child(even) { border-right: 0; }
+  .anden-stats .stat:nth-child(1), .anden-stats .stat:nth-child(2) { border-bottom: 1px solid rgba(0,43,73,.12); padding-bottom: 16px; }
+  .anden-stats .stat:nth-child(3), .anden-stats .stat:nth-child(4) { padding-top: 16px; }
+  .anden-cards--4, .anden-cards--2 { grid-template-columns: 1fr; }
+  .anden-gallery-grid { grid-template-columns: 1fr; grid-auto-rows: 230px; }
+  .anden-gallery-grid .anden-photo:first-child,
+  .anden-gallery-grid .anden-photo:nth-child(6) { grid-column: auto; }
+  .anden-panel__row { grid-template-columns: 1fr; gap: 4px; }
+  .anden-btn { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .anden-card, .anden-btn, .anden-gallery-grid .anden-photo img { transition: none; }
+}
