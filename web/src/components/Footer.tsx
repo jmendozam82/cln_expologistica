@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from 'next/link';
 
 export default function Footer() {
@@ -6,14 +7,19 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <img 
-              src="/logo-vertical.png" 
-              alt="Comunidad Logística Nicaragüense" 
-              className="h-16 w-auto object-contain mb-4"
+            <Image
+              src="/logo-vertical.png"
+              alt="Comunidad Logística Nicaragüense"
+              width={217}
+              height={256}
+              className="h-20 w-auto object-contain mb-4"
+              sizes="217px"
             />
             <p className="text-sm text-gray-400 mb-4">
-              Conectando Profesionales, Potenciando la Logística. El principal espacio de encuentro profesional de Nicaragua.
+              Conectando Profesionales, Potenciando la Logística. El gran encuentro anual de la Comunidad
+              Logística Nicaragüense, en su edición 2026.
             </p>
+            <p className="text-sm text-cln-300 font-bold">#SoyCLN</p>
           </div>
           <div>
             <h3 className="text-white font-heading font-bold text-xl mb-4">Enlaces Rápidos</h3>
@@ -35,7 +41,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-gray-800 text-sm text-center text-gray-500">
-          <p>&copy; {new Date().getFullYear()} Evento de Cierre CLN. Todos los derechos reservados.</p>
+          <p>&copy; {new Date().getFullYear()} EXPO LOGÍSTICA 2026 · CLN. Todos los derechos reservados.</p>
         </div>
       </div>
     </footer>

@@ -44,7 +44,7 @@ export async function GET() {
       status: 200,
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="Registros_CLN_${new Date().toISOString().split('T')[0]}.csv"`,
+        'Content-Disposition': `attachment; filename="EXPO_LOGISTICA_CLN_${new Date().toISOString().split('T')[0]}.csv"`,
       },
     });
   } catch (error) {

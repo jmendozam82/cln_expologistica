@@ -15,8 +15,9 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "CLN Evento de Cierre 2026",
-  description: "Evento de Cierre 2026 | Comunidad Logística Nicaragüense",
+  title: "EXPO LOGÍSTICA 2026 · CLN | Comunidad Logística Nicaragüense",
+  description:
+    "EXPO LOGÍSTICA 2026 · CLN — El gran encuentro anual de la Comunidad Logística Nicaragüense. 20 de noviembre · DoubleTree by Hilton Managua.",
 };
 
 import { SpeedInsights } from "@vercel/speed-insights/next";

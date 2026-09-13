@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -10,7 +11,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const targetDate = new Date('2026-11-21T07:00:00');
+    const targetDate = new Date('2026-11-20T08:00:00');
     const interval = setInterval(() => {
       const now = new Date();
       const difference = targetDate.getTime() - now.getTime();
@@ -33,10 +34,13 @@ export default function Navbar() {
           <div className="flex justify-between items-center h-24">
             <div className="flex-shrink-0 flex items-center py-2">
               <Link href="/" className="flex items-center gap-2">
-                <img 
-                  src="/logo-horizontal.jpg" 
-                  alt="Comunidad Logística Nicaragüense" 
+                <Image
+                  src="/logo-horizontal.jpg"
+                  alt="Comunidad Logística Nicaragüense"
+                  width={1024}
+                  height={481}
                   className="h-20 w-auto object-contain"
+                  priority
                 />
               </Link>
             </div>
@@ -99,20 +103,15 @@ export default function Navbar() {
       </nav>
 
       {/* Info Bar - Dark Blue Theme */}
-      <div className="bg-cln-900 text-white text-sm font-medium py-2.5 px-4 shadow-md relative z-10">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center sm:justify-between text-center gap-2">
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
-            <span className="text-cln-200">
-              Faltan <strong className="text-white tracking-wide">{timeLeft.days} d {timeLeft.hours} h {timeLeft.minutes} min</strong>
-            </span>
-            <span className="hidden sm:inline text-orange-500">•</span>
-            <span className="font-bold">Evento de Cierre CLN 2026</span>
-            <span className="hidden lg:inline text-orange-500">•</span>
-            <span className="hidden lg:inline text-gray-300">21 de nov · Hyatt Place Managua</span>
-          </div>
-          <Link href="/registro" className="text-white hover:text-orange-300 flex items-center font-bold transition-colors group">
-            Reservar acceso <span className="ml-1 transform group-hover:translate-x-1 transition-transform">→</span>
-          </Link>
+      <div className="bg-cln-900 text-white text-base font-medium py-5 px-4 shadow-md relative z-10">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-5 text-center">
+          <span className="text-cln-200">
+            Faltan <strong className="text-white tracking-wide">{timeLeft.days} d {timeLeft.hours} h {timeLeft.minutes} min</strong>
+          </span>
+          <span className="hidden sm:inline text-orange-500">•</span>
+          <span className="font-bold">EXPO LOGÍSTICA 2026</span>
+          <span className="hidden lg:inline text-orange-500">•</span>
+          <span className="hidden lg:inline text-gray-300">20 de nov · DoubleTree by Hilton Managua</span>
         </div>
       </div>
     </div>

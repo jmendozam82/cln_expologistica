@@ -2,14 +2,25 @@ import { sql } from '@vercel/postgres';
 
 export const dynamic = 'force-dynamic';
 
+interface Registro {
+  id: number;
+  ticket_type: string;
+  is_member: boolean;
+  nombre: string;
+  email: string;
+  empresa: string | null;
+  cargo: string | null;
+  created_at: string;
+}
+
 export default async function AdminRegistros() {
-  let registrations: any[] = [];
+  let registrations: Registro[] = [];
   try {
     const { rows } = await sql`
       SELECT * FROM registrations 
       ORDER BY created_at DESC
     `;
-    registrations = rows;
+    registrations = rows as Registro[];
   } catch (error) {
     console.error('Error fetching registrations:', error);
   }
@@ -23,7 +34,10 @@ export default async function AdminRegistros() {
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Panel de Administración</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Panel de Administración</h1>
+            <p className="text-sm text-gray-500 mt-1">EXPO LOGÍSTICA 2026 · CLN — 20 de noviembre, DoubleTree by Hilton Managua</p>
+          </div>
           <a 
             href="/admin/export"
             className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm"

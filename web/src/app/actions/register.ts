@@ -47,7 +47,7 @@ export async function submitRegistration(formData: FormData) {
       await resend.emails.send({
         from: 'CLN Eventos <registro@nilogistic.com>',
         to: email,
-        subject: '¡Registro Exitoso! - CLN Evento de Cierre 2026',
+        subject: '¡Registro Exitoso! - EXPO LOGÍSTICA 2026 · CLN',
         react: RegistrationEmail({ nombre, ticketType }),
       });
     } else {

@@ -54,7 +54,7 @@ export const RegistrationEmail = ({
                   src="https://expologistic-cln2026.nilogistic.com/logo-horizontal.jpg" 
                   width="180" 
                   height="auto"
-                  alt="CLN Evento 2026" 
+                  alt="EXPO LOGÍSTICA 2026" 
                   style={logoImage} 
                 />
               </Column>
@@ -132,7 +132,7 @@ export const RegistrationEmail = ({
                 </Column>
               </Row>
               
-              <Text style={referenceText}>Referencia: <strong style={primaryText}>{nombre} · CLN Evento 2026</strong></Text>
+              <Text style={referenceText}>Referencia: <strong style={primaryText}>{nombre} · EXPO LOGÍSTICA 2026</strong></Text>
             </Section>
           )}
 
@@ -159,8 +159,8 @@ export const RegistrationEmail = ({
           {/* Footer */}
           <Section style={footer}>
             <Text style={footerText}>
-              <strong style={primaryText}>CLN Evento de Cierre 2026</strong><br />
-              Diciembre 2026 · Managua, Nicaragua<br />
+              <strong style={primaryText}>EXPO LOGÍSTICA 2026 · CLN</strong><br />
+              20 de noviembre 2026 · DoubleTree by Hilton Managua<br />
               <a href="https://nilogistic.com" style={footerLink}>nilogistic.com</a>
             </Text>
           </Section>
