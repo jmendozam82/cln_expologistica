@@ -4,8 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-type SessionType = "apertura" | "conferencia" | "magistral" | "panel" | "networking" | "clausura";
-
 interface Speaker {
   id: string;
   name: string;
@@ -14,18 +12,11 @@ interface Speaker {
   country?: string;
   bio?: string;
   session: string;
+  topic: string;
+  topicSubtitle?: string;
   time: string;
   confirmed: boolean;
   photo?: string;
-}
-
-interface AgendaItem {
-  time: string;
-  type: SessionType;
-  title: string;
-  speakerIds?: string[];
-  moderatorId?: string;
-  isBreak?: boolean;
 }
 
 const SPEAKERS: Speaker[] = [
@@ -36,6 +27,7 @@ const SPEAKERS: Speaker[] = [
     company: "CLN",
     country: "Nicaragua",
     session: "Ceremonia de Apertura",
+    topic: "Ceremonia de Apertura",
     time: "8:30 a.m.",
     confirmed: true,
   },
@@ -47,6 +39,8 @@ const SPEAKERS: Speaker[] = [
     country: "Internacional",
     bio: "Experto regional en cadenas de suministro con más de 15 años de trayectoria en la optimización de operaciones logísticas en Centroamérica. Ha liderado proyectos de transformación digital para empresas multinacionales en la región.",
     session: "Conferencia 1 — Supply Chain Regional",
+    topic: "Supply Chain Regional",
+    topicSubtitle: "Desafíos y oportunidades en la cadena de suministro centroamericana para 2026 y más allá.",
     time: "9:00 a.m.",
     confirmed: true,
   },
@@ -58,6 +52,8 @@ const SPEAKERS: Speaker[] = [
     country: "Colombia",
     bio: "Experto colombiano en seguridad integral, gestión del riesgo y cumplimiento normativo con más de 38 años de experiencia en los sectores público y privado. Auditor internacional BASC y consultor en normas ISO relacionadas con seguridad y continuidad operativa.",
     session: "Conferencia Magistral 1 — Resiliencia de la Cadena de Suministro",
+    topic: "Resiliencia de la Cadena de Suministro",
+    topicSubtitle: "De la protección física a la resiliencia global.",
     time: "11:00 a.m.",
     confirmed: true,
   },
@@ -69,6 +65,8 @@ const SPEAKERS: Speaker[] = [
     country: "Internacional",
     bio: "Especialista en innovación y transformación digital aplicada al sector logístico. Más de 20 años liderando programas de cooperación internacional y proyectos de modernización de cadenas de suministro en América Central y Europa.",
     session: "Conferencia 3 — Innovación y Tecnología en Logística",
+    topic: "Innovación y Tecnología en Logística",
+    topicSubtitle: "Herramientas digitales, automatización e inteligencia artificial al sector logístico.",
     time: "1:30 p.m.",
     confirmed: true,
   },
@@ -80,35 +78,12 @@ const SPEAKERS: Speaker[] = [
     country: "El Salvador",
     bio: "Consultor con más de diez años de experiencia en diplomacia económica, promoción del comercio exterior y atracción de inversiones. Ha dirigido estrategias de relacionamiento con organismos internacionales y sector privado en la región centroamericana.",
     session: "Conferencia Magistral 2 — Comercio e Inversión Regional",
+    topic: "Comercio e Inversión Regional",
+    topicSubtitle: "Perspectivas estratégicas de comercio exterior e inversión para 2026.",
     time: "2:40 p.m.",
     confirmed: true,
   },
 ];
-
-const AGENDA: AgendaItem[] = [
-  { time: "7:00 a.m.", type: "networking", title: "Registro de congresistas e invitados especiales", isBreak: true },
-  { time: "8:30 a.m.", type: "apertura", title: "Ceremonia de Apertura — EXPO LOGÍSTICA · CLN · 2026", speakerIds: ["mayerling"] },
-  { time: "9:00 a.m.", type: "conferencia", title: "Supply Chain Regional: desafíos y oportunidades", speakerIds: ["jorge"] },
-  { time: "10:00 a.m.", type: "networking", title: "Coffee break y visita al piso de exhibición", isBreak: true },
-  { time: "10:30 a.m.", type: "panel", title: "Panel Fórum — Infraestructura Logística Nacional" },
-  { time: "11:00 a.m.", type: "magistral", title: "Resiliencia de la Cadena de Suministro: de la protección física a la resiliencia global", speakerIds: ["carlos"] },
-  { time: "12:00 p.m.", type: "networking", title: "Receso para almuerzo de networking", isBreak: true },
-  { time: "1:30 p.m.", type: "conferencia", title: "Innovación y Tecnología aplicada a la Logística", speakerIds: ["karla"] },
-  { time: "2:30 p.m.", type: "networking", title: "Coffee break y visita al piso de exhibición", isBreak: true },
-  { time: "2:40 p.m.", type: "magistral", title: "Comercio e Inversión Regional: perspectivas 2026", speakerIds: ["eduardo"] },
-  { time: "4:00 p.m.", type: "panel", title: "Panel de Cierre — Conectando la Logística Nicaragüense al Mundo" },
-  { time: "5:00 p.m.", type: "clausura", title: "Presentación de conclusiones y clausura del evento", isBreak: true },
-  { time: "6:00 p.m.", type: "networking", title: "Cóctel de networking y conexión empresarial B2B", isBreak: true },
-];
-
-const TYPE_META: Record<SessionType, { label: string; tag: string; card: string }> = {
-  apertura: { label: "Apertura", tag: "bg-amber-100 text-amber-800", card: "rounded-xl bg-white border border-gray-100 border-l-4 border-l-amber-500 shadow-sm" },
-  conferencia: { label: "Conferencia", tag: "bg-cln-100 text-cln-700", card: "rounded-xl bg-white border border-gray-100 border-l-4 border-l-cln-600 shadow-sm" },
-  magistral: { label: "Magistral", tag: "bg-orange-100 text-orange-700", card: "rounded-xl bg-orange-50/50 border border-orange-200 border-l-4 border-l-orange-500 shadow-md" },
-  panel: { label: "Panel Fórum", tag: "bg-emerald-100 text-emerald-700", card: "rounded-xl bg-cln-50/40 border border-cln-100 border-l-4 border-l-emerald-600 shadow-sm" },
-  networking: { label: "Networking", tag: "bg-gray-100 text-gray-600", card: "rounded-xl bg-white border border-gray-200 border-l-4 border-l-cln-900 shadow-sm" },
-  clausura: { label: "Clausura", tag: "bg-cln-100 text-cln-800", card: "rounded-xl bg-white border border-gray-100 border-l-4 border-l-cln-800 shadow-sm" },
-};
 
 function Avatar({ speaker, size = 48 }: { speaker: Speaker; size?: number }) {
   const initials = speaker.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
@@ -162,10 +137,8 @@ function SpeakerCard({ speaker, onClick }: { speaker: Speaker; onClick: () => vo
   );
 }
 
-function SpeakerModal({ speaker, onClose }: { speaker: Speaker; onClose: () => void }) {
+function SpeakerModal({ speaker, onClose, onVerEnAgenda }: { speaker: Speaker; onClose: () => void; onVerEnAgenda: (id: string) => void }) {
   const closeRef = useRef<HTMLButtonElement>(null);
-  const rowIndex = AGENDA.findIndex((item) => item.speakerIds?.includes(speaker.id));
-  const agendaAnchor = rowIndex >= 0 ? `#agenda-row-${rowIndex}` : "/agenda";
   useEffect(() => {
     closeRef.current?.focus();
     const handler = (e: KeyboardEvent) => {
@@ -224,16 +197,23 @@ function SpeakerModal({ speaker, onClose }: { speaker: Speaker; onClose: () => v
 
         <div className="flex-1 min-w-0 p-8 md:p-10">
           <span
-            className={`inline-block rounded-full px-3 py-1 text-[11px] font-bold tracking-wide mb-4 ${
-              speaker.confirmed ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"
-            }`}
+            className={`inline-block rounded-full px-3 py-1 text-[11px] font-bold tracking-wide mb-4 ${speaker.confirmed ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"
+              }`}
           >
             {speaker.confirmed ? "Participación Confirmada" : "Pendiente de Confirmación"}
           </span>
 
-          <h2 id="modal-speaker-name" className="font-heading font-extrabold text-2xl md:text-[26px] text-cln-950 leading-tight mb-6">
+          <h2 id="modal-speaker-name" className="font-heading font-extrabold text-2xl md:text-[26px] text-cln-950 leading-tight mb-2">
             {speaker.name}
           </h2>
+
+          {speaker.topicSubtitle && (
+            <p className="text-base font-semibold text-orange-600 mb-1">{speaker.topic}</p>
+          )}
+          {speaker.topicSubtitle && (
+            <p className="text-sm text-gray-500 italic mb-6">{speaker.topicSubtitle}</p>
+          )}
+          {!speaker.topicSubtitle && <div className="mb-6" />}
 
           {speaker.bio && (
             <p className="text-sm leading-relaxed text-gray-600 mb-6">{speaker.bio}</p>
@@ -254,90 +234,16 @@ function SpeakerModal({ speaker, onClose }: { speaker: Speaker; onClose: () => v
             ))}
           </dl>
 
-          <Link
-            href={agendaAnchor}
-            onClick={
-              rowIndex >= 0
-                ? (e) => {
-                    e.preventDefault();
-                    onClose();
-                    setTimeout(() => {
-                      document
-                        .getElementById(`agenda-row-${rowIndex}`)
-                        ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }, 60);
-                  }
-                : undefined
-            }
-            className="inline-flex items-center gap-1.5 text-sm font-bold text-cln-600 hover:text-cln-800 transition-colors"
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              setTimeout(() => onVerEnAgenda(speaker.id), 60);
+            }}
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-cln-600 hover:text-cln-800 transition-colors cursor-pointer bg-transparent border-none p-0"
           >
             Ver en la agenda <span aria-hidden>→</span>
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AgendaRow({
-  item,
-  speakers,
-  onSpeakerClick,
-  rowId,
-}: {
-  item: AgendaItem;
-  speakers: Speaker[];
-  onSpeakerClick: (s: Speaker) => void;
-  rowId?: string;
-}) {
-  const meta = TYPE_META[item.type];
-  const rowSpeakers = (item.speakerIds ?? [])
-    .map((id) => speakers.find((s) => s.id === id))
-    .filter(Boolean) as Speaker[];
-
-  return (
-    <div id={rowId} className={`scroll-mt-24 flex ${item.isBreak ? "opacity-70" : ""}`}>
-      <div className="w-24 flex-shrink-0 pt-5">
-        <span className="text-sm md:text-base font-semibold text-gray-500 leading-snug">{item.time}</span>
-      </div>
-      <div className={`flex-1 min-w-0 mb-4 ${meta.card}`}>
-        <div className="pl-4 md:pl-6 pt-5 pb-5">
-          <div className="flex justify-end mb-2">
-            <span className={`inline-block rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${meta.tag}`}>
-              {meta.label}
-            </span>
-          </div>
-          <p className="font-semibold text-gray-900 leading-snug mb-2">{item.title}</p>
-          {rowSpeakers.length > 0 && (
-            <div className="flex flex-col gap-3">
-              {rowSpeakers.map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => onSpeakerClick(s)}
-                  className="group/speaker flex items-center gap-3 w-full text-left rounded-lg bg-gray-50 hover:bg-white border border-gray-200 hover:border-cln-300 py-2.5 px-3 cursor-pointer transition-all duration-150 hover:translate-x-1"
-                  aria-label={`Ver perfil de ${s.name}`}
-                >
-                  <Avatar speaker={s} size={44} />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-heading font-bold text-gray-900 group-hover/speaker:text-orange-600 transition-colors leading-tight text-sm md:text-base">
-                      {s.name}
-                    </p>
-                    <p className="text-xs md:text-sm text-gray-500">
-                      {s.role} · {s.company}
-                      {s.country && <span className="text-gray-400"> · {s.country}</span>}
-                    </p>
-                  </div>
-                  <span className="text-cln-600 font-bold text-sm shrink-0 flex items-center gap-1">
-                    Ver perfil
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
+          </button>
         </div>
       </div>
     </div>
@@ -346,6 +252,13 @@ function AgendaRow({
 
 export default function PonentesPage() {
   const [active, setActive] = useState<Speaker | null>(null);
+
+  const handleVerEnAgenda = (speakerId: string) => {
+    const el = document.getElementById(`timeline-${speakerId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
 
   return (
     <>
@@ -374,17 +287,16 @@ export default function PonentesPage() {
         />
         <div className="relative z-10 text-left max-w-5xl px-4 sm:px-6 lg:px-8 py-24">
           <span className="inline-block py-1 px-3 rounded-full bg-cln-500/20 text-cln-300 border border-cln-500/30 text-sm font-semibold tracking-wider mb-6 backdrop-blur-sm">
-            EXPO LOGÍSTICA · CLN · 2026 · VIERNES 20 DE NOVIEMBRE · MANAGUA
+            APRENDER
           </span>
           <h1 className="font-heading font-extrabold text-white text-4xl md:text-6xl lg:text-7xl leading-tight mb-6">
-            Conocimiento que fortalece{" "}
+            Conocimiento que {" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cln-300 to-cln-500">
-              la operación logística.
+              cruza fronteras.
             </span>
           </h1>
           <p className="text-lg md:text-xl text-cln-200 font-light max-w-3xl mb-10">
-            Una agenda ejecutiva con líderes del sector, especialistas y autoridades para analizar
-            desafíos, tendencias y decisiones que impactan la cadena de suministro en Nicaragua.
+            Voces nacionales e internacionales compartirán conocimiento, experiencias y nuevas perspectivas sobre los desafíos y oportunidades que están transformando la logística y Supply Chain.
           </p>
           <div className="flex flex-col sm:flex-row items-start justify-start gap-4">
             <Link
@@ -397,7 +309,7 @@ export default function PonentesPage() {
               href="#agenda"
               className="w-full sm:w-auto bg-transparent hover:bg-white/10 text-white border border-white/30 px-8 py-4 rounded-lg font-bold text-lg transition-all backdrop-blur-sm"
             >
-              Ver agenda
+              Explora la agenda
             </a>
           </div>
         </div>
@@ -426,85 +338,114 @@ export default function PonentesPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════ AGENDA ══════════════════════════════════════ */}
+      {/* ══════════════════════════════════════ HORARIOS DE CONFERENCIAS ══════════════════════════════════════ */}
       <section id="agenda" className="bg-gray-50 border-t border-gray-200 py-16 md:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16 items-end mb-10">
-            <div>
-              <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-3">
-                Viernes 20 de noviembre
-              </p>
-              <h2 className="font-heading font-extrabold text-3xl md:text-5xl text-cln-950 leading-tight">
-                Agenda del Congreso.
-              </h2>
-            </div>
-            <p className="text-xl font-medium text-gray-600 leading-relaxed lg:text-right">
-              Una jornada de contenido ejecutivo, conversaciones sectoriales y espacios de relacionamiento
-              para quienes toman decisiones en la cadena logística.
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-3">
+              CUÁNDO PARTICIPA CADA SPEAKER
+            </p>
+            <h2 className="font-heading font-extrabold text-3xl md:text-5xl text-cln-950 leading-tight mb-4">
+              Horarios de conferencias.
+            </h2>
+            <p className="text-lg text-gray-600">
+              Consulta el horario de cada participación para planificar tu jornada.
             </p>
           </div>
 
-          <div>
-            {AGENDA.map((item, i) => (
-              <AgendaRow key={i} item={item} speakers={SPEAKERS} rowId={`agenda-row-${i}`} onSpeakerClick={(s) => setActive(s)} />
+          <div className="relative">
+            <div className="absolute top-0 bottom-0 left-[72px] md:left-[88px] w-px bg-gray-300" aria-hidden />
+            {SPEAKERS.filter((s) => s.id !== "mayerling").map((speaker) => (
+              <div key={speaker.id} id={`timeline-${speaker.id}`} className="relative flex items-start mb-6 last:mb-0 scroll-mt-24">
+                <div className="w-16 md:w-20 flex-shrink-0 pt-5 pr-3 text-right">
+                  <span className="text-sm md:text-base font-bold text-cln-700">{speaker.time}</span>
+                </div>
+                <div className="w-3 h-3 rounded-full bg-orange-500 mt-6 relative z-10 flex-shrink-0 ring-4 ring-gray-50" aria-hidden />
+                <button
+                  type="button"
+                  onClick={() => setActive(speaker)}
+                  className="flex-1 min-w-0 bg-white rounded-xl border border-gray-200 shadow-sm p-5 ml-4 hover:shadow-md hover:border-cln-300 transition-all text-left cursor-pointer"
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-cln-600 mb-1">{speaker.session}</p>
+                  <p className="font-heading font-bold text-orange-600 text-sm mb-0.5">{speaker.topic}</p>
+                  {speaker.topicSubtitle && (
+                    <p className="text-xs text-gray-500 italic mb-3">{speaker.topicSubtitle}</p>
+                  )}
+                  <div className="flex items-center gap-3">
+                    <Avatar speaker={speaker} size={36} />
+                    <div>
+                      <p className="font-heading font-bold text-cln-950 text-sm md:text-base leading-tight">{speaker.name}</p>
+                      <p className="text-xs text-gray-500">{speaker.role} · {speaker.company}</p>
+                    </div>
+                  </div>
+                </button>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════ ACCESO / PRECIOS ══════════════════════════════════════ */}
-      <section className="bg-cln-950 py-16 md:py-20 text-center">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="font-heading font-extrabold text-white text-3xl md:text-4xl mb-4">
-            Congreso — Acceso con costo.
-          </h2>
-          <p className="text-lg text-cln-200 font-light mb-10 leading-relaxed">
-            El acceso incluye ingreso al congreso, piso de exhibición, almuerzo ejecutivo y dos coffee
-            breaks para networking.
+      {/* ══════════════════════════════════════ EDITORIAL ══════════════════════════════════════ */}
+      <section className="py-20 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-4">
+            IDEAS GLOBALES. IMPACTO EN NUESTRA REALIDAD.
           </p>
+          <h2 className="font-heading font-extrabold text-3xl md:text-5xl text-cln-950 leading-tight mb-8">
+            Ideas globales. Impacto en nuestra realidad.
+          </h2>
+          <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto mb-6">
+            Expo Logística CLN reúne voces con diferentes experiencias, mercados y perspectivas para abrir conversaciones sobre los desafíos que enfrenta nuestra cadena logística.
+          </p>
+          <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
+            Desde la resiliencia y el comercio regional hasta la innovación y la tecnología, cada sesión busca aportar una nueva mirada para comprender hacia dónde se mueve Supply Chain.
+          </p>
+        </div>
+      </section>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10 max-w-xl mx-auto">
-            {[
-              { label: "Miembro CLN", price: "$75", note: "+ IVA · sujeto a validación", highlight: false },
-              { label: "Tarifa General", price: "$120", note: "+ IVA · no asociado", highlight: true },
-            ].map((t) => (
-              <div
-                key={t.label}
-                className={`relative rounded-xl p-8 ${
-                  t.highlight
-                    ? "bg-orange-500 shadow-xl shadow-orange-500/30"
-                    : "bg-white border-t-4 border-cln-500 shadow-xl"
-                }`}
-              >
-                {t.highlight && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cln-950 text-cln-200 text-[10px] font-bold px-3 py-1 rounded-full tracking-widest">
-                    TARIFA GENERAL
-                  </span>
-                )}
-                <p className={`text-sm font-semibold mb-2 ${t.highlight ? "text-cln-950" : "text-gray-500"}`}>
-                  {t.label}
-                </p>
-                <p className={`font-heading font-extrabold text-4xl mb-1 ${t.highlight ? "text-cln-950" : "text-cln-950"}`}>
-                  {t.price}
-                </p>
-                <p className={`text-xs ${t.highlight ? "text-cln-900" : "text-gray-500"}`}>{t.note}</p>
-              </div>
-            ))}
-          </div>
+      {/* ══════════════════════════════════════ SPEAKERS → AGENDA ══════════════════════════════════════ */}
+      <section className="py-16 bg-gray-50 border-t border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="font-heading font-extrabold text-3xl md:text-4xl text-cln-950 leading-tight mb-4">
+            Ahora sabes quiénes.<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cln-300 to-cln-500">Descubre cuándo.</span>
+          </h2>
+          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            Consulta el programa completo y planifica tu jornada alrededor de las sesiones que quieres vivir.
+          </p>
+          <Link
+            href="/agenda"
+            className="inline-flex items-center gap-2 bg-cln-600 hover:bg-cln-500 text-white px-8 py-4 rounded-full font-bold text-lg shadow-md transition-all hover:-translate-y-0.5"
+          >
+            Explorar la agenda <span aria-hidden>→</span>
+          </Link>
+        </div>
+      </section>
 
+      {/* ══════════════════════════════════════ CTA FINAL ══════════════════════════════════════ */}
+      <section className="bg-cln-950 py-20 text-center">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="font-heading font-extrabold text-white text-3xl md:text-5xl leading-tight mb-4">
+            El conocimiento se comparte.<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cln-300 to-cln-500">Las oportunidades comienzan cuando nos conectamos.</span>
+          </h2>
+          <p className="text-lg md:text-xl text-cln-200 font-light mb-10 leading-relaxed">
+            Ven a vivir Expo Logística CLN 2026.
+          </p>
           <Link
             href="/registro"
-            className="inline-block bg-orange-500 hover:bg-orange-600 text-white px-10 py-4 rounded-full font-bold text-lg shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1"
+            className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-10 py-4 rounded-full font-bold text-lg shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1"
           >
-            Asegurar mi lugar →
+            Asegurar mi lugar <span aria-hidden>→</span>
           </Link>
         </div>
       </section>
 
       {/* ══════════════════════════════════════ MODAL PONENTE ══════════════════════════════════════ */}
-      {active && <SpeakerModal speaker={active} onClose={() => setActive(null)} />}
+      {active && <SpeakerModal speaker={active} onClose={() => setActive(null)} onVerEnAgenda={handleVerEnAgenda} />}
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @keyframes modalIn {
           from { opacity:0; transform:translateY(20px) scale(.97) }
           to   { opacity:1; transform:translateY(0) scale(1) }

@@ -67,7 +67,7 @@ export const EVENT_HIGHLIGHTS: EventHighlight[] = [
     description: "Experiencias, conversaciones, aprendizajes y nuevas perspectivas dentro de una comunidad que trabaja por fortalecer la logística de Nicaragua.",
     href: "/registro",
     cta: "Ser parte de CLN →",
-    photo: "https://nilogistic.com/wp-content/uploads/2026/09/card5-scaled.jpeg",
+    photo: "https://nilogistic.com/wp-content/uploads/2026/09/card7-scaled.jpeg",
   },
   {
     title: "Cóctel de Cierre",

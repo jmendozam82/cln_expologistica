@@ -40,18 +40,19 @@ export default function PatrocinadoresPage() {
         />
         <div className="relative z-10 text-left max-w-5xl px-4 sm:px-6 lg:px-8 py-24">
           <span className="inline-block py-1 px-3 rounded-full bg-cln-500/20 text-cln-300 border border-cln-500/30 text-sm font-semibold tracking-wider mb-6 backdrop-blur-sm">
-            PATROCINADORES · EVENTO DE CIERRE CLN 2026
+            CONECTAR
           </span>
           <h1 className="font-heading font-extrabold text-white text-4xl md:text-6xl lg:text-7xl leading-tight mb-6">
-            Aliados estratégicos que{" "}
+            Soluciones que{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cln-300 to-cln-500">
-              impulsan la logística.
+              mueven la logística.
             </span>
           </h1>
           <p className="text-lg md:text-xl text-cln-200 font-light max-w-3xl mb-10">
-            El evento cuenta con el respaldo de empresas líderes que apuestan por la innovación y el
-            desarrollo del sector logístico en Nicaragua. Interactúe con el plano para conocer la
-            ubicación de nuestros aliados estratégicos y reservar su espacio comercial.
+            Empresas nacionales e internacionales se reúnen en Expo Logística CLN para presentar tecnología, servicios y soluciones que responden a los desafíos actuales de Supply Chain.
+          </p>
+          <p className="text-lg md:text-xl text-cln-200 font-light max-w-3xl mb-10">
+            Descubre quiénes están detrás de las soluciones que están transformando nuestra cadena logística.
           </p>
           <div className="flex flex-col sm:flex-row items-start justify-start gap-4">
             <a

@@ -1,155 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import AgendaTimeline from "@/components/AgendaTimeline";
 
 export const metadata: Metadata = {
   title: "Agenda | EXPO LOGÍSTICA · CLN · 2026",
   description:
     "Programa oficial de EXPO LOGÍSTICA · CLN · 2026 — Comunidad Logística Nicaragüense. Viernes 20 de noviembre, DoubleTree by Hilton Managua.",
-};
-
-type SessionType = "registro" | "institucional" | "conferencia" | "magistral" | "panel" | "networking" | "sponsors" | "cierre";
-type AccessType = "libre" | "congreso" | "vip";
-
-interface Session {
-  time: string;
-  type: SessionType;
-  access: AccessType;
-  title: string;
-  description?: string;
-  speaker?: string;
-  highlight?: boolean;
-}
-
-const SCHEDULE: Session[] = [
-  {
-    time: "7:00 a.m. – 8:00 a.m.",
-    type: "registro",
-    access: "libre",
-    title: "Montaje final · Staff · Patrocinadores",
-    description: "Preparación de salones, instalación de stands y acreditación del equipo organizador y sponsors.",
-  },
-  {
-    time: "8:00 a.m. – 8:30 a.m.",
-    type: "registro",
-    access: "libre",
-    title: "Registro de asistentes",
-    description: "Recepción, acreditación y orientación para congresistas e invitados especiales.",
-  },
-  {
-    time: "8:30 a.m. – 9:00 a.m.",
-    type: "institucional",
-    access: "congreso",
-    title: "Ceremonia de Apertura — EXPO LOGÍSTICA · CLN · 2026",
-    description: "Bienvenida oficial a cargo de la organización CLN. Inicio formal del programa de contenidos.",
-    speaker: "Mayerling Cervantes · Líder Organizadora, CLN",
-  },
-  {
-    time: "9:00 a.m. – 9:40 a.m.",
-    type: "conferencia",
-    access: "congreso",
-    title: "Conferencia 1 — Supply Chain Regional",
-    description: "Desafíos y oportunidades en la cadena de suministro centroamericana para 2026 y más allá.",
-    speaker: "Jorge Mauricio Pocasangre · Director Regional, Supply Chain Latam",
-  },
-  {
-    time: "9:50 a.m. – 10:30 a.m.",
-    type: "conferencia",
-    access: "congreso",
-    title: "Conferencia 2",
-    description: "Segunda sesión de contenido técnico y estratégico del programa CLN 2026.",
-  },
-  {
-    time: "10:30 a.m. – 11:00 a.m.",
-    type: "networking",
-    access: "libre",
-    title: "Coffee Break AM · Visita a Stands de Patrocinadores",
-    description: "Espacio de networking y recorrido por el piso de exhibición con los sponsors del evento.",
-  },
-  {
-    time: "11:00 a.m. – 12:00 m.",
-    type: "magistral",
-    access: "congreso",
-    title: "Conferencia Magistral 1 — Resiliencia de la Cadena de Suministro",
-    description: "De la protección física a la resiliencia global: seguridad integral, gestión del riesgo y cumplimiento normativo en la cadena logística latinoamericana.",
-    speaker: "Carlos Boshell · Logistics Group, Colombia",
-    highlight: true,
-  },
-  {
-    time: "12:15 p.m. – 1:30 p.m.",
-    type: "networking",
-    access: "congreso",
-    title: "Almuerzo Ejecutivo de Networking",
-    description: "Almuerzo incluido en el acceso Congreso. Espacio para conectar con líderes del ecosistema logístico nicaragüense.",
-  },
-  {
-    time: "1:30 p.m. – 2:10 p.m.",
-    type: "conferencia",
-    access: "congreso",
-    title: "Conferencia 3 — Innovación y Tecnología en Logística",
-    description: "Aplicación de herramientas digitales, automatización e inteligencia artificial al sector logístico y de supply chain.",
-    speaker: "Karla Klaus · TechLog",
-  },
-  {
-    time: "2:10 p.m. – 2:40 p.m.",
-    type: "networking",
-    access: "libre",
-    title: "Coffee Break PM · Visita a Stands de Patrocinadores",
-    description: "Segundo espacio de networking y actividades de los patrocinadores en el piso de exhibición.",
-  },
-  {
-    time: "2:40 p.m. – 3:40 p.m.",
-    type: "magistral",
-    access: "congreso",
-    title: "Conferencia Magistral 2 — Comercio e Inversión Regional",
-    description: "Perspectivas estratégicas de comercio exterior e inversión para el ecosistema logístico de Nicaragua y la región centroamericana.",
-    speaker: "Eduardo García Grande · Consultor Senior, Global Trade",
-    highlight: true,
-  },
-  {
-    time: "3:40 p.m. – 4:00 p.m.",
-    type: "sponsors",
-    access: "libre",
-    title: "Actividad Patrocinadores · Reconocimiento CLN",
-    description: "Espacio de visibilidad para los patrocinadores del evento. Reconocimientos especiales de la Comunidad Logística Nicaragüense.",
-  },
-  {
-    time: "4:00 p.m. – 5:30 p.m.",
-    type: "networking",
-    access: "libre",
-    title: "Networking de Cierre — Conexión Empresarial B2B",
-    description: "El principal espacio de relacionamiento del año. Conecta con líderes del sector logístico, proveedores de soluciones y tomadores de decisión.",
-    highlight: true,
-  },
-  {
-    time: "5:30 p.m. – 6:00 p.m.",
-    type: "cierre",
-    access: "libre",
-    title: "Cierre Operativo · Desmontaje",
-    description: "Conclusión de actividades y cierre del evento CLN 2026.",
-  },
-];
-
-const TYPE_META: Record<SessionType, { label: string; dot: string; tag: string; card: string }> = {
-  registro: { label: "Registro", dot: "bg-slate-400", tag: "bg-slate-100 text-slate-600", card: "my-3 mr-2 md:mr-3 rounded-xl bg-white border border-gray-100 border-l-4 border-l-slate-400 shadow-sm" },
-  institucional: { label: "Institucional", dot: "bg-amber-500", tag: "bg-amber-100 text-amber-800", card: "my-3 mr-2 md:mr-3 rounded-xl bg-white border border-gray-100 border-l-4 border-l-amber-500 shadow-sm" },
-  conferencia: { label: "Conferencia", dot: "bg-cln-600", tag: "bg-cln-100 text-cln-700", card: "my-3 mr-2 md:mr-3 rounded-xl bg-white border border-gray-100 border-l-4 border-l-cln-600 shadow-sm" },
-  magistral: {
-    label: "Magistral",
-    dot: "bg-orange-500",
-    tag: "bg-orange-100 text-orange-700",
-    card: "my-3 mr-2 md:mr-3 rounded-xl bg-orange-50/50 border border-orange-200 border-l-4 border-l-orange-500 shadow-md",
-  },
-  panel: { label: "Panel Fórum", dot: "bg-emerald-600", tag: "bg-emerald-100 text-emerald-700", card: "my-3 mr-2 md:mr-3 rounded-xl bg-cln-50/40 border border-cln-100 border-l-4 border-l-emerald-600 shadow-sm" },
-  networking: { label: "Networking", dot: "bg-cln-900", tag: "bg-gray-100 text-gray-600", card: "my-3 mr-2 md:mr-3 rounded-xl bg-white border border-gray-200 border-l-4 border-l-cln-900 shadow-sm" },
-  sponsors: { label: "Patrocinadores", dot: "bg-amber-500", tag: "bg-amber-100 text-amber-800", card: "my-3 mr-2 md:mr-3 rounded-xl bg-white border border-gray-100 border-l-4 border-l-amber-500 shadow-sm" },
-  cierre: { label: "Cierre", dot: "bg-slate-400", tag: "bg-slate-100 text-slate-600", card: "my-3 mr-2 md:mr-3 rounded-xl bg-white border border-gray-100 border-l-4 border-l-slate-400 shadow-sm" },
-};
-
-const ACCESS_META: Record<AccessType, { label: string; tag: string }> = {
-  libre: { label: "Acceso libre", tag: "bg-emerald-100 text-emerald-700" },
-  congreso: { label: "Acceso Congreso", tag: "bg-cln-100 text-cln-700" },
-  vip: { label: "Acceso VIP", tag: "bg-amber-100 text-amber-700" },
 };
 
 const svgArrow = (
@@ -192,17 +49,19 @@ export default function AgendaPage() {
         />
         <div className="relative z-10 text-left max-w-5xl px-4 sm:px-6 lg:px-8 py-24">
           <span className="inline-block py-1 px-3 rounded-full bg-cln-500/20 text-cln-300 border border-cln-500/30 text-sm font-semibold tracking-wider mb-6 backdrop-blur-sm">
-            AGENDA OFICIAL · EXPO LOGÍSTICA · CLN · 2026
+            APRENDER · CONECTAR · COMPARTIR
           </span>
           <h1 className="font-heading font-extrabold text-white text-4xl md:text-6xl lg:text-7xl leading-tight mb-6">
-            Programa oficial{" "}
+            Un día. Muchas ideas.{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cln-300 to-cln-500">
-              Viernes 20 de noviembre.
+              Nuevas posibilidades.
             </span>
           </h1>
           <p className="text-lg md:text-xl text-cln-200 font-light max-w-3xl mb-10">
-            Consulta los horarios de conferencias, actividades de patrocinadores, networking y momentos
-            clave de la jornada logística más importante de Nicaragua.
+            Una agenda diseñada para llevarte del conocimiento a la conversación, y de la conversación a nuevas oportunidades.
+          </p>
+          <p className="text-base md:text-lg text-cln-300 font-light max-w-3xl mb-10">
+            Conferencias, magistrales, networking, experiencias con sponsors y espacios para conectar con profesionales y líderes de toda la cadena logística.
           </p>
           <div className="flex flex-col sm:flex-row items-start justify-start gap-4">
             <Link
@@ -234,78 +93,110 @@ export default function AgendaPage() {
               Viernes 20 de noviembre 2026
             </p>
             <h2 className="font-heading font-bold text-2xl md:text-4xl text-cln-950 leading-tight mb-2">
-              Jornada principal de EXPO LOGÍSTICA · CLN · 2026
+              Una jornada, diferentes formas de conectar
             </h2>
-            <p className="text-base md:text-lg text-gray-600 leading-relaxed">
-              Conferencias, espacios de networking, actividades de patrocinadores y el encuentro B2B más
-              importante de la logística nicaragüense.
+            <p className="text-base md:text-lg text-gray-600 leading-relaxed mb-2">
+              De las ideas estratégicas a las conversaciones que generan oportunidades.
+            </p>
+            <p className="text-sm md:text-base text-gray-500 leading-relaxed">
+              La jornada combina conferencias, sesiones magistrales, espacios de networking, experiencias con sponsors y momentos diseñados para conectar a los diferentes actores de la cadena logística.
             </p>
           </div>
           <span className="text-xs font-bold text-gray-500 bg-gray-100 rounded-full px-3 py-1.5 whitespace-nowrap">
-            {SCHEDULE.length} sesiones
+            12 sesiones
           </span>
         </div>
 
-        {/* Timeline */}
-        <ol className="relative" aria-label="Programa hora por hora">
-          <div className="absolute top-0 bottom-0 left-[88px] md:left-[112px] w-px bg-gray-200" aria-hidden />
-          {SCHEDULE.map((s, i) => {
-            const tm = TYPE_META[s.type];
-            const am = ACCESS_META[s.access];
-            return (
-              <li key={i} className="relative flex">
-                <div className="w-20 md:w-24 flex-shrink-0 pt-6 pr-3 text-right text-xs md:text-sm font-semibold text-gray-500 leading-snug">
-                  {s.time}
-                </div>
-                <div className={`w-2.5 h-2.5 rounded-full mt-7 relative z-10 flex-shrink-0 ${tm.dot}`} aria-hidden />
-                <div className={`flex-1 min-w-0 ${tm.card} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl cursor-default`}>
-                  <div className="pl-4 md:pl-6 pt-5 pb-5">
-                    <div className="flex flex-wrap items-center justify-end gap-2 mb-2">
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${tm.tag}`}>
-                        {tm.label}
-                      </span>
-                      <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${am.tag}`}>
-                        {am.label}
-                      </span>
-                    </div>
-                    <h3 className={`font-heading font-bold text-base md:text-lg leading-snug mb-1 ${s.highlight ? "text-orange-900" : "text-cln-950"}`}>
-                      {s.title}
-                    </h3>
-                    {s.description && (
-                      <p className="text-sm text-gray-600 leading-relaxed">{s.description}</p>
-                    )}
-                    {s.speaker && (
-                      <span className="inline-flex items-center gap-1.5 mt-1.5 text-xs md:text-sm font-semibold text-cln-700">
-                        <span className="w-1.5 h-1.5 rounded-full bg-orange-500" aria-hidden />
-                        {s.speaker}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
-
-        <p className="mt-8 text-xs text-gray-400 text-center">
-          * Este programa es preliminar y puede experimentar ajustes menores en horarios y contenidos.
-        </p>
+        {/* Timeline con filtros */}
+        <AgendaTimeline />
       </section>
 
-      {/* ════════════════════════════════ CTA FINAL ════════════════════════════════ */}
-      <section className="bg-cln-950 py-16 md:py-20 text-center">
+      {/* ════════════════════════════════ ACCESOS ════════════════════════════════ */}
+      <section className="py-20 bg-gray-50 border-t border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-3">
+              ELIGE TU ACCESO
+            </p>
+            <h2 className="font-heading font-extrabold text-3xl md:text-5xl text-cln-950 leading-tight">
+              Elige cómo quieres vivir Expo Logística CLN 2026
+            </h2>
+          </div>
+
+          <div className="flex justify-center">
+            {/* ACCESO CONGRESO */}
+            <div className="bg-white rounded-2xl shadow-lg border-2 border-cln-600 p-8 md:p-10 flex flex-col w-full max-w-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="bg-cln-600 text-white p-2 rounded-lg">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <h3 className="font-heading font-extrabold text-2xl text-cln-950">ACCESO CONGRESO</h3>
+              </div>
+              <p className="text-lg font-semibold text-cln-600 mb-6">Todo el contenido. Toda la experiencia.</p>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-3 text-gray-700">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-cln-100 text-cln-600 flex items-center justify-center text-xs font-bold">✓</span>
+                  Conferencias
+                </li>
+                <li className="flex items-center gap-3 text-gray-700">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-cln-100 text-cln-600 flex items-center justify-center text-xs font-bold">✓</span>
+                  Conferencias magistrales
+                </li>
+                <li className="flex items-center gap-3 text-gray-700">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-cln-100 text-cln-600 flex items-center justify-center text-xs font-bold">✓</span>
+                  Almuerzo ejecutivo
+                </li>
+                <li className="flex items-center gap-3 text-gray-700">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-cln-100 text-cln-600 flex items-center justify-center text-xs font-bold">✓</span>
+                  Coffee Break AM
+                </li>
+                <li className="flex items-center gap-3 text-gray-700">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-cln-100 text-cln-600 flex items-center justify-center text-xs font-bold">✓</span>
+                  Coffee Break PM
+                </li>
+                <li className="flex items-center gap-3 text-gray-700">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-cln-100 text-cln-600 flex items-center justify-center text-xs font-bold">✓</span>
+                  Networking
+                </li>
+                <li className="flex items-center gap-3 text-gray-700">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-cln-100 text-cln-600 flex items-center justify-center text-xs font-bold">✓</span>
+                  Piso de exhibición
+                </li>
+                <li className="flex items-center gap-3 text-gray-700">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-cln-100 text-cln-600 flex items-center justify-center text-xs font-bold">✓</span>
+                  Actividades de sponsors
+                </li>
+                <li className="flex items-center gap-3 text-gray-700">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-cln-100 text-cln-600 flex items-center justify-center text-xs font-bold">✓</span>
+                  Cóctel de Cierre
+                </li>
+              </ul>
+              <Link
+                href="/registro"
+                className="inline-flex items-center justify-center gap-2 bg-cln-600 hover:bg-cln-500 text-white px-8 py-4 rounded-full font-bold text-lg shadow-md transition-all hover:-translate-y-0.5"
+              >
+                Asegurar mi lugar {svgArrow}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════ CIERRE ════════════════════════════════ */}
+      <section className="bg-cln-950 py-20 text-center">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="font-heading font-extrabold text-white text-3xl md:text-4xl mb-4">
-            Elige el acceso correcto para tu agenda.
+          <h2 className="font-heading font-extrabold text-white text-3xl md:text-5xl leading-tight mb-4">
+            La agenda termina.<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cln-300 to-cln-500">Las conexiones continúan.</span>
           </h2>
-          <p className="text-lg text-cln-200 font-light mb-8 leading-relaxed">
-            El acceso Congreso incluye todas las conferencias, almuerzo ejecutivo y dos coffee breaks.
-            El acceso libre permite participar en networking, piso de exhibición y actividades de
-            patrocinadores.
+          <p className="text-lg md:text-xl text-cln-200 font-light mb-10 leading-relaxed">
+            Ven preparado para aprender, conectar y compartir con quienes están moviendo la logística de Nicaragua y la región.
           </p>
           <Link
             href="/registro"
-            className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1"
+            className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-10 py-4 rounded-full font-bold text-lg shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1"
           >
             Asegurar mi lugar {svgArrow}
           </Link>

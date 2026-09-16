@@ -66,7 +66,7 @@ export default function Home() {
           </span>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-heading font-extrabold text-white mb-6 leading-tight">
             EXPO LOGÍSTICA
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cln-300 to-cln-500"> - CLN · 2026 - </span>
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cln-300 to-cln-500">   - CLN · 2026 - </span>
           </h1>
           <p className="text-xl md:text-2xl text-cln-200 mb-4 max-w-3xl font-light">
             {EVENT_SLOGAN}.
@@ -225,31 +225,36 @@ export default function Home() {
             Un día para mover ideas, conexiones y oportunidades.
           </h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 lg:gap-12 mb-16">
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-6 lg:gap-8 mb-16">
             <div className="flex flex-col items-center">
-              <span className="text-5xl lg:text-7xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-cln-300 to-cln-500 mb-2">1</span>
-              <span className="text-white font-bold text-lg mb-1">DÍA</span>
-              <span className="text-cln-300 text-sm">de experiencia logística</span>
+              <span className="text-4xl lg:text-6xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-cln-300 to-cln-500 mb-2">1</span>
+              <span className="text-white font-bold text-sm lg:text-base mb-1">DÍA</span>
+              <span className="text-cln-300 text-xs lg:text-sm">de experiencia logística</span>
             </div>
             <div className="flex flex-col items-center">
-              <span className="text-5xl lg:text-7xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-cln-300 to-cln-500 mb-2">2</span>
-              <span className="text-white font-bold text-lg mb-1">MAGISTRALES</span>
-              <span className="text-cln-300 text-sm">con speakers internacionales</span>
+              <span className="text-4xl lg:text-6xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-cln-300 to-cln-500 mb-2">2</span>
+              <span className="text-white font-bold text-sm lg:text-base mb-1">MAGISTRALES</span>
+              <span className="text-cln-300 text-xs lg:text-sm">con speakers internacionales</span>
             </div>
             <div className="flex flex-col items-center">
-              <span className="text-5xl lg:text-7xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-cln-300 to-cln-500 mb-2">10</span>
-              <span className="text-white font-bold text-lg mb-1">SPONSORS</span>
-              <span className="text-cln-300 text-sm">presentando soluciones</span>
+              <span className="text-4xl lg:text-6xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-cln-300 to-cln-500 mb-2">5</span>
+              <span className="text-white font-bold text-sm lg:text-base mb-1">CONFERENCIAS</span>
+              <span className="text-cln-300 text-xs lg:text-sm">de alto nivel</span>
             </div>
             <div className="flex flex-col items-center">
-              <span className="text-5xl lg:text-7xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-cln-300 to-cln-500 mb-2">&infin;</span>
-              <span className="text-white font-bold text-lg mb-1">SUPPLY CHAIN END TO END</span>
-              <span className="text-cln-300 text-sm">toda la cadena conectada</span>
+              <span className="text-4xl lg:text-6xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-cln-300 to-cln-500 mb-2">10</span>
+              <span className="text-white font-bold text-sm lg:text-base mb-1">SPONSORS</span>
+              <span className="text-cln-300 text-xs lg:text-sm">presentando soluciones</span>
             </div>
-            <div className="flex flex-col items-center col-span-2 md:col-span-1">
-              <span className="text-5xl lg:text-7xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-cln-300 to-cln-500 mb-2">+</span>
-              <span className="text-white font-bold text-lg mb-1">NETWORKING & CÓCTEL</span>
-              <span className="text-cln-300 text-sm">conexiones que trascienden</span>
+            <div className="flex flex-col items-center">
+              <span className="text-4xl lg:text-6xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-cln-300 to-cln-500 mb-2">&infin;</span>
+              <span className="text-white font-bold text-sm lg:text-base mb-1 text-center leading-tight">SUPPLY CHAIN</span>
+              <span className="text-cln-300 text-xs lg:text-sm text-center">toda la cadena conectada</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-4xl lg:text-6xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-cln-300 to-cln-500 mb-2">+</span>
+              <span className="text-white font-bold text-sm lg:text-base mb-1 text-center leading-tight">NETWORKING</span>
+              <span className="text-cln-300 text-xs lg:text-sm text-center">conexiones que trascienden</span>
             </div>
           </div>
 

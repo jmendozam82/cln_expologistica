@@ -29,11 +29,11 @@ const LABEL: Record<Tier, string> = { elite: "Elite", oro: "Oro", plata: "Plata"
 // Ajustadas para un viewBox de 1200 x 750
 const STANDS: Stand[] = [
   // Pasillo Izquierdo (Frente Mombacho y Télica)
-  { id: "P1", label: "PLATA 1", tier: "plata", estado: "libre", x: 150, y: 550, w: 75, h: 42 },
-  { id: "P2", label: "PLATA 2", tier: "plata", estado: "libre", x: 240, y: 550, w: 75, h: 42 },
-  { id: "P3", label: "PLATA 3", tier: "plata", estado: "libre", x: 330, y: 550, w: 75, h: 42 },
-  { id: "O4", label: "ORO 4", tier: "oro", estado: "libre", x: 420, y: 550, w: 75, h: 42 },
-  { id: "O3", label: "ORO 3", tier: "oro", estado: "libre", x: 510, y: 550, w: 75, h: 42 },
+  { id: "P1", label: "PLATA 1", tier: "plata", estado: "libre", x: 100, y: 550, w: 75, h: 42 },
+  { id: "P2", label: "PLATA 2", tier: "plata", estado: "libre", x: 180, y: 550, w: 75, h: 42 },
+  { id: "P3", label: "PLATA 3", tier: "plata", estado: "libre", x: 260, y: 550, w: 75, h: 42 },
+  { id: "O4", label: "ORO 4", tier: "oro", estado: "libre", x: 340, y: 550, w: 75, h: 42 },
+  { id: "O3", label: "ORO 3", tier: "oro", estado: "libre", x: 420, y: 550, w: 75, h: 42 },
 
   // Pasillo Central (Elite, vertical)
   { id: "E1", label: "ELITE 1", tier: "elite", estado: "libre", x: 723, y: 470, w: 75, h: 42 },
@@ -188,10 +188,10 @@ export default function SponsorMap() {
           {STANDS.map(s => <StandRect key={s.id} s={s} {...sp} />)}
 
           {/* REGISTRO (Estático) */}
-          <rect x={612} y={550} width={100} height={42} rx={6} fill="#F97316" stroke="#C2410C" strokeWidth={1.5} />
-          <rect x={614} y={550} width={98} height={6} rx={4} fill="rgba(255,255,255,0.2)" />
-          <text x={662} y={565} textAnchor="middle" dominantBaseline="middle" fontSize={10} fontWeight="800" fill="white" fontFamily="system-ui,sans-serif" letterSpacing="0.4">REGISTRO /</text>
-          <text x={662} y={579} textAnchor="middle" dominantBaseline="middle" fontSize={10} fontWeight="800" fill="white" fontFamily="system-ui,sans-serif" letterSpacing="0.4">RECEP.</text>
+          <rect x={510} y={550} width={100} height={42} rx={6} fill="#F97316" stroke="#C2410C" strokeWidth={1.5} />
+          <rect x={512} y={550} width={98} height={6} rx={4} fill="rgba(255,255,255,0.2)" />
+          <text x={560} y={565} textAnchor="middle" dominantBaseline="middle" fontSize={10} fontWeight="800" fill="white" fontFamily="system-ui,sans-serif" letterSpacing="0.4">REGISTRO /</text>
+          <text x={560} y={579} textAnchor="middle" dominantBaseline="middle" fontSize={10} fontWeight="800" fill="white" fontFamily="system-ui,sans-serif" letterSpacing="0.4">RECEP.</text>
         </svg>
       </div>
 
