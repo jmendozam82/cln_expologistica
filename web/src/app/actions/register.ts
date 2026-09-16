@@ -1,4 +1,4 @@
-'use server';
+﻿'use server';
 
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
@@ -47,7 +47,7 @@ export async function submitRegistration(formData: FormData) {
       await resend.emails.send({
         from: 'CLN Eventos <registro@nilogistic.com>',
         to: email,
-        subject: '¡Registro Exitoso! - EXPO LOGÍSTICA 2026 · CLN',
+        subject: '¡Registro Exitoso! - EXPO LOGÍSTICA · CLN · 2026',
         react: RegistrationEmail({ nombre, ticketType }),
       });
     } else {

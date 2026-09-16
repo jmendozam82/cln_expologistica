@@ -1,4 +1,4 @@
-export interface GalleryItem {
+﻿export interface GalleryItem {
   src: string;
   type: "image" | "video";
 }

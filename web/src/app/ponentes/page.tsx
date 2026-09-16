@@ -87,7 +87,7 @@ const SPEAKERS: Speaker[] = [
 
 const AGENDA: AgendaItem[] = [
   { time: "7:00 a.m.", type: "networking", title: "Registro de congresistas e invitados especiales", isBreak: true },
-  { time: "8:30 a.m.", type: "apertura", title: "Ceremonia de Apertura — EXPO LOGÍSTICA 2026 · CLN", speakerIds: ["mayerling"] },
+  { time: "8:30 a.m.", type: "apertura", title: "Ceremonia de Apertura — EXPO LOGÍSTICA · CLN · 2026", speakerIds: ["mayerling"] },
   { time: "9:00 a.m.", type: "conferencia", title: "Supply Chain Regional: desafíos y oportunidades", speakerIds: ["jorge"] },
   { time: "10:00 a.m.", type: "networking", title: "Coffee break y visita al piso de exhibición", isBreak: true },
   { time: "10:30 a.m.", type: "panel", title: "Panel Fórum — Infraestructura Logística Nacional" },
@@ -374,7 +374,7 @@ export default function PonentesPage() {
         />
         <div className="relative z-10 text-left max-w-5xl px-4 sm:px-6 lg:px-8 py-24">
           <span className="inline-block py-1 px-3 rounded-full bg-cln-500/20 text-cln-300 border border-cln-500/30 text-sm font-semibold tracking-wider mb-6 backdrop-blur-sm">
-            EXPO LOGÍSTICA 2026 · CLN · VIERNES 20 DE NOVIEMBRE · MANAGUA
+            EXPO LOGÍSTICA · CLN · 2026 · VIERNES 20 DE NOVIEMBRE · MANAGUA
           </span>
           <h1 className="font-heading font-extrabold text-white text-4xl md:text-6xl lg:text-7xl leading-tight mb-6">
             Conocimiento que fortalece{" "}
@@ -391,7 +391,7 @@ export default function PonentesPage() {
               href="/registro"
               className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-lg font-bold text-lg shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1"
             >
-              Reservar acceso al congreso
+              Asegurar mi lugar
             </Link>
             <a
               href="#agenda"
@@ -496,7 +496,7 @@ export default function PonentesPage() {
             href="/registro"
             className="inline-block bg-orange-500 hover:bg-orange-600 text-white px-10 py-4 rounded-full font-bold text-lg shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1"
           >
-            Solicitar acceso →
+            Asegurar mi lugar →
           </Link>
         </div>
       </section>

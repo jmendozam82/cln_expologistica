@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
@@ -88,7 +88,7 @@ export default function NetworkingGallery() {
         className="relative h-[400px] rounded-xl overflow-hidden shadow-2xl cursor-pointer select-none"
         role="button"
         tabIndex={0}
-        aria-label="Abrir galería de fotos de Expo Logística 2026"
+        aria-label="Abrir galería Así se vive CLN"
         onClick={() => setOpen(true)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -100,7 +100,7 @@ export default function NetworkingGallery() {
         onMouseLeave={() => setPaused(false)}
       >
         <div key={active} className="absolute inset-0 animate-media-in">
-          <MediaItem item={current} alt={`Galería Expo Logística 2026 · foto ${active + 1}`} />
+          <MediaItem item={current} alt={`Así se vive CLN · foto ${active + 1}`} />
         </div>
 
         {previous && (
@@ -117,7 +117,7 @@ export default function NetworkingGallery() {
 
         <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-5 pb-4 pt-14">
           <p className="text-white text-sm font-bold drop-shadow">
-            Galería Expo Logística 2026 · {String(active + 1).padStart(2, "0")} / {len}
+            Así se vive CLN · {String(active + 1).padStart(2, "0")} / {len}
           </p>
         </div>
 
@@ -131,7 +131,7 @@ export default function NetworkingGallery() {
           className="fixed inset-0 z-50 bg-black/95 flex flex-col"
           role="dialog"
           aria-modal="true"
-          aria-label="Galería de fotos Expo Logística 2026"
+          aria-label="Galería Así se vive CLN"
           onClick={() => setOpen(false)}
         >
           <div className="flex-1 relative min-h-0" onClick={(e) => e.stopPropagation()}>
@@ -140,7 +140,7 @@ export default function NetworkingGallery() {
                 <div className="relative w-full h-full">
                   <Image
                     src={current.src}
-                    alt={`Galería Expo Logística 2026 · foto ${active + 1}`}
+                    alt={`Así se vive CLN · foto ${active + 1}`}
                     fill
                     quality={100}
                     sizes="(max-width: 1280px) 100vw, 80vw"

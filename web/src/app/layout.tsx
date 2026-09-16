@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -15,9 +15,9 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "EXPO LOGÍSTICA 2026 · CLN | Comunidad Logística Nicaragüense",
+  title: "EXPO LOGÍSTICA · CLN · 2026 | Comunidad Logística Nicaragüense",
   description:
-    "EXPO LOGÍSTICA 2026 · CLN — El gran encuentro anual de la Comunidad Logística Nicaragüense. 20 de noviembre · DoubleTree by Hilton Managua.",
+    "EXPO LOGÍSTICA · CLN · 2026 — El gran encuentro anual de la Comunidad Logística Nicaragüense. 20 de noviembre · DoubleTree by Hilton Managua.",
 };
 
 import { SpeedInsights } from "@vercel/speed-insights/next";

@@ -3,9 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Agenda | EXPO LOGÍSTICA 2026 · CLN",
+  title: "Agenda | EXPO LOGÍSTICA · CLN · 2026",
   description:
-    "Programa oficial de EXPO LOGÍSTICA 2026 · CLN — Comunidad Logística Nicaragüense. Viernes 20 de noviembre, DoubleTree by Hilton Managua.",
+    "Programa oficial de EXPO LOGÍSTICA · CLN · 2026 — Comunidad Logística Nicaragüense. Viernes 20 de noviembre, DoubleTree by Hilton Managua.",
 };
 
 type SessionType = "registro" | "institucional" | "conferencia" | "magistral" | "panel" | "networking" | "sponsors" | "cierre";
@@ -40,7 +40,7 @@ const SCHEDULE: Session[] = [
     time: "8:30 a.m. – 9:00 a.m.",
     type: "institucional",
     access: "congreso",
-    title: "Ceremonia de Apertura — EXPO LOGÍSTICA 2026 · CLN",
+    title: "Ceremonia de Apertura — EXPO LOGÍSTICA · CLN · 2026",
     description: "Bienvenida oficial a cargo de la organización CLN. Inicio formal del programa de contenidos.",
     speaker: "Mayerling Cervantes · Líder Organizadora, CLN",
   },
@@ -192,7 +192,7 @@ export default function AgendaPage() {
         />
         <div className="relative z-10 text-left max-w-5xl px-4 sm:px-6 lg:px-8 py-24">
           <span className="inline-block py-1 px-3 rounded-full bg-cln-500/20 text-cln-300 border border-cln-500/30 text-sm font-semibold tracking-wider mb-6 backdrop-blur-sm">
-            AGENDA OFICIAL · EXPO LOGÍSTICA 2026 · CLN
+            AGENDA OFICIAL · EXPO LOGÍSTICA · CLN · 2026
           </span>
           <h1 className="font-heading font-extrabold text-white text-4xl md:text-6xl lg:text-7xl leading-tight mb-6">
             Programa oficial{" "}
@@ -209,7 +209,7 @@ export default function AgendaPage() {
               href="/registro"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-lg font-bold text-lg shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1"
             >
-              Reservar acceso {svgArrow}
+              Asegurar mi lugar {svgArrow}
             </Link>
             <a
               href="/docs/agenda-cln-2026.pdf"
@@ -234,7 +234,7 @@ export default function AgendaPage() {
               Viernes 20 de noviembre 2026
             </p>
             <h2 className="font-heading font-bold text-2xl md:text-4xl text-cln-950 leading-tight mb-2">
-              Jornada principal de EXPO LOGÍSTICA 2026 · CLN
+              Jornada principal de EXPO LOGÍSTICA · CLN · 2026
             </h2>
             <p className="text-base md:text-lg text-gray-600 leading-relaxed">
               Conferencias, espacios de networking, actividades de patrocinadores y el encuentro B2B más
@@ -307,7 +307,7 @@ export default function AgendaPage() {
             href="/registro"
             className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1"
           >
-            Reservar acceso {svgArrow}
+            Asegurar mi lugar {svgArrow}
           </Link>
         </div>
       </section>

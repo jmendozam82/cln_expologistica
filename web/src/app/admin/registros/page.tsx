@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+﻿import { sql } from '@vercel/postgres';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,7 +36,7 @@ export default async function AdminRegistros() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Panel de Administración</h1>
-            <p className="text-sm text-gray-500 mt-1">EXPO LOGÍSTICA 2026 · CLN — 20 de noviembre, DoubleTree by Hilton Managua</p>
+            <p className="text-sm text-gray-500 mt-1">EXPO LOGÍSTICA · CLN · 2026 — 20 de noviembre, DoubleTree by Hilton Managua</p>
           </div>
           <a 
             href="/admin/export"

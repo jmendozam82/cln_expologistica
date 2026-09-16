@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { EVENT_DATE_LONG, EVENT_TIME, EVENT_LOCATION } from '@/lib/event';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,7 +45,7 @@ export default function Navbar() {
                 />
               </Link>
             </div>
-            
+
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-8">
               <Link href="/" className={`relative font-bold transition-colors group py-2 ${pathname === '/' ? 'text-cln-900' : 'text-gray-700 hover:text-cln-900'}`}>
@@ -56,19 +57,19 @@ export default function Navbar() {
                 <span className={`absolute bottom-0 left-0 h-0.5 bg-orange-500 transition-all duration-300 ${pathname === '/agenda' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
               </Link>
               <Link href="/ponentes" className={`relative font-bold transition-colors group py-2 ${pathname === '/ponentes' ? 'text-cln-900' : 'text-gray-700 hover:text-cln-900'}`}>
-                Ponentes
+                Speakers
                 <span className={`absolute bottom-0 left-0 h-0.5 bg-orange-500 transition-all duration-300 ${pathname === '/ponentes' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
               </Link>
               <Link href="/patrocinadores" className={`relative font-bold transition-colors group py-2 ${pathname === '/patrocinadores' ? 'text-cln-900' : 'text-gray-700 hover:text-cln-900'}`}>
-                Patrocinadores
+                Sponsors
                 <span className={`absolute bottom-0 left-0 h-0.5 bg-orange-500 transition-all duration-300 ${pathname === '/patrocinadores' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
               </Link>
-              
+
               <Link href="/registro" className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-full font-bold shadow-md shadow-orange-500/20 transition-all hover:-translate-y-0.5">
                 Registrarse
               </Link>
             </div>
-            
+
             {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center">
               <button
@@ -87,15 +88,15 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-        
+
         {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden bg-gray-50 border-t border-gray-200 shadow-inner absolute w-full left-0">
             <div className="px-4 pt-2 pb-6 space-y-2">
               <Link href="/" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-cln-900 hover:bg-gray-100 rounded-md">Inicio</Link>
               <Link href="/agenda" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-cln-900 hover:bg-gray-100 rounded-md">Agenda</Link>
-              <Link href="/ponentes" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-cln-900 hover:bg-gray-100 rounded-md">Ponentes</Link>
-              <Link href="/patrocinadores" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-cln-900 hover:bg-gray-100 rounded-md">Patrocinadores</Link>
+              <Link href="/ponentes" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-cln-900 hover:bg-gray-100 rounded-md">Speakers</Link>
+              <Link href="/patrocinadores" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-cln-900 hover:bg-gray-100 rounded-md">Sponsors</Link>
               <Link href="/registro" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-bold text-center text-white bg-orange-500 hover:bg-orange-600 rounded-md mt-4 shadow-md">Registrarse</Link>
             </div>
           </div>
@@ -109,9 +110,9 @@ export default function Navbar() {
             Faltan <strong className="text-white tracking-wide">{timeLeft.days} d {timeLeft.hours} h {timeLeft.minutes} min</strong>
           </span>
           <span className="hidden sm:inline text-orange-500">•</span>
-          <span className="font-bold">EXPO LOGÍSTICA 2026</span>
+          <span className="font-bold">EXPO LOGÍSTICA · CLN · 2026</span>
           <span className="hidden lg:inline text-orange-500">•</span>
-          <span className="hidden lg:inline text-gray-300">20 de nov · DoubleTree by Hilton Managua</span>
+          <span className="hidden lg:inline text-gray-300">{EVENT_DATE_LONG} · {EVENT_TIME} · {EVENT_LOCATION}</span>
         </div>
       </div>
     </div>

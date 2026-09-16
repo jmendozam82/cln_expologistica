@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Image from "next/image";
 import SponsorMap from "@/components/SponsorMap";
 
 export const metadata: Metadata = {
-  title: "Patrocinadores | EXPO LOGÍSTICA 2026 · CLN",
-  description: "Conozca a los patrocinadores de EXPO LOGÍSTICA 2026 · CLN, el gran encuentro anual de la Comunidad Logística Nicaragüense.",
+  title: "Patrocinadores | EXPO LOGÍSTICA · CLN · 2026",
+  description: "Conozca a los patrocinadores de EXPO LOGÍSTICA · CLN · 2026, el gran encuentro anual de la Comunidad Logística Nicaragüense.",
 };
 
 export default function PatrocinadoresPage() {

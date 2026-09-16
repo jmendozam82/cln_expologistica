@@ -136,13 +136,13 @@ export default function RegistroPage() {
               href="#registro"
               className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-lg font-bold text-lg shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1"
             >
-              Reservar mi acceso
+              Asegurar mi lugar
             </a>
             <a
               href="/agenda"
               className="w-full sm:w-auto bg-transparent hover:bg-white/10 text-white border border-white/30 px-8 py-4 rounded-lg font-bold text-lg transition-all backdrop-blur-sm"
             >
-              Ver programa
+              Descubrir la experiencia
             </a>
           </div>
         </div>
@@ -427,7 +427,7 @@ export default function RegistroPage() {
                 </>
               ) : (
                 !ticketType ? 'Selecciona tu condición de tarifa' : 
-                ticketType === 'piso' ? 'Obtener pase sin costo' : 'Enviar solicitud de acceso'
+                ticketType === 'piso' ? 'Obtener pase sin costo' : 'Asegurar mi lugar'
               )}
             </button>
           </div>
@@ -510,7 +510,7 @@ export default function RegistroPage() {
             href="#registro"
             className="inline-block bg-orange-500 hover:bg-orange-600 text-white px-10 py-4 rounded-full font-bold text-lg shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1"
           >
-            Reservar mi acceso
+            Asegurar mi lugar
           </a>
         </div>
       </section>
