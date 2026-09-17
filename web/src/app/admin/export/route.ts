@@ -1,4 +1,4 @@
-﻿import { sql } from '@vercel/postgres';
+import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +11,7 @@ export async function GET() {
     `;
 
     // Crear cabeceras del CSV
-    const csvHeaders = ['ID,Fecha,Nombre,Email,Empresa,Cargo,Tipo de Pase,Socio CLN'];
+    const csvHeaders = ['ID,Fecha,Nombre,Email,Telefono,Empresa,Cargo'];
     
     // Crear filas del CSV
     const csvRows = rows.map((reg) => {
@@ -30,10 +30,9 @@ export async function GET() {
         escape(date),
         escape(reg.nombre),
         escape(reg.email),
+        escape(reg.telefono),
         escape(reg.empresa),
-        escape(reg.cargo),
-        escape(reg.ticket_type),
-        reg.is_member ? 'Si' : 'No'
+        escape(reg.cargo)
       ].join(',');
     });
 
