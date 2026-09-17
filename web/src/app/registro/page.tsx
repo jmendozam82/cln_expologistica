@@ -94,14 +94,17 @@ export default function RegistroPage() {
           }}
           aria-hidden
         />
-        <div className="relative z-10 text-left max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 py-24">
+        <div className="relative z-10 text-left max-w-5xl px-4 sm:px-6 lg:px-8 py-24">
+          <span className="inline-block py-1 px-3 rounded-full bg-cln-500/20 text-cln-300 border border-cln-500/30 text-sm font-semibold tracking-wider mb-6 backdrop-blur-sm">
+            ACCESO CONGRESO · CUPO LIMITADO
+          </span>
           <h1 className="font-heading font-extrabold text-white text-4xl md:text-6xl lg:text-7xl leading-tight mb-4">
-            VIVE LA <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">EXPERIENCIA COMPLETA</span>
+            VIVE LA <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cln-300 to-cln-500">EXPERIENCIA COMPLETA</span>
           </h1>
-          <p className="text-2xl md:text-3xl text-cln-200 font-light mb-8">
+          <p className="text-2xl md:text-3xl text-cln-200 font-light mb-8 max-w-3xl">
             Todo el contenido. Toda la experiencia.
           </p>
-          <p className="text-lg md:text-xl text-cln-200 font-light max-w-3xl mx-auto mb-10 leading-relaxed">
+          <p className="text-lg md:text-xl text-cln-200 font-light max-w-3xl mb-10 leading-relaxed">
             Un acceso para vivir Expo Logística CLN 2026 de principio a fin: conocimiento, conexiones, soluciones y experiencias que reúnen a la Comunidad Logística Nicaragüense.
           </p>
           
@@ -111,9 +114,6 @@ export default function RegistroPage() {
           >
             ASEGURAR MI LUGAR &rarr;
           </a>
-          <p className="text-sm md:text-base text-cln-300 font-medium tracking-widest uppercase">
-            ACCESO CONGRESO · CUPO LIMITADO
-          </p>
         </div>
       </section>
 
@@ -331,6 +331,9 @@ export default function RegistroPage() {
       <section className="py-16 md:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
+            <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-3">
+              PARA QUIÉN ES
+            </p>
             <h2 className="text-3xl md:text-4xl font-heading font-extrabold text-cln-950 mb-4">
               Una experiencia para toda la cadena
             </h2>
@@ -365,6 +368,9 @@ export default function RegistroPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center mb-12">
+            <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-3">
+              REGISTRO
+            </p>
             <h2 className="text-3xl md:text-5xl font-heading font-extrabold text-cln-950 mb-4">
               Asegura tu lugar
             </h2>
