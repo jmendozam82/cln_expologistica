@@ -179,34 +179,34 @@ export default function AgendaTimeline() {
 
       {/* Timeline */}
       <ol className="relative" aria-label="Programa hora por hora">
-        <div className="absolute top-0 bottom-0 left-[88px] md:left-[112px] w-px bg-gray-200" aria-hidden />
+        <div className="absolute top-0 bottom-0 left-[104px] md:left-[128px] w-px bg-gray-200" aria-hidden />
         {filtered.map((s, i) => {
           const tm = TYPE_META[s.type];
           const am = ACCESS_META[s.access];
           return (
             <li key={`${s.time}-${s.title}`} className="relative flex">
-              <div className="w-20 md:w-24 flex-shrink-0 pt-6 pr-3 text-right text-xs md:text-sm font-semibold text-gray-500 leading-snug">
+              <div className="w-24 md:w-28 flex-shrink-0 pt-6 pr-3 text-right text-sm md:text-base font-semibold text-gray-500 leading-snug">
                 {s.time}
               </div>
               <div className={`w-2.5 h-2.5 rounded-full mt-7 relative z-10 flex-shrink-0 ${tm.dot}`} aria-hidden />
               <div className={`flex-1 min-w-0 ${tm.card} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl cursor-default`}>
                 <div className="pl-4 md:pl-6 pt-5 pb-5">
                   <div className="flex flex-wrap items-center justify-end gap-2 mb-2">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${tm.tag}`}>
+                    <span className={`text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${tm.tag}`}>
                       {tm.label}
                     </span>
-                    <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${am.tag}`}>
+                    <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${am.tag}`}>
                       {am.label}
                     </span>
                   </div>
-                  <h3 className={`font-heading font-bold text-base md:text-lg leading-snug mb-1 ${s.highlight ? "text-orange-900" : "text-cln-950"}`}>
+                  <h3 className={`font-heading font-bold text-lg md:text-xl leading-snug mb-1 ${s.highlight ? "text-orange-900" : "text-cln-950"}`}>
                     {s.title}
                   </h3>
                   {s.description && (
-                    <p className="text-sm text-gray-600 leading-relaxed">{s.description}</p>
+                    <p className="text-base text-gray-600 leading-relaxed">{s.description}</p>
                   )}
                   {s.speaker && (
-                    <span className="inline-flex items-center gap-1.5 mt-1.5 text-xs md:text-sm font-semibold text-cln-700">
+                    <span className="inline-flex items-center gap-1.5 mt-1.5 text-sm md:text-base font-semibold text-cln-700">
                       <span className="w-1.5 h-1.5 rounded-full bg-orange-500" aria-hidden />
                       {s.speaker}
                     </span>

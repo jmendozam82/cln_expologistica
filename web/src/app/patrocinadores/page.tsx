@@ -8,10 +8,26 @@ export const metadata: Metadata = {
 };
 
 export default function PatrocinadoresPage() {
-  const sponsors = Array.from({ length: 10 }).map((_, i) => ({
-    id: i + 1,
-    name: `Sponsor ${i + 1}`,
-  }));
+  const sponsors = [
+    { id: "E1", name: "Sponsor 1", tier: "elite" },
+    { id: "E2", name: "Sponsor 2", tier: "elite" },
+    { id: "E3", name: "Sponsor 3", tier: "elite" },
+    { id: "O1", name: "Sponsor 4", tier: "oro" },
+    { id: "O2", name: "Sponsor 5", tier: "oro" },
+    { id: "O3", name: "Sponsor 6", tier: "oro" },
+    { id: "O4", name: "Sponsor 7", tier: "oro" },
+    { id: "P1", name: "Sponsor 8", tier: "plata" },
+    { id: "P2", name: "Sponsor 9", tier: "plata" },
+    { id: "P3", name: "Sponsor 10", tier: "plata" },
+  ];
+
+  type SponsorTier = "elite" | "oro" | "plata";
+
+  const TIERS: { key: SponsorTier; label: string; desc: string; color: string; text: string; soft: string; cols: string }[] = [
+    { key: "elite", label: "Sponsors Elite", desc: "Máxima visibilidad y exclusividad", color: "#B8860B", text: "#FFFBEB", soft: "#FBF3E0", cols: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" },
+    { key: "oro", label: "Sponsors Oro", desc: "Alta presencia corporativa", color: "#1B3A6B", text: "#EFF6FF", soft: "#E8EFFB", cols: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" },
+    { key: "plata", label: "Sponsors Plata", desc: "Presencia profesional estratégica", color: "#2E6B8F", text: "#F0F9FF", soft: "#E9F3F8", cols: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" },
+  ];
 
   return (
     <div>
@@ -49,10 +65,10 @@ export default function PatrocinadoresPage() {
             </span>
           </h1>
           <p className="text-lg md:text-xl text-cln-200 font-light max-w-3xl mb-10">
-            Empresas nacionales e internacionales se reúnen en Expo Logística CLN para presentar tecnología, servicios y soluciones que responden a los desafíos actuales de Supply Chain.
+            Empresas nacionales e internacionales se reúnen en Expo Logística CLN 2026 para presentar tecnología, servicios y soluciones que responden a los desafíos actuales de Supply Chain.
           </p>
           <p className="text-lg md:text-xl text-cln-200 font-light max-w-3xl mb-10">
-            Descubre quiénes están detrás de las soluciones que están transformando nuestra cadena logística.
+            Descubre las marcas que estarán presentes, explora el piso de exhibición y conecta con las soluciones que están transformando la cadena logística.
           </p>
           <div className="flex flex-col sm:flex-row items-start justify-start gap-4">
             <a
@@ -79,12 +95,11 @@ export default function PatrocinadoresPage() {
               Piso de exhibición
             </p>
             <h2 className="font-heading font-extrabold text-3xl md:text-5xl text-cln-950 leading-tight">
-              Nuestros Patrocinadores
+              Las empresas que están moviendo la cadena logística.
             </h2>
           </div>
           <p className="text-xl font-medium text-gray-600 leading-relaxed lg:text-right">
-            Cada espacio del mapa corresponde a la ubicación de un aliado comercial dentro del área de
-            circulación del evento.
+            Conoce las marcas, empresas y soluciones que serán parte de Expo Logística CLN 2026.
           </p>
         </div>
         <SponsorMap />
@@ -107,17 +122,43 @@ export default function PatrocinadoresPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {sponsors.map((sponsor) => (
-              <div
-                key={sponsor.id}
-                className="bg-white rounded-xl shadow-md p-8 border border-gray-100 flex items-center justify-center aspect-[3/2] hover:shadow-lg hover:border-cln-300 hover:-translate-y-1 transition-all cursor-pointer group"
-              >
-                <div className="text-gray-400 font-bold text-xl group-hover:text-cln-500 transition-colors">
-                  Logo {sponsor.name}
+          <div className="space-y-14">
+            {TIERS.map((tier) => {
+              const groupSponsors = sponsors.filter((s) => s.tier === tier.key);
+              return (
+                <div key={tier.key}>
+                  <div className="flex flex-wrap items-center gap-3 mb-8">
+                    <span
+                      className="inline-block px-4 py-2 rounded-full text-sm font-bold tracking-wider"
+                      style={{ background: tier.color, color: tier.text }}
+                    >
+                      {tier.label}
+                    </span>
+                    <span className="text-sm text-gray-500">{tier.desc}</span>
+                    <span className="text-xs font-bold text-gray-400 bg-white border border-gray-200 rounded-full px-3 py-1">
+                      {groupSponsors.length} {groupSponsors.length === 1 ? "posición" : "posiciones"}
+                    </span>
+                  </div>
+
+                  <div className={`grid ${tier.cols} gap-8`}>
+                    {groupSponsors.map((sponsor) => (
+                      <div
+                        key={sponsor.id}
+                        className="bg-white rounded-xl shadow-md p-8 border-t-4 flex items-center justify-center aspect-[3/2] hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group"
+                        style={{ borderTopColor: tier.color, borderColor: tier.color }}
+                      >
+                        <div
+                          className="text-xl font-bold transition-colors"
+                          style={{ color: "#9CA3AF" }}
+                        >
+                          Logo {sponsor.name}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -129,9 +170,9 @@ export default function PatrocinadoresPage() {
             ¿Desea ser patrocinador?
           </h2>
           <p className="text-lg text-cln-200 font-light mb-8 leading-relaxed">
-            Posicione su marca ante 120 ejecutivos y líderes de la cadena de suministro. Contamos con
-            espacios estratégicos en el área principal de circulación, como lo puede visualizar en el
-            mapa superior.
+            Posicione su marca ante más de 120 ejecutivos y líderes de la cadena logística, tomadores de decisiones en áreas clave del negocio.
+            Contamos con paquetes y espacios estratégicos en el área principal de circulación, como lo puede visualizar en el
+            mapa superior. Contaremos con actividades que conectan los Sponsors con los asistentes.
           </p>
           <a
             href="mailto:cln@nilogistic.com"

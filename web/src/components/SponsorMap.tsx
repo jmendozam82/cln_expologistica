@@ -13,6 +13,9 @@ export interface Stand {
   estado: Estado;
   empresa?: string;
   x: number; y: number; w: number; h: number;
+  rotate?: number;
+  labelSize?: number;
+  textRotate?: number;
 }
 
 /* ─── PALETA CORPORATIVA LOGÍSTICA ───────────────────── */
@@ -29,20 +32,20 @@ const LABEL: Record<Tier, string> = { elite: "Elite", oro: "Oro", plata: "Plata"
 // Ajustadas para un viewBox de 1200 x 750
 const STANDS: Stand[] = [
   // Pasillo Izquierdo (Frente Mombacho y Télica)
-  { id: "P1", label: "PLATA 1", tier: "plata", estado: "libre", x: 100, y: 550, w: 75, h: 42 },
-  { id: "P2", label: "PLATA 2", tier: "plata", estado: "libre", x: 180, y: 550, w: 75, h: 42 },
-  { id: "P3", label: "PLATA 3", tier: "plata", estado: "libre", x: 260, y: 550, w: 75, h: 42 },
-  { id: "O4", label: "ORO 4", tier: "oro", estado: "libre", x: 340, y: 550, w: 75, h: 42 },
-  { id: "O3", label: "ORO 3", tier: "oro", estado: "libre", x: 420, y: 550, w: 75, h: 42 },
+  { id: "P1", label: "PLATA 1", tier: "plata", estado: "libre", x: 190, y: 555, w: 75, h: 38 },
+  { id: "P2", label: "PLATA 2", tier: "plata", estado: "libre", x: 280, y: 555, w: 75, h: 38 },
+  { id: "P3", label: "PLATA 3", tier: "plata", estado: "libre", x: 370, y: 555, w: 75, h: 38 },
+  { id: "O4", label: "ORO 4", tier: "oro", estado: "libre", x: 460, y: 555, w: 75, h: 38 },
+  { id: "O3", label: "ORO 3", tier: "oro", estado: "libre", x: 550, y: 555, w: 75, h: 38 },
 
-  // Pasillo Central (Elite, vertical)
-  { id: "E1", label: "ELITE 1", tier: "elite", estado: "libre", x: 723, y: 470, w: 75, h: 42 },
-  { id: "E2", label: "ELITE 2", tier: "elite", estado: "libre", x: 723, y: 410, w: 75, h: 42 },
-  { id: "E3", label: "ELITE 3", tier: "elite", estado: "libre", x: 723, y: 350, w: 75, h: 42 },
+  // Pasillo Central (Elite, vertical side by side)
+  { id: "E1", label: "ELITE 1", tier: "elite", estado: "libre", x: 785, y: 415, w: 38, h: 78, textRotate: 90 },
+  { id: "E2", label: "ELITE 2", tier: "elite", estado: "libre", x: 700, y: 415, w: 38, h: 78, textRotate: -90 },
+  { id: "E3", label: "ELITE 3", tier: "elite", estado: "libre", x: 723, y: 340, w: 78, h: 38 },
 
   // Pasillo Derecho (Frente Momotombo)
-  { id: "O1", label: "ORO 1", tier: "oro", estado: "libre", x: 940, y: 550, w: 75, h: 42 },
-  { id: "O2", label: "ORO 2", tier: "oro", estado: "libre", x: 1030, y: 550, w: 75, h: 42 },
+  { id: "O1", label: "ORO 1", tier: "oro", estado: "libre", x: 940, y: 555, w: 75, h: 38 },
+  { id: "O2", label: "ORO 2", tier: "oro", estado: "libre", x: 1030, y: 555, w: 75, h: 38 },
 ];
 
 /* ─── TOOLTIP ────────────────────────── */
@@ -105,31 +108,39 @@ function StandRect({ s, onEnter, onLeave, onMove }: {
   const textC = isRes ? C.res.text : C[s.tier].text;
   const subC = isRes ? C.res.sub : C[s.tier].sub;
 
+  const cx = s.x + s.w / 2;
+  const cy = s.y + s.h / 2;
+  const transform = s.rotate ? `rotate(${s.rotate} ${cx} ${cy})` : undefined;
+  const textTransform = s.textRotate ? `rotate(${s.textRotate} ${cx} ${cy})` : transform;
+
   return (
     <g style={{ cursor: "pointer" }}
       onMouseEnter={e => { setHov(true); onEnter(s, e); }}
       onMouseMove={onMove}
       onMouseLeave={() => { setHov(false); onLeave(); }}>
-      {hov && <rect x={s.x + 2} y={s.y + 3} width={s.w} height={s.h} rx={4} fill="rgba(0,0,0,0.18)" />}
+      {hov && <rect x={s.x + 2} y={s.y + 3} width={s.w} height={s.h} rx={4} fill="rgba(0,0,0,0.18)" transform={transform} />}
       <rect
         x={s.x} y={s.y} width={s.w} height={s.h} rx={6}
         fill={fill} stroke={border} strokeWidth={hov ? 2 : 1.5}
         style={{ transition: "fill .15s" }}
+        transform={transform}
       />
-      <rect x={s.x + 1} y={s.y + 1} width={s.w - 2} height={6} rx={4} fill="rgba(255,255,255,0.12)" />
+      <rect x={s.x + 1} y={s.y + 1} width={s.w - 2} height={6} rx={4} fill="rgba(255,255,255,0.12)" transform={transform} />
       <text
-        x={s.x + s.w / 2} y={s.y + s.h / 2 - 6}
+        x={cx} y={cy - 6}
         textAnchor="middle" dominantBaseline="middle"
-        fontSize={11} fontWeight="800" fill={textC}
+        fontSize={s.labelSize ?? 11} fontWeight="800" fill={textC}
         fontFamily="system-ui, -apple-system, sans-serif"
+        transform={textTransform}
       >
         {s.label}
       </text>
       <text
-        x={s.x + s.w / 2} y={s.y + s.h / 2 + 8}
+        x={cx} y={cy + 8}
         textAnchor="middle" dominantBaseline="middle"
         fontSize={9} fill={subC}
         fontFamily="system-ui, sans-serif"
+        transform={textTransform}
       >
         {isRes ? "RESERVADO" : "DISPONIBLE"}
       </text>
@@ -188,10 +199,14 @@ export default function SponsorMap() {
           {STANDS.map(s => <StandRect key={s.id} s={s} {...sp} />)}
 
           {/* REGISTRO (Estático) */}
-          <rect x={510} y={550} width={100} height={42} rx={6} fill="#F97316" stroke="#C2410C" strokeWidth={1.5} />
-          <rect x={512} y={550} width={98} height={6} rx={4} fill="rgba(255,255,255,0.2)" />
-          <text x={560} y={565} textAnchor="middle" dominantBaseline="middle" fontSize={10} fontWeight="800" fill="white" fontFamily="system-ui,sans-serif" letterSpacing="0.4">REGISTRO /</text>
-          <text x={560} y={579} textAnchor="middle" dominantBaseline="middle" fontSize={10} fontWeight="800" fill="white" fontFamily="system-ui,sans-serif" letterSpacing="0.4">RECEP.</text>
+          <rect x={835} y={528} width={95} height={28} rx={6} fill="#F97316" stroke="#C2410C" strokeWidth={1.5} />
+          <rect x={835} y={530} width={93} height={6} rx={4} fill="rgba(255,255,255,0.2)" />
+          <text x={887} y={545} textAnchor="middle" dominantBaseline="middle" fontSize={10} fontWeight="800" fill="white" fontFamily="system-ui,sans-serif" letterSpacing="0.4">REGISTRO</text>
+
+          {/* FLECHA DE ACCESO (Verde) */}
+          <line x1={859} y1={640} x2={859} y2={590} stroke="#16A34A" strokeWidth={4} strokeLinecap="round" />
+          <polygon points={`859,572 854,590 864,590`} fill="#16A34A" />
+          <text x={859} y={664} textAnchor="middle" dominantBaseline="middle" fontSize={12} fontWeight="800" fill="#16A34A" fontFamily="system-ui,sans-serif" letterSpacing="1">ACCESO</text>
         </svg>
       </div>
 

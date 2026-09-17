@@ -119,13 +119,13 @@ function SpeakerCard({ speaker, onClick }: { speaker: Speaker; onClick: () => vo
       aria-label={`Ver perfil de ${speaker.name}`}
     >
       <div className="flex-shrink-0">
-        <Avatar speaker={speaker} size={64} />
+        <Avatar speaker={speaker} size={72} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-heading font-extrabold text-gray-900 group-hover:text-orange-600 transition-colors leading-tight">
+        <p className="font-heading font-extrabold text-lg text-gray-900 group-hover:text-orange-600 transition-colors leading-tight">
           {speaker.name}
         </p>
-        <p className="text-sm text-gray-500">
+        <p className="text-base text-gray-500">
           {speaker.role} · {speaker.company}
           {speaker.country && <span className="text-gray-400"> · {speaker.country}</span>}
         </p>
@@ -296,7 +296,7 @@ export default function PonentesPage() {
             </span>
           </h1>
           <p className="text-lg md:text-xl text-cln-200 font-light max-w-3xl mb-10">
-            Voces nacionales e internacionales compartirán conocimiento, experiencias y nuevas perspectivas sobre los desafíos y oportunidades que están transformando la logística y Supply Chain.
+            Referentes de la logística nacionales e internacionales compartirán conocimiento, experiencias y nuevas perspectivas sobre los desafíos y oportunidades que están transformando la logística y Supply Chain.
           </p>
           <div className="flex flex-col sm:flex-row items-start justify-start gap-4">
             <Link
@@ -354,28 +354,28 @@ export default function PonentesPage() {
           </div>
 
           <div className="relative">
-            <div className="absolute top-0 bottom-0 left-[72px] md:left-[88px] w-px bg-gray-300" aria-hidden />
+            <div className="absolute top-0 bottom-0 left-[100px] md:left-[120px] w-px bg-gray-300" aria-hidden />
             {SPEAKERS.filter((s) => s.id !== "mayerling").map((speaker) => (
               <div key={speaker.id} id={`timeline-${speaker.id}`} className="relative flex items-start mb-6 last:mb-0 scroll-mt-24">
-                <div className="w-16 md:w-20 flex-shrink-0 pt-5 pr-3 text-right">
-                  <span className="text-sm md:text-base font-bold text-cln-700">{speaker.time}</span>
+                <div className="w-24 md:w-28 flex-shrink-0 pt-5 pr-3 text-right">
+                  <span className="text-base md:text-lg font-bold text-cln-700">{speaker.time}</span>
                 </div>
-                <div className="w-3 h-3 rounded-full bg-orange-500 mt-6 relative z-10 flex-shrink-0 ring-4 ring-gray-50" aria-hidden />
+                <div className="w-3 h-3 rounded-full bg-orange-500 mt-7 relative z-10 flex-shrink-0 ring-4 ring-gray-50" aria-hidden />
                 <button
                   type="button"
                   onClick={() => setActive(speaker)}
-                  className="flex-1 min-w-0 bg-white rounded-xl border border-gray-200 shadow-sm p-5 ml-4 hover:shadow-md hover:border-cln-300 transition-all text-left cursor-pointer"
+                  className="flex-1 min-w-0 bg-white rounded-xl border border-gray-200 shadow-sm p-6 ml-4 hover:shadow-md hover:border-cln-300 transition-all text-left cursor-pointer"
                 >
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-cln-600 mb-1">{speaker.session}</p>
-                  <p className="font-heading font-bold text-orange-600 text-sm mb-0.5">{speaker.topic}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-cln-600 mb-1">{speaker.session}</p>
+                  <p className="font-heading font-bold text-orange-600 text-lg md:text-xl mb-0.5">{speaker.topic}</p>
                   {speaker.topicSubtitle && (
-                    <p className="text-xs text-gray-500 italic mb-3">{speaker.topicSubtitle}</p>
+                    <p className="text-sm md:text-base text-gray-500 italic mb-3">{speaker.topicSubtitle}</p>
                   )}
-                  <div className="flex items-center gap-3">
-                    <Avatar speaker={speaker} size={36} />
+                  <div className="flex items-center gap-4">
+                    <Avatar speaker={speaker} size={48} />
                     <div>
-                      <p className="font-heading font-bold text-cln-950 text-sm md:text-base leading-tight">{speaker.name}</p>
-                      <p className="text-xs text-gray-500">{speaker.role} · {speaker.company}</p>
+                      <p className="font-heading font-bold text-cln-950 text-base md:text-lg leading-tight">{speaker.name}</p>
+                      <p className="text-sm md:text-base text-gray-500">{speaker.role} · {speaker.company}</p>
                     </div>
                   </div>
                 </button>
@@ -389,13 +389,13 @@ export default function PonentesPage() {
       <section className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-4">
-            IDEAS GLOBALES. IMPACTO EN NUESTRA REALIDAD.
+            LA VOZ DE LOS REFERENTES DE LA LOGÍSTICA
           </p>
           <h2 className="font-heading font-extrabold text-3xl md:text-5xl text-cln-950 leading-tight mb-8">
             Ideas globales. Impacto en nuestra realidad.
           </h2>
           <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto mb-6">
-            Expo Logística CLN reúne voces con diferentes experiencias, mercados y perspectivas para abrir conversaciones sobre los desafíos que enfrenta nuestra cadena logística.
+            Expo Logística CLN reúne referentes de la logística con diferentes experiencias, mercados y perspectivas para abrir conversaciones sobre los desafíos que enfrenta nuestra cadena logística.
           </p>
           <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
             Desde la resiliencia y el comercio regional hasta la innovación y la tecnología, cada sesión busca aportar una nueva mirada para comprender hacia dónde se mueve Supply Chain.
@@ -403,41 +403,44 @@ export default function PonentesPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════ SPEAKERS → AGENDA ══════════════════════════════════════ */}
-      <section className="py-16 bg-gray-50 border-t border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-heading font-extrabold text-3xl md:text-4xl text-cln-950 leading-tight mb-4">
-            Ahora sabes quiénes.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cln-300 to-cln-500">Descubre cuándo.</span>
-          </h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Consulta el programa completo y planifica tu jornada alrededor de las sesiones que quieres vivir.
-          </p>
-          <Link
-            href="/agenda"
-            className="inline-flex items-center gap-2 bg-cln-600 hover:bg-cln-500 text-white px-8 py-4 rounded-full font-bold text-lg shadow-md transition-all hover:-translate-y-0.5"
-          >
-            Explorar la agenda <span aria-hidden>→</span>
-          </Link>
-        </div>
-      </section>
+      {/* ══════════════════════════════════════ SPEAKERS → AGENDA + CTA ══════════════════════════════════════ */}
+      <section className="bg-cln-950 py-16 md:py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-stretch">
+            {/* SPEAKERS → AGENDA */}
+            <div className="flex flex-col items-center justify-center text-center border-b lg:border-b-0 lg:border-r border-white/10 pb-10 lg:pb-0 lg:pr-14">
+              <h2 className="font-heading font-extrabold text-white text-3xl md:text-4xl leading-tight mb-4">
+                Ahora sabes quiénes.<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cln-300 to-cln-500">Descubre cuándo.</span>
+              </h2>
+              <p className="text-lg md:text-xl text-cln-200 font-light mb-8 max-w-md mx-auto leading-relaxed">
+                Consulta el programa completo y planifica tu jornada alrededor de las sesiones que quieres vivir.
+              </p>
+              <Link
+                href="/agenda"
+                className="inline-flex items-center gap-2 bg-cln-600 hover:bg-cln-500 text-white px-8 py-4 rounded-full font-bold text-lg shadow-md transition-all hover:-translate-y-0.5"
+              >
+                Explorar la agenda <span aria-hidden>→</span>
+              </Link>
+            </div>
 
-      {/* ══════════════════════════════════════ CTA FINAL ══════════════════════════════════════ */}
-      <section className="bg-cln-950 py-20 text-center">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="font-heading font-extrabold text-white text-3xl md:text-5xl leading-tight mb-4">
-            El conocimiento se comparte.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cln-300 to-cln-500">Las oportunidades comienzan cuando nos conectamos.</span>
-          </h2>
-          <p className="text-lg md:text-xl text-cln-200 font-light mb-10 leading-relaxed">
-            Ven a vivir Expo Logística CLN 2026.
-          </p>
-          <Link
-            href="/registro"
-            className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-10 py-4 rounded-full font-bold text-lg shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1"
-          >
-            Asegurar mi lugar <span aria-hidden>→</span>
-          </Link>
+            {/* CTA FINAL */}
+            <div className="flex flex-col items-center justify-center text-center">
+              <h2 className="font-heading font-extrabold text-white text-3xl md:text-4xl leading-tight mb-4">
+                El conocimiento se comparte.<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cln-300 to-cln-500">Las oportunidades comienzan cuando nos conectamos.</span>
+              </h2>
+              <p className="text-lg md:text-xl text-cln-200 font-light mb-8 max-w-md mx-auto leading-relaxed">
+                Ven a vivir Expo Logística CLN 2026.
+              </p>
+              <Link
+                href="/registro"
+                className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-10 py-4 rounded-full font-bold text-lg shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1"
+              >
+                Asegurar mi lugar <span aria-hidden>→</span>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 

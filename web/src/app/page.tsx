@@ -102,8 +102,8 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-              <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-1">APRENDER</p>
-              <h3 className="text-xl font-heading font-bold text-cln-900 mb-2">Una jornada para descubrir lo que viene</h3>
+              <p className="text-base font-bold uppercase tracking-widest text-orange-500 mb-1">APRENDER</p>
+              <h3 className="text-xl font-heading font-bold text-cln-900 mb-2">Una jornada + Conocimiento</h3>
               <p className="text-gray-600">Viernes 20 de noviembre. De 8:00 a.m. a 6:00 p.m., una jornada completa de conocimiento, tendencias, experiencias y nuevas perspectivas para nuestra Supply Chain.</p>
             </div>
 
@@ -115,9 +115,9 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
-              <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-1">CONECTAR</p>
+              <p className="text-base font-bold uppercase tracking-widest text-orange-500 mb-1">CONECTAR</p>
               <h3 className="text-xl font-heading font-bold text-cln-900 mb-2">El lugar donde la logística se encuentra</h3>
-              <p className="text-gray-600">DoubleTree by Hilton Managua. Un ambiente ejecutivo diseñado para conferencias, exhibición de soluciones, conversaciones y networking de alto valor.</p>
+              <p className="text-gray-600">Un ambiente ejecutivo diseñado para conferencias, exhibición de soluciones, conversaciones y networking de alto valor.</p>
             </div>
 
             {/* COMPARTIR */}
@@ -127,7 +127,7 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
-              <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-1">COMPARTIR</p>
+              <p className="text-base font-bold uppercase tracking-widest text-orange-500 mb-1">COMPARTIR</p>
               <h3 className="text-xl font-heading font-bold text-cln-900 mb-2">Una experiencia construida desde la comunidad</h3>
               <p className="text-gray-600">Prioridad para miembros CLN. Abierto también a profesionales, ejecutivos, estudiantes y personas interesadas en Supply Chain y Logística.</p>
             </div>
@@ -137,11 +137,11 @@ export default function Home() {
 
       {/* MOTTO BAND */}
       <section className="bg-cln-900 py-14 text-center">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-lg md:text-2xl text-cln-200 mt-4 font-light">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-xl md:text-3xl text-cln-200 mt-4 font-light">
             Una jornada. Una comunidad. Todo un ecosistema logístico conectado.
           </p>
-          <p className="text-sm text-cln-400 mt-3 font-bold tracking-widest">{EVENT_HASHTAG}</p>
+          <p className="text-lg text-cln-400 mt-3 font-bold tracking-widest">{EVENT_HASHTAG}</p>
         </div>
       </section>
 
@@ -198,7 +198,7 @@ export default function Home() {
                 </div>
 
                 <div className="p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-heading font-bold text-cln-950 mb-1">{h.title}</h3>
+                  <h3 className="text-xl font-heading font-bold text-cln-950 mb-1 whitespace-pre-line">{h.title}</h3>
                   <p className="text-sm font-semibold text-cln-600 mb-3">{h.subtitle}</p>
                   <p className="text-gray-600 leading-relaxed mb-6">{h.description}</p>
                   <Link
@@ -279,25 +279,6 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 mb-12">
-            {[1, 2].map((i) => (
-              <div key={i} className="flex flex-col md:flex-row bg-gray-50 rounded-2xl overflow-hidden shadow-lg border border-gray-100">
-                <div className="w-full md:w-2/5 relative aspect-square md:aspect-auto">
-                  <Image src="/images/speaker-placeholder.png" alt="Speaker" fill className="object-cover" />
-                </div>
-                <div className="w-full md:w-3/5 p-8 flex flex-col justify-center">
-                  <span className="inline-block px-3 py-1 bg-cln-100 text-cln-700 text-xs font-bold rounded-full w-max mb-4">
-                    CONFERENCIA MAGISTRAL INTERNACIONAL
-                  </span>
-                  <h3 className="text-2xl font-bold text-cln-950 mb-1">Nombre Apellido</h3>
-                  <p className="text-sm text-gray-500 mb-4">Cargo<br />Empresa &middot; País</p>
-                  <p className="font-semibold text-cln-800">Tema:</p>
-                  <p className="text-gray-700">Título de la conferencia</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
           <div className="text-center">
             <Link href="/ponentes" className="inline-block bg-cln-600 hover:bg-cln-500 text-white px-8 py-4 rounded-full font-bold text-lg shadow-md transition-all hover:-translate-y-0.5">
               Conoce a nuestros speakers &rarr;
@@ -318,14 +299,6 @@ export default function Home() {
           <p className="text-xl text-gray-600 mb-10">
             Una agenda diseñada para llevarte del conocimiento a la conversación, y de la conversación a nuevas oportunidades.
           </p>
-
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {['CONFERENCIAS', 'MAGISTRALES', 'EXPO & COFFEE', 'NETWORKING', 'CÓCTEL'].map((tag) => (
-              <span key={tag} className="px-4 py-2 bg-white border border-gray-200 shadow-sm text-cln-800 font-bold rounded-lg">
-                {tag}
-              </span>
-            ))}
-          </div>
 
           <Link href="/agenda" className="inline-block bg-white text-cln-600 border-2 border-cln-600 hover:bg-cln-50 px-8 py-4 rounded-full font-bold text-lg transition-all">
             Explorar la agenda completa &rarr;
@@ -348,39 +321,10 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Dummy Logos */}
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50 grayscale mb-12">
-            <div className="h-12 w-32 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-16 w-32 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-12 w-40 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-16 w-24 bg-gray-200 rounded animate-pulse"></div>
-          </div>
-
           <div className="text-center mb-20">
             <Link href="/patrocinadores" className="inline-block bg-cln-600 hover:bg-cln-500 text-white px-8 py-4 rounded-full font-bold text-lg shadow-md transition-all hover:-translate-y-0.5">
               Conocer sponsors &rarr;
             </Link>
-          </div>
-        </div>
-
-        {/* Franja Comercial */}
-        <div className="bg-orange-50 py-16 border-y border-orange-100">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h3 className="text-2xl md:text-3xl font-extrabold text-cln-950 mb-4">¿Tu empresa quiere estar donde está la comunidad logística?</h3>
-            <p className="text-lg text-gray-700 mb-6">
-              Posiciona tu marca frente a profesionales, ejecutivos, líderes y tomadores de decisión de toda la cadena.
-            </p>
-            <p className="text-sm font-bold uppercase tracking-widest text-orange-600 mb-8 bg-orange-100 inline-block px-4 py-2 rounded-full">
-              10 ESPACIOS EXCLUSIVOS PARA SPONSORS
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/patrocinadores" className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-full font-bold shadow-md transition-all">
-                Quiero ser sponsor &rarr;
-              </Link>
-              <a href="mailto:info@nilogistic.com" className="bg-white hover:bg-gray-50 text-orange-600 border border-orange-200 px-8 py-3 rounded-full font-bold transition-all">
-                Solicitar dossier comercial &rarr;
-              </a>
-            </div>
           </div>
         </div>
       </section>

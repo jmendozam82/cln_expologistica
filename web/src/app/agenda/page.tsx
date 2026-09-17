@@ -61,7 +61,7 @@ export default function AgendaPage() {
             Una agenda diseñada para llevarte del conocimiento a la conversación, y de la conversación a nuevas oportunidades.
           </p>
           <p className="text-base md:text-lg text-cln-300 font-light max-w-3xl mb-10">
-            Conferencias, magistrales, networking, experiencias con sponsors y espacios para conectar con profesionales y líderes de toda la cadena logística.
+            Conferencias magistrales + ponencias de alto nivel, networking, experiencias con sponsors y espacios para conectar con profesionales y líderes de toda la cadena logística.
           </p>
           <div className="flex flex-col sm:flex-row items-start justify-start gap-4">
             <Link
@@ -116,10 +116,10 @@ export default function AgendaPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-3">
-              ELIGE TU ACCESO
+              ACCESO ÚNICO
             </p>
             <h2 className="font-heading font-extrabold text-3xl md:text-5xl text-cln-950 leading-tight">
-              Elige cómo quieres vivir Expo Logística CLN 2026
+              Vive toda la experiencia del congreso con un solo acceso
             </h2>
           </div>
 
@@ -138,7 +138,7 @@ export default function AgendaPage() {
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center gap-3 text-gray-700">
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-cln-100 text-cln-600 flex items-center justify-center text-xs font-bold">✓</span>
-                  Conferencias
+                  Ponencias de alto nivel
                 </li>
                 <li className="flex items-center gap-3 text-gray-700">
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-cln-100 text-cln-600 flex items-center justify-center text-xs font-bold">✓</span>
@@ -170,7 +170,7 @@ export default function AgendaPage() {
                 </li>
                 <li className="flex items-center gap-3 text-gray-700">
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-cln-100 text-cln-600 flex items-center justify-center text-xs font-bold">✓</span>
-                  Cóctel de Cierre
+                  Cóctel de Cierre 2026
                 </li>
               </ul>
               <Link
