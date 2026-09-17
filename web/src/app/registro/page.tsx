@@ -33,14 +33,14 @@ export default function RegistroPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       const form = e.target as HTMLFormElement;
       const formData = new FormData(form);
       formData.append('telefono', telefono);
-      
+
       const result = await submitRegistration(formData);
-      
+
       if (result.success) {
         setIsSuccess(true);
       } else {
@@ -107,7 +107,7 @@ export default function RegistroPage() {
           <p className="text-lg md:text-xl text-cln-200 font-light max-w-3xl mb-10 leading-relaxed">
             Un acceso para vivir Expo Logística CLN 2026 de principio a fin: conocimiento, conexiones, soluciones y experiencias que reúnen a la Comunidad Logística Nicaragüense.
           </p>
-          
+
           <a
             href="#registro"
             className="inline-block bg-orange-500 hover:bg-orange-600 text-white px-10 py-4 rounded-lg font-bold text-lg shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1 mb-6"
@@ -124,7 +124,7 @@ export default function RegistroPage() {
             <div className="md:w-3/5 p-8 md:p-12">
               <h2 className="text-3xl font-heading font-extrabold text-cln-950 mb-2">ACCESO CONGRESO</h2>
               <p className="text-lg text-gray-500 mb-8">Todo el contenido. Toda la experiencia.</p>
-              
+
               <h3 className="font-bold text-gray-900 mb-4">Tu acceso incluye:</h3>
               <ul className="space-y-3 text-gray-700">
                 <li className="flex items-center"><Check /> Ponencias de alto nivel</li>
@@ -143,11 +143,11 @@ export default function RegistroPage() {
               <p className="text-gray-300 text-sm mb-2">Tarifa única por persona</p>
               <p className="text-5xl font-heading font-bold text-white mb-2">US$ XXX</p>
               <p className="text-cln-300 text-sm mb-8">+ IVA</p>
-              
+
               <div className="bg-white/10 px-4 py-2 rounded-full text-sm font-medium text-cln-200 mb-8">
                 Cupos limitados
               </div>
-              
+
               <a
                 href="#registro"
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-bold shadow-lg transition-all hover:-translate-y-1 text-center"
@@ -178,7 +178,7 @@ export default function RegistroPage() {
               </div>
               <h3 className="text-xl font-bold text-cln-950 mb-2">APRENDER</h3>
               <p className="text-orange-500 font-medium text-sm mb-4">Contenido que aporta valor</p>
-              
+
               <div className="mb-4">
                 <h4 className="font-bold text-gray-900">Ponencias de alto nivel</h4>
                 <p className="text-sm text-gray-600">Ideas, experiencias y perspectivas para comprender los desafíos actuales de Supply Chain.</p>
@@ -195,7 +195,7 @@ export default function RegistroPage() {
               </div>
               <h3 className="text-xl font-bold text-cln-950 mb-2">CONECTAR</h3>
               <p className="text-orange-500 font-medium text-sm mb-4">Personas, empresas y soluciones</p>
-              
+
               <div className="mb-4">
                 <h4 className="font-bold text-gray-900">Networking</h4>
                 <p className="text-sm text-gray-600">Conecta con profesionales, líderes y empresas de diferentes eslabones de la cadena.</p>
@@ -216,7 +216,7 @@ export default function RegistroPage() {
               </div>
               <h3 className="text-xl font-bold text-cln-950 mb-2">COMPARTIR</h3>
               <p className="text-orange-500 font-medium text-sm mb-4">Momentos para vivir la experiencia</p>
-              
+
               <div className="mb-4">
                 <h4 className="font-bold text-gray-900">Almuerzo ejecutivo</h4>
                 <p className="text-sm text-gray-600">Un espacio para continuar conversaciones y generar nuevas conexiones.</p>
@@ -250,7 +250,7 @@ export default function RegistroPage() {
           </div>
 
           <div className="relative border-l-2 border-orange-500/30 ml-4 md:ml-0 md:border-l-0 md:flex md:flex-col md:items-center space-y-12">
-            
+
             {/* Timeline Item 1 */}
             <div className="relative pl-8 md:pl-0 md:w-full md:flex md:items-center md:justify-between">
               <div className="absolute left-[-9px] top-1 md:left-1/2 md:-ml-[9px] w-4 h-4 rounded-full bg-orange-500 ring-4 ring-cln-950"></div>
@@ -335,10 +335,10 @@ export default function RegistroPage() {
               PARA QUIÉN ES
             </p>
             <h2 className="text-3xl md:text-4xl font-heading font-extrabold text-cln-950 mb-4">
-              Una experiencia para toda la cadena
+              Una experiencia para toda la cadena logística
             </h2>
             <p className="text-xl text-gray-600">
-              Distintos roles. Una misma cadena. Una misma comunidad.
+              Distintos roles. Una misma experiencia. Una misma comunidad.
             </p>
           </div>
 
@@ -366,7 +366,7 @@ export default function RegistroPage() {
       {/* ════════════════════════════════ FORMULARIO Y CONFIANZA ════════════════════════════════ */}
       <section id="registro" className="py-16 md:py-24 bg-white scroll-mt-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center mb-12">
             <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-3">
               REGISTRO
@@ -380,7 +380,7 @@ export default function RegistroPage() {
           </div>
 
           <div className="flex flex-col lg:flex-row gap-12 items-start">
-            
+
             {/* Columna Izquierda: Formulario */}
             <div className="w-full lg:w-3/5 bg-white rounded-2xl shadow-xl border border-gray-100 p-8 md:p-10">
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -403,14 +403,14 @@ export default function RegistroPage() {
                   </div>
                   <div className="sm:col-span-2">
                     <label htmlFor="telefono" className="block text-sm font-bold text-gray-700 mb-2">Teléfono / WhatsApp *</label>
-                    <input 
-                      type="tel" 
-                      id="telefono" 
+                    <input
+                      type="tel"
+                      id="telefono"
                       name="telefono_input"
                       value={telefono}
                       onChange={handleTelefonoChange}
-                      required 
-                      className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-orange-500 focus:border-orange-500 p-3 border font-mono text-lg" 
+                      required
+                      className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-orange-500 focus:border-orange-500 p-3 border font-mono text-lg"
                     />
                     <p className="text-xs text-gray-500 mt-1">Ingresa tu número (el código de área +505 está por defecto)</p>
                   </div>
@@ -421,8 +421,8 @@ export default function RegistroPage() {
                     <p className="font-bold text-cln-950 text-lg uppercase tracking-wider mb-1">ACCESO CONGRESO</p>
                     <p className="text-gray-600">Tarifa: US$ XXX + IVA</p>
                   </div>
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={isSubmitting}
                     className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-lg font-bold shadow-lg transition-all hover:-translate-y-1 flex justify-center items-center"
                   >
