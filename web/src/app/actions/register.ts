@@ -51,7 +51,7 @@ export async function submitRegistration(formData: FormData) {
     // 4. Enviar correo de confirmación con Resend
     if (process.env.RESEND_API_KEY) {
       await resend.emails.send({
-        from: 'CLN Eventos <registro@nilogistic.com>',
+        from: 'CLN Eventos <cln@nilogistic.com>',
         to: email,
         subject: 'Solicitud Recibida - EXPO LOGÍSTICA · CLN · 2026',
         react: RegistrationEmail({ nombre }),
