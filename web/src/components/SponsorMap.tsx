@@ -173,7 +173,7 @@ export default function SponsorMap() {
           DoubleTree by Hilton — Managua
         </p>
         <h2 style={{ fontSize: "clamp(20px,3vw,28px)", fontWeight: 900, color: "#0A1628", margin: "0 0 4px", letterSpacing: "0.04em" }}>
-          MAPA DE PATROCINADORES
+          MAPA DEL PISO DE EXHIBICIÓN
         </h2>
         <p style={{ fontSize: 13, color: "#64748B", margin: 0 }}>EXPO LOGÍSTICA · CLN · 2026 — Salón Principal</p>
       </div>
