@@ -56,10 +56,10 @@ export default function Navbar() {
                 Agenda
                 <span className={`absolute bottom-0 left-0 h-0.5 bg-orange-500 transition-all duration-300 ${pathname === '/agenda' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
               </Link>
-              <Link href="/ponentes" className={`relative font-bold transition-colors group py-2 ${pathname === '/ponentes' ? 'text-cln-900' : 'text-gray-700 hover:text-cln-900'}`}>
+              {/* <Link href="/ponentes" className={`relative font-bold transition-colors group py-2 ${pathname === '/ponentes' ? 'text-cln-900' : 'text-gray-700 hover:text-cln-900'}`}>
                 Speakers
                 <span className={`absolute bottom-0 left-0 h-0.5 bg-orange-500 transition-all duration-300 ${pathname === '/ponentes' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
-              </Link>
+              </Link> */}
               <Link href="/patrocinadores" className={`relative font-bold transition-colors group py-2 ${pathname === '/patrocinadores' ? 'text-cln-900' : 'text-gray-700 hover:text-cln-900'}`}>
                 Sponsors
                 <span className={`absolute bottom-0 left-0 h-0.5 bg-orange-500 transition-all duration-300 ${pathname === '/patrocinadores' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
@@ -95,7 +95,7 @@ export default function Navbar() {
             <div className="px-4 pt-2 pb-6 space-y-2">
               <Link href="/" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-cln-900 hover:bg-gray-100 rounded-md">Inicio</Link>
               <Link href="/agenda" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-cln-900 hover:bg-gray-100 rounded-md">Agenda</Link>
-              <Link href="/ponentes" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-cln-900 hover:bg-gray-100 rounded-md">Speakers</Link>
+              {/* <Link href="/ponentes" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-cln-900 hover:bg-gray-100 rounded-md">Speakers</Link> */}
               <Link href="/patrocinadores" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-cln-900 hover:bg-gray-100 rounded-md">Sponsors</Link>
               <Link href="/registro" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-bold text-center text-white bg-orange-500 hover:bg-orange-600 rounded-md mt-4 shadow-md">Registrarse</Link>
             </div>

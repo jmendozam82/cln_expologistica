@@ -5,8 +5,6 @@ import { revalidatePath } from 'next/cache';
 import { Resend } from 'resend';
 import { RegistrationEmail } from '@/emails/RegistrationEmail';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function submitRegistration(formData: FormData) {
   try {
     // 1. Extraer los datos del formulario
@@ -35,9 +33,14 @@ export async function submitRegistration(formData: FormData) {
       );
     `;
 
-    // Asegurar que la columna telefono existe si la tabla ya estaba creada antes
+    // Asegurar que las columnas telefono y status existen si la tabla ya estaba creada antes
     try {
       await sql`ALTER TABLE registrations ADD COLUMN telefono VARCHAR(50);`;
+    } catch (e) {
+      // Ignorar si la columna ya existe
+    }
+    try {
+      await sql`ALTER TABLE registrations ADD COLUMN status VARCHAR(50) DEFAULT 'Registrado';`;
     } catch (e) {
       // Ignorar si la columna ya existe
     }
@@ -50,10 +53,11 @@ export async function submitRegistration(formData: FormData) {
 
     // 4. Enviar correo de confirmación con Resend
     if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
         from: 'CLN Eventos <cln@nilogistic.com>',
         to: email,
-        subject: 'Solicitud Recibida - EXPO LOGÍSTICA · CLN · 2026',
+        subject: 'Expo Logística 2026 CLN | Registro recibido · Confirmá tu acceso',
         react: RegistrationEmail({ nombre }),
       });
     } else {

@@ -1,4 +1,4 @@
-﻿export const EVENT_NAME = "EXPO LOGÍSTICA · CLN · 2026";
+export const EVENT_NAME = "EXPO LOGÍSTICA · CLN · 2026";
 export const EVENT_NAME_SHORT = "EXPO LOGÍSTICA · CLN · 2026";
 export const EVENT_SLOGAN = "El gran encuentro anual de la Comunidad Logística Nicaragüense";
 export const EVENT_TAGLINE = "La logística de Nicaragua y Centroamérica se encuentra aquí";
@@ -29,8 +29,8 @@ export const EVENT_HIGHLIGHTS: EventHighlight[] = [
     tag: "Aprender",
     subtitle: "Ideas globales. Impacto en nuestra realidad.",
     description: "Speakers internacionales y nacionales compartirán perspectivas, tendencias y experiencias para enfrentar los nuevos desafíos de Supply Chain en Nicaragua y la región.",
-    href: "/ponentes",
-    cta: "Conocer speakers →",
+    href: "#",
+    cta: "Próximamente →",
     photo: "https://nilogistic.com/wp-content/uploads/2026/09/card1-scaled.jpeg",
   },
   {

@@ -21,33 +21,33 @@ export const RegistrationEmail = ({
   nombre,
 }: RegistrationEmailProps) => {
   // TODO: Actualizar con la tarifa definitiva cuando se confirme
-  const price = 150; 
-  const iva = price * 0.15; // 15% IVA Nicaragua
-  const total = price + iva;
+  const price = 70;
+  const discount = 10;
+  const total = price - discount;
 
   return (
     <Html>
       <Head />
-      <Preview>Valida tu acceso al Congreso completando tu pago</Preview>
+      <Preview>Registro recibido · Pago pendiente</Preview>
       <Body style={main}>
         <Container style={container}>
           {/* Top Gradient Border */}
           <div style={topBorder} />
-          
+
           {/* Header Banner */}
           <Section style={headerBanner}>
             <Row>
               <Column>
-                <Img 
-                  src="https://expologistic-cln2026.nilogistic.com/logo-horizontal.jpg" 
-                  width="180" 
+                <Img
+                  src="https://expologistic-cln2026.nilogistic.com/logo-horizontal.jpg"
+                  width="180"
                   height="auto"
-                  alt="EXPO LOGÍSTICA · CLN · 2026" 
-                  style={logoImage} 
+                  alt="EXPO LOGÍSTICA · CLN · 2026"
+                  style={logoImage}
                 />
               </Column>
               <Column align="right">
-                <span style={badge}>Confirmación de acceso al Congreso</span>
+                <span style={badge}>Registro recibido · Pago pendiente</span>
               </Column>
             </Row>
           </Section>
@@ -56,11 +56,11 @@ export const RegistrationEmail = ({
           <Section style={contentSection}>
             <Text style={label}>Reserva de acceso</Text>
             <Heading style={h1}>
-              Valida tu acceso al Congreso completando tu pago
+              ¡Gracias por registrarte en Expo Logística CLN 2026!
             </Heading>
             <Text style={greeting}>
-              Hola <strong style={primaryText}>{nombre}</strong>, tu reserva para <strong style={primaryText}>Acceso Congreso</strong> está registrada. 
-              Para confirmar tu acceso, realiza el depósito y comparte el comprobante.
+              Hola <strong style={primaryText}>{nombre}</strong>, tu solicitud para <strong style={primaryText}>Acceso Congreso</strong> ha sido recibida con éxito.
+              Para asegurar tu espacio, por favor completa tu pago siguiendo las instrucciones a continuación.
             </Text>
           </Section>
 
@@ -82,13 +82,14 @@ export const RegistrationEmail = ({
             <Section style={paymentBox}>
               <Text style={paymentBoxTitle}>Resumen de pago</Text>
               <Row style={paymentRow}>
-                <Column><Text style={paymentLabel}>Acceso Congreso</Text></Column>
+                <Column><Text style={paymentLabel}>Acceso Congreso (Regular)</Text></Column>
                 <Column align="right"><Text style={paymentValue}>US$ {price.toFixed(2)}</Text></Column>
               </Row>
               <Row style={paymentRow}>
-                <Column><Text style={paymentLabel}>IVA (15%)</Text></Column>
-                <Column align="right"><Text style={paymentValue}>US$ {iva.toFixed(2)}</Text></Column>
+                <Column><Text style={{...paymentLabel, color: '#16a34a'}}>Preventa (Hasta 30 Oct)</Text></Column>
+                <Column align="right"><Text style={{...paymentValue, color: '#16a34a'}}>- US$ {discount.toFixed(2)}</Text></Column>
               </Row>
+              {/* IVA Eliminado de la vista del correo */}
               <Row style={paymentTotalRow}>
                 <Column><Text style={paymentTotalLabel}>Total a depositar</Text></Column>
                 <Column align="right"><Text style={paymentTotalValue}>US$ {total.toFixed(2)}</Text></Column>
@@ -99,31 +100,30 @@ export const RegistrationEmail = ({
           {/* Transferencia Bancaria */}
           <Section style={bankSection}>
             <Text style={bankTitle}>Transferencia bancaria</Text>
-            <Text style={bankSubtitle}>Realiza el depósito en cualquiera de las siguientes cuentas:</Text>
-            
-            <Text style={bankAccountLabel}>Cuentas a nombre de</Text>
-            <Text style={bankAccountName}>Comunidad Logística Nicaragüense (CLN)</Text>
-            
+            <Text style={bankSubtitle}>Realiza el depósito en la siguiente cuenta:</Text>
+
+            <Text style={bankAccountLabel}>Cuenta a nombre de</Text>
+            <Text style={bankAccountName}>MARIA DE LA CONCEPCION CRUZ ESPINOZA</Text>
+
             <Row>
-              <Column style={bankColLeft}>
+              <Column>
                 <Text style={bankName}>Banco BAC</Text>
                 <Text style={bankType}>Cuenta en Dólares</Text>
-                <Text style={bankNumber}>123-456789-0</Text>
-              </Column>
-              <Column style={bankColRight}>
-                <Text style={bankName}>Banco LAFISE</Text>
-                <Text style={bankType}>Cuenta en Dólares</Text>
-                <Text style={bankNumber}>0987654321</Text>
+                <Text style={bankNumber}>371785908</Text>
               </Column>
             </Row>
-            
+
             <Text style={referenceText}>Referencia: <strong style={primaryText}>{nombre} · Expo Logística 2026</strong></Text>
           </Section>
 
           {/* Instrucciones finales */}
           <Section style={instructionsSection}>
             <Text style={instructionsText}>
-              <strong style={primaryText}>Envía el comprobante:</strong> responde a este correo y adjunta la imagen o PDF de tu depósito. Incluye tu nombre completo para identificarlo con rapidez.
+              <strong style={{...primaryText, fontSize: '16px'}}>CONFIRMÁ TU ACCESO</strong><br/><br/>
+              Enviá el voucher de transferencia, en imagen o PDF, a:<br/>
+              <a href="mailto:cln@nilogistic.com" style={{color: '#00345b', fontWeight: 'bold'}}>cln@nilogistic.com</a><br/><br/>
+              Una vez validado el pago, recibirás por correo electrónico la confirmación oficial de tu participación.<br/><br/>
+              <strong>Importante:</strong> Tu espacio quedará asegurado una vez confirmado el pago, sujeto a disponibilidad de cupos.
             </Text>
           </Section>
 
@@ -139,9 +139,12 @@ export const RegistrationEmail = ({
           {/* Footer */}
           <Section style={footer}>
             <Text style={footerText}>
-              <strong style={primaryText}>Expo Logística Nicaragua 2026</strong><br />
-              20 de noviembre · DoubleTree by Hilton Managua<br />
-              <a href="https://nilogistic.com" style={footerLink}>nilogistic.com</a>
+              <strong style={{...primaryText, fontSize: '15px'}}>¡Nos vemos en ExpoLogísticaCLN2026!</strong><br /><br />
+              <strong>Comunidad Logística Nicaragüense</strong><br />
+              Aprender · Conectar · Compartir<br />
+              Conectando profesionales - Potenciando la logística<br />
+              <strong>#SoyCLN</strong><br /><br />
+              Consultar agenda del evento: <a href="https://expologistic-cln2026.nilogistic.com/agenda" style={footerLink}>https://expologistic-cln2026.nilogistic.com/agenda</a>
             </Text>
           </Section>
 

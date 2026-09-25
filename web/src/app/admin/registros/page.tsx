@@ -1,4 +1,5 @@
 import { sql } from '@vercel/postgres';
+import { StatusSelect } from './StatusSelect';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,6 +11,7 @@ interface Registro {
   empresa: string | null;
   cargo: string | null;
   created_at: string;
+  status?: string;
 }
 
 export default async function AdminRegistros() {
@@ -25,6 +27,8 @@ export default async function AdminRegistros() {
   }
 
   const total = registrations.length;
+  const pagosRealizados = registrations.filter(r => r.status === 'Pago Realizado').length;
+  const pendientes = total - pagosRealizados;
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -51,6 +55,14 @@ export default async function AdminRegistros() {
             <h3 className="text-gray-500 text-sm font-medium">Total Registrados</h3>
             <p className="text-3xl font-bold text-gray-900 mt-2">{total}</p>
           </div>
+          <div className="bg-green-50 rounded-xl shadow-sm p-6 border border-green-100">
+            <h3 className="text-green-700 text-sm font-medium">Pagos Realizados</h3>
+            <p className="text-3xl font-bold text-green-900 mt-2">{pagosRealizados}</p>
+          </div>
+          <div className="bg-yellow-50 rounded-xl shadow-sm p-6 border border-yellow-100">
+            <h3 className="text-yellow-700 text-sm font-medium">Pendientes de Pago</h3>
+            <p className="text-3xl font-bold text-yellow-900 mt-2">{pendientes}</p>
+          </div>
         </div>
 
         {/* Tabla de Registros */}
@@ -63,12 +75,13 @@ export default async function AdminRegistros() {
                   <th className="px-6 py-4 font-medium">Nombre</th>
                   <th className="px-6 py-4 font-medium">Contacto</th>
                   <th className="px-6 py-4 font-medium">Empresa / Cargo</th>
+                  <th className="px-6 py-4 font-medium">Estado</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {registrations.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
                       No hay registros todavía.
                     </td>
                   </tr>
@@ -89,6 +102,9 @@ export default async function AdminRegistros() {
                         {reg.empresa || '-'}<br/>
                         <span className="text-gray-400 text-xs">{reg.cargo || '-'}</span>
                       </td>
+                      <td className="px-6 py-4">
+                        <StatusSelect id={reg.id} currentStatus={reg.status || 'Registrado'} />
+                      </td>
                     </tr>
                   ))
                 )}
@@ -100,3 +116,4 @@ export default async function AdminRegistros() {
     </div>
   );
 }
+

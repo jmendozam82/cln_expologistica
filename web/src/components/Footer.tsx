@@ -25,7 +25,7 @@ export default function Footer() {
             <h3 className="text-white font-heading font-bold text-xl mb-4">Aprender</h3>
             <ul className="space-y-2 text-sm">
               <li><Link href="/agenda" className="hover:text-cln-300 transition-colors">Programa del Evento</Link></li>
-              <li><Link href="/ponentes" className="hover:text-cln-300 transition-colors">Conferencistas</Link></li>
+              {/* <li><Link href="/ponentes" className="hover:text-cln-300 transition-colors">Conferencistas</Link></li> */}
               <li><Link href="/patrocinadores" className="hover:text-cln-300 transition-colors">Sponsors</Link></li>
               <li><Link href="/registro" className="hover:text-cln-300 transition-colors">Registro y Tarifas</Link></li>
             </ul>

@@ -279,11 +279,11 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="text-center">
+          {/* <div className="text-center">
             <Link href="/ponentes" className="inline-block bg-cln-600 hover:bg-cln-500 text-white px-8 py-4 rounded-full font-bold text-lg shadow-md transition-all hover:-translate-y-0.5">
               Conoce a nuestros speakers &rarr;
             </Link>
-          </div>
+          </div> */}
         </div>
       </section>
 
