@@ -237,9 +237,9 @@ export default function Home() {
               <span className="text-cln-300 text-xs lg:text-sm">con speakers internacionales</span>
             </div>
             <div className="flex flex-col items-center">
-              <span className="text-4xl lg:text-6xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-cln-300 to-cln-500 mb-2">5</span>
+              <span className="text-4xl lg:text-6xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-cln-300 to-cln-500 mb-2">8</span>
               <span className="text-white font-bold text-sm lg:text-base mb-1">CONFERENCIAS</span>
-              <span className="text-cln-300 text-xs lg:text-sm">de alto nivel</span>
+              <span className="text-cln-300 text-xs lg:text-sm">ejecutivas de alto nivel</span>
             </div>
             <div className="flex flex-col items-center">
               <span className="text-4xl lg:text-6xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-cln-300 to-cln-500 mb-2">10</span>

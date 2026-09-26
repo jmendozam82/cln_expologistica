@@ -103,7 +103,7 @@ const SLOTS: TimeSlot[] = [
     time: "11:00 a.m. – 12:00 m.",
     mambacho: {
       kind: "magistral",
-      title: "Magistral 1: Del Almacén Tradicional al Smart CEDIS",
+      title: "Magistral 1: Del Almacén Tradicional al Almacén Smart",
       sub: "Tecnología, automatización y decisiones para evolucionar sin sobredimensionar la inversión",
       speakers: [""],
     },
@@ -299,7 +299,7 @@ function Cell({ cell, salonKey }: { cell: Cell; salonKey: SalonKey }) {
               className={`flex items-center gap-1.5 text-[11px] font-semibold ${isCierre ? "text-slate-300" : "text-slate-500"}`}
             >
               <span className={`w-1 h-1 rounded-full flex-shrink-0 ${isCierre ? "bg-orange-400" : "bg-orange-500"}`} aria-hidden />
-              {s || "Por confirmar"}
+              {s || "Speaker"}
             </span>
           ))}
         </div>
