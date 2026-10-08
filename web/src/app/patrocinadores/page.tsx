@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from "next";
 import Image from "next/image";
 import SponsorMap from "@/components/SponsorMap";
+import SponsorsDirectory, { type Sponsor } from "@/components/SponsorsDirectory";
 
 export const metadata: Metadata = {
   title: "Patrocinadores | EXPO LOGÍSTICA · CLN · 2026",
@@ -8,26 +9,63 @@ export const metadata: Metadata = {
 };
 
 export default function PatrocinadoresPage() {
-  type SponsorTier = "elite" | "oro" | "plata";
-  type Sponsor = { id: string; name: string; tier: SponsorTier; logo?: string };
-
   const sponsors: Sponsor[] = [
     { id: "E1", name: "Sponsor 1", tier: "elite" },
     { id: "E2", name: "Sponsor 2", tier: "elite" },
     { id: "E3", name: "Sponsor 3", tier: "elite" },
-    { id: "O1", name: "HA LOGIX", tier: "oro", logo: "/sponsor/ha_logix_Sponsor_Oro_crop.png" },
+    {
+      id: "O1",
+      name: "HA LOGIX",
+      tier: "oro",
+      logo: "/sponsor/ha_logix_Sponsor_Oro_crop.png",
+      profile: {
+        headline: "90 años de trayectoria como operador de soluciones logísticas para el comercio internacional.",
+        description:
+          "HA Logix es una plataforma integrada de servicios logísticos con presencia en Nicaragua y la región centroamericana. Une transporte, aduanas, almacenamiento y distribución con una plataforma tecnológica propia, comprometida en generar eficiencia y tranquilidad a sus clientes, con altos estándares de transparencia, ética y responsabilidad.",
+        services: [
+          "Servicios Aduaneros",
+          "Almacén Fiscal",
+          "Almacén Logístico",
+          "Distribución",
+          "Transporte Terrestre",
+          "Transporte Aéreo",
+          "Transporte Marítimo",
+          "Agenciamiento Portuario",
+          "Logística de Proyectos",
+          "Courier",
+        ],
+        website: "https://ni.ha-logix.com/",
+      },
+    },
     { id: "O2", name: "Sponsor 5", tier: "oro" },
     { id: "O3", name: "Sponsor 6", tier: "oro" },
     { id: "O4", name: "Sponsor 7", tier: "oro" },
     { id: "O5", name: "Sponsor 8", tier: "oro" },
     { id: "P1", name: "Sponsor 9", tier: "plata" },
     { id: "P2", name: "Sponsor 10", tier: "plata" },
-  ];
-
-  const TIERS: { key: SponsorTier; label: string; desc: string; color: string; text: string; soft: string; card: string; logo: string }[] = [
-    { key: "elite", label: "Sponsors Elite", desc: "Máxima visibilidad y exclusividad", color: "#B8860B", text: "#FFFBEB", soft: "#FBF3E0", card: "w-full sm:w-[380px] p-8", logo: "text-xl" },
-    { key: "oro", label: "Sponsors Oro", desc: "Alta presencia corporativa", color: "#1B3A6B", text: "#EFF6FF", soft: "#E8EFFB", card: "w-full sm:w-[260px] p-5", logo: "text-base" },
-    { key: "plata", label: "Sponsors Plata", desc: "Presencia profesional estratégica", color: "#2E6B8F", text: "#F0F9FF", soft: "#E9F3F8", card: "w-full sm:w-[200px] p-4", logo: "text-sm" },
+    {
+      id: "A1",
+      name: "VIVO",
+      tier: "aliado",
+      logo: "/sponsor/vivo_aliado_cln.png",
+      profile: {
+        headline: "Tu dosis diaria de vida: shots funcionales 100% naturales.",
+        description:
+          "VIVO es una marca de bienestar y alimentación natural que desarrolla bebidas y shots funcionales elaborados con ingredientes naturales, prensados en frío y sin conservantes. Su propuesta busca incorporar el bienestar a la rutina diaria con productos funcionales para detox, defensa y energía, disponibles en pack de ahorro y pack semanal.",
+        services: [
+          "Shot Verde — Detox • Alcalino",
+          "Shot Defense — Inmunidad • Anti-inflamatorio",
+          "Shot Energy — Energía • Vitalidad",
+          "Pack Semanal de bienestar",
+          "100% Natural · Prensado en frío",
+          "Sin conservantes",
+        ],
+        website: "https://www.instagram.com/vivotudosisdevida",
+        websiteLabel: "Ver en Instagram",
+      },
+    },
+    { id: "A2", name: "Aliado 2", tier: "aliado" },
+    { id: "A3", name: "Aliado 3", tier: "aliado" },
   ];
 
   return (
@@ -123,54 +161,7 @@ export default function PatrocinadoresPage() {
             </p>
           </div>
 
-          <div className="space-y-14">
-            {TIERS.map((tier) => {
-              const groupSponsors = sponsors.filter((s) => s.tier === tier.key);
-              return (
-                <div key={tier.key}>
-                  <div className="flex flex-wrap items-center gap-3 mb-8">
-                    <span
-                      className="inline-block px-4 py-2 rounded-full text-sm font-bold tracking-wider"
-                      style={{ background: tier.color, color: tier.text }}
-                    >
-                      {tier.label}
-                    </span>
-                    <span className="text-sm text-gray-500">{tier.desc}</span>
-                    <span className="text-xs font-bold text-gray-400 bg-white border border-gray-200 rounded-full px-3 py-1">
-                      {groupSponsors.length} {groupSponsors.length === 1 ? "posición" : "posiciones"}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-wrap justify-center gap-6 lg:gap-8">
-                    {groupSponsors.map((sponsor) => (
-                      <div
-                        key={sponsor.id}
-                        className={`relative bg-white rounded-xl shadow-md ${tier.card} border-t-4 flex items-center justify-center aspect-[3/2] hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group`}
-                        style={{ borderTopColor: tier.color, borderColor: tier.color }}
-                      >
-                        {sponsor.logo ? (
-                          <Image
-                            src={sponsor.logo}
-                            alt={sponsor.name}
-                            fill
-                            sizes="(max-width: 640px) 100vw, 260px"
-                            className="object-contain p-4 group-hover:scale-105 transition-transform"
-                          />
-                        ) : (
-                          <div
-                            className={`${tier.logo} font-bold transition-colors`}
-                            style={{ color: "#9CA3AF" }}
-                          >
-                            Logo {sponsor.name}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <SponsorsDirectory sponsors={sponsors} />
         </div>
       </section>
 
