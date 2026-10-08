@@ -12,6 +12,7 @@ export interface Stand {
   tier: Tier;
   estado: Estado;
   empresa?: string;
+  logo?: string;
   x: number; y: number; w: number; h: number;
   rotate?: number;
   labelSize?: number;
@@ -29,23 +30,23 @@ const C = {
 const LABEL: Record<Tier, string> = { elite: "Elite", oro: "Oro", plata: "Plata" };
 
 /* ─── STANDS NUEVO PLANO FONDO IMAGEN ────────────────────────────── */
-// Ajustadas para un viewBox de 1200 x 750
+// Ajustadas para un viewBox de 1200 x 750 — 3 Elite · 5 Oro · 2 Plata
 const STANDS: Stand[] = [
-  // Pasillo Izquierdo (Frente Mombacho y Télica)
-  { id: "P1", label: "PLATA 1", tier: "plata", estado: "libre", x: 190, y: 555, w: 75, h: 38 },
-  { id: "P2", label: "PLATA 2", tier: "plata", estado: "libre", x: 280, y: 555, w: 75, h: 38 },
-  { id: "P3", label: "PLATA 3", tier: "plata", estado: "libre", x: 370, y: 555, w: 75, h: 38 },
-  { id: "O4", label: "ORO 4", tier: "oro", estado: "libre", x: 460, y: 555, w: 75, h: 38 },
-  { id: "O3", label: "ORO 3", tier: "oro", estado: "libre", x: 550, y: 555, w: 75, h: 38 },
+  // Pasillo Izquierdo (Frente Mombacho y Télica) — ORO 5 → ORO 1
+  { id: "O5", label: "ORO 5", tier: "oro", estado: "libre", x: 190, y: 555, w: 75, h: 38 },
+  { id: "O4", label: "ORO 4", tier: "oro", estado: "libre", x: 280, y: 555, w: 75, h: 38 },
+  { id: "O3", label: "ORO 3", tier: "oro", estado: "libre", x: 370, y: 555, w: 75, h: 38 },
+  { id: "O2", label: "ORO 2", tier: "oro", estado: "libre", x: 460, y: 555, w: 75, h: 38 },
+  { id: "O1", label: "ORO 1", tier: "oro", estado: "libre", x: 550, y: 555, w: 75, h: 38, empresa: "HA LOGIX", logo: "/sponsor/ha_logix_Sponsor_Oro_crop.png" },
 
   // Pasillo Central (Elite, vertical side by side)
   { id: "E1", label: "ELITE 1", tier: "elite", estado: "libre", x: 785, y: 415, w: 38, h: 78, textRotate: 90 },
   { id: "E2", label: "ELITE 2", tier: "elite", estado: "libre", x: 700, y: 415, w: 38, h: 78, textRotate: -90 },
   { id: "E3", label: "ELITE 3", tier: "elite", estado: "libre", x: 723, y: 340, w: 78, h: 38 },
 
-  // Pasillo Derecho (Frente Momotombo)
-  { id: "O1", label: "ORO 1", tier: "oro", estado: "libre", x: 940, y: 555, w: 75, h: 38 },
-  { id: "O2", label: "ORO 2", tier: "oro", estado: "libre", x: 1030, y: 555, w: 75, h: 38 },
+  // Pasillo Derecho (Frente Momotombo) — PLATA 1..2
+  { id: "P1", label: "PLATA 1", tier: "plata", estado: "libre", x: 940, y: 555, w: 75, h: 38 },
+  { id: "P2", label: "PLATA 2", tier: "plata", estado: "libre", x: 1030, y: 555, w: 75, h: 38 },
 ];
 
 /* ─── TOOLTIP ────────────────────────── */
@@ -65,11 +66,17 @@ function Tooltip({ s, px, py }: { s: Stand; px: number; py: number }) {
               className="mt-0.5 px-2.5 py-1 rounded-md text-[9px] font-bold uppercase text-white"
               style={{ background: isRes ? C.res.fill : C[s.tier].fill }}
             >
-              {s.estado}
+              {isRes ? "reservado" : s.empresa ? "confirmado" : "libre"}
             </span>
           </div>
           <div className="h-px bg-gray-100 my-3" />
-          {!isRes ? (
+          {(isRes || s.empresa) && (
+            <div className="rounded-xl p-3 border border-gray-100 bg-gray-50 mb-3">
+              <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mb-1">Empresa Patrocinadora</p>
+              <p className="text-base font-bold text-gray-800">{s.empresa ?? "Reservado — Confirmado"}</p>
+            </div>
+          )}
+          {!isRes && !s.empresa && (
             <>
               <p className="text-[13px] text-gray-500 mb-3 leading-snug">
                 Maximice su presencia ante líderes del sector logístico centroamericano.
@@ -82,11 +89,6 @@ function Tooltip({ s, px, py }: { s: Stand; px: number; py: number }) {
                 Solicitar Cotización →
               </a>
             </>
-          ) : (
-            <div className="rounded-xl p-3 border border-gray-100 bg-gray-50">
-              <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mb-1">Empresa Patrocinadora</p>
-              <p className="text-base font-bold text-gray-800">{s.empresa ?? "Reservado — Confirmado"}</p>
-            </div>
           )}
         </div>
       </div>
@@ -126,24 +128,38 @@ function StandRect({ s, onEnter, onLeave, onMove }: {
         transform={transform}
       />
       <rect x={s.x + 1} y={s.y + 1} width={s.w - 2} height={6} rx={4} fill="rgba(255,255,255,0.12)" transform={transform} />
-      <text
-        x={cx} y={cy - 6}
-        textAnchor="middle" dominantBaseline="middle"
-        fontSize={s.labelSize ?? 11} fontWeight="800" fill={textC}
-        fontFamily="system-ui, -apple-system, sans-serif"
-        transform={textTransform}
-      >
-        {s.label}
-      </text>
-      <text
-        x={cx} y={cy + 8}
-        textAnchor="middle" dominantBaseline="middle"
-        fontSize={9} fill={subC}
-        fontFamily="system-ui, sans-serif"
-        transform={textTransform}
-      >
-        {isRes ? "RESERVADO" : "DISPONIBLE"}
-      </text>
+      {s.logo ? (
+        <>
+          <rect x={s.x + 3} y={s.y + 3} width={s.w - 6} height={s.h - 6} rx={4} fill="#FFFFFF" transform={transform} />
+          <image
+            href={s.logo}
+            x={s.x + 7} y={s.y + 7} width={s.w - 14} height={s.h - 14}
+            preserveAspectRatio="xMidYMid meet"
+            transform={transform}
+          />
+        </>
+      ) : (
+        <>
+          <text
+            x={cx} y={cy - 6}
+            textAnchor="middle" dominantBaseline="middle"
+            fontSize={s.labelSize ?? 11} fontWeight="800" fill={textC}
+            fontFamily="system-ui, -apple-system, sans-serif"
+            transform={textTransform}
+          >
+            {s.label}
+          </text>
+          <text
+            x={cx} y={cy + 8}
+            textAnchor="middle" dominantBaseline="middle"
+            fontSize={9} fill={subC}
+            fontFamily="system-ui, sans-serif"
+            transform={textTransform}
+          >
+            {isRes ? "RESERVADO" : "DISPONIBLE"}
+          </text>
+        </>
+      )}
     </g>
   );
 }

@@ -8,25 +8,26 @@ export const metadata: Metadata = {
 };
 
 export default function PatrocinadoresPage() {
-  const sponsors = [
+  type SponsorTier = "elite" | "oro" | "plata";
+  type Sponsor = { id: string; name: string; tier: SponsorTier; logo?: string };
+
+  const sponsors: Sponsor[] = [
     { id: "E1", name: "Sponsor 1", tier: "elite" },
     { id: "E2", name: "Sponsor 2", tier: "elite" },
     { id: "E3", name: "Sponsor 3", tier: "elite" },
-    { id: "O1", name: "Sponsor 4", tier: "oro" },
+    { id: "O1", name: "HA LOGIX", tier: "oro", logo: "/sponsor/ha_logix_Sponsor_Oro_crop.png" },
     { id: "O2", name: "Sponsor 5", tier: "oro" },
     { id: "O3", name: "Sponsor 6", tier: "oro" },
     { id: "O4", name: "Sponsor 7", tier: "oro" },
-    { id: "P1", name: "Sponsor 8", tier: "plata" },
-    { id: "P2", name: "Sponsor 9", tier: "plata" },
-    { id: "P3", name: "Sponsor 10", tier: "plata" },
+    { id: "O5", name: "Sponsor 8", tier: "oro" },
+    { id: "P1", name: "Sponsor 9", tier: "plata" },
+    { id: "P2", name: "Sponsor 10", tier: "plata" },
   ];
 
-  type SponsorTier = "elite" | "oro" | "plata";
-
-  const TIERS: { key: SponsorTier; label: string; desc: string; color: string; text: string; soft: string; cols: string }[] = [
-    { key: "elite", label: "Sponsors Elite", desc: "Máxima visibilidad y exclusividad", color: "#B8860B", text: "#FFFBEB", soft: "#FBF3E0", cols: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" },
-    { key: "oro", label: "Sponsors Oro", desc: "Alta presencia corporativa", color: "#1B3A6B", text: "#EFF6FF", soft: "#E8EFFB", cols: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" },
-    { key: "plata", label: "Sponsors Plata", desc: "Presencia profesional estratégica", color: "#2E6B8F", text: "#F0F9FF", soft: "#E9F3F8", cols: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" },
+  const TIERS: { key: SponsorTier; label: string; desc: string; color: string; text: string; soft: string; card: string; logo: string }[] = [
+    { key: "elite", label: "Sponsors Elite", desc: "Máxima visibilidad y exclusividad", color: "#B8860B", text: "#FFFBEB", soft: "#FBF3E0", card: "w-full sm:w-[380px] p-8", logo: "text-xl" },
+    { key: "oro", label: "Sponsors Oro", desc: "Alta presencia corporativa", color: "#1B3A6B", text: "#EFF6FF", soft: "#E8EFFB", card: "w-full sm:w-[260px] p-5", logo: "text-base" },
+    { key: "plata", label: "Sponsors Plata", desc: "Presencia profesional estratégica", color: "#2E6B8F", text: "#F0F9FF", soft: "#E9F3F8", card: "w-full sm:w-[200px] p-4", logo: "text-sm" },
   ];
 
   return (
@@ -140,19 +141,29 @@ export default function PatrocinadoresPage() {
                     </span>
                   </div>
 
-                  <div className={`grid ${tier.cols} gap-8`}>
+                  <div className="flex flex-wrap justify-center gap-6 lg:gap-8">
                     {groupSponsors.map((sponsor) => (
                       <div
                         key={sponsor.id}
-                        className="bg-white rounded-xl shadow-md p-8 border-t-4 flex items-center justify-center aspect-[3/2] hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group"
+                        className={`relative bg-white rounded-xl shadow-md ${tier.card} border-t-4 flex items-center justify-center aspect-[3/2] hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group`}
                         style={{ borderTopColor: tier.color, borderColor: tier.color }}
                       >
-                        <div
-                          className="text-xl font-bold transition-colors"
-                          style={{ color: "#9CA3AF" }}
-                        >
-                          Logo {sponsor.name}
-                        </div>
+                        {sponsor.logo ? (
+                          <Image
+                            src={sponsor.logo}
+                            alt={sponsor.name}
+                            fill
+                            sizes="(max-width: 640px) 100vw, 260px"
+                            className="object-contain p-4 group-hover:scale-105 transition-transform"
+                          />
+                        ) : (
+                          <div
+                            className={`${tier.logo} font-bold transition-colors`}
+                            style={{ color: "#9CA3AF" }}
+                          >
+                            Logo {sponsor.name}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
