@@ -127,15 +127,6 @@ export const RegistrationEmail = ({
             </Text>
           </Section>
 
-          <Section style={qrSection}>
-            <Text style={qrTitle}>
-              Después de validar el comprobante, te enviaremos tu código QR habilitado por correo electrónico.
-            </Text>
-            <Text style={qrSubtitle}>
-              Tu QR se utiliza para el ingreso y debe presentarse desde tu teléfono el día del evento.
-            </Text>
-          </Section>
-
           {/* Footer */}
           <Section style={footer}>
             <Text style={footerText}>
@@ -352,23 +343,6 @@ const bankAccountName = {
   lineHeight: '1.35',
 };
 
-const bankColLeft = {
-  width: '50%',
-  padding: '14px 18px 14px 0',
-  borderTop: '1px solid #dedede',
-  borderBottom: '1px solid #dedede',
-  verticalAlign: 'top',
-};
-
-const bankColRight = {
-  width: '50%',
-  padding: '14px 0 14px 18px',
-  borderTop: '1px solid #dedede',
-  borderBottom: '1px solid #dedede',
-  borderLeft: '1px solid #dedede',
-  verticalAlign: 'top',
-};
-
 const bankName = {
   margin: '0',
   color: '#002b49',
@@ -405,28 +379,6 @@ const instructionsSection = {
 const instructionsText = {
   margin: '0',
   padding: '0',
-  color: '#555555',
-  fontSize: '14px',
-  lineHeight: '1.55',
-};
-
-const qrSection = {
-  padding: '0 34px 34px',
-  borderTop: '1px solid #dedede',
-  marginTop: '20px',
-  paddingTop: '20px',
-};
-
-const qrTitle = {
-  margin: '0',
-  color: '#002b49',
-  fontSize: '16px',
-  lineHeight: '1.45',
-  fontWeight: 'bold',
-};
-
-const qrSubtitle = {
-  margin: '11px 0 0',
   color: '#555555',
   fontSize: '14px',
   lineHeight: '1.55',
