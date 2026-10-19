@@ -38,7 +38,26 @@ export default function PatrocinadoresPage() {
       },
     },
     { id: "O2", name: "Sponsor 5", tier: "oro" },
-    { id: "O3", name: "Sponsor 6", tier: "oro" },
+    {
+      id: "O3",
+      name: "IAMMSA",
+      tier: "oro",
+      logo: "/sponsor/iammsa-Sponsor_oro.png",
+      profile: {
+        headline: "Más de 25 años ofreciendo las mejores soluciones de almacenaje en México y Centroamérica.",
+        description:
+          "IAMMSA es sinónimo de innovación y logística aplicada, parte de GRUPO SISA, compañía especializada en la planeación, diseño e implementación de sistemas avanzados para el manejo de materiales e información. Su equipo de ingenieros, calculistas y diseñadores ejecuta centros de distribución con las mejores prácticas mundiales en almacenaje y distribución, apoyado en una filosofía de responsabilidad total y las 5'S de la calidad.",
+        services: [
+          "Diseño de Racks y Sistemas de Almacenamiento",
+          "Sistemas Autosoportados y Naves Industriales",
+          "Fabricación, suministro y montaje",
+          "Consultoría y Logística",
+          "Análisis logístico de operación",
+          "Transformación de acero bajo normas nacionales e internacionales",
+        ],
+        website: "https://iammsa.mx/",
+      },
+    },
     { id: "O4", name: "Sponsor 7", tier: "oro" },
     { id: "O5", name: "Sponsor 8", tier: "oro" },
     { id: "P1", name: "Sponsor 9", tier: "plata" },

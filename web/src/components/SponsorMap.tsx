@@ -35,7 +35,7 @@ const STANDS: Stand[] = [
   // Pasillo Izquierdo (Frente Mombacho y Télica) — ORO 5 → ORO 1
   { id: "O5", label: "ORO 5", tier: "oro", estado: "libre", x: 190, y: 555, w: 75, h: 38 },
   { id: "O4", label: "ORO 4", tier: "oro", estado: "libre", x: 280, y: 555, w: 75, h: 38 },
-  { id: "O3", label: "ORO 3", tier: "oro", estado: "libre", x: 370, y: 555, w: 75, h: 38 },
+  { id: "O3", label: "ORO 3", tier: "oro", estado: "libre", x: 370, y: 555, w: 75, h: 38, empresa: "IAMMSA", logo: "/sponsor/iammsa-Sponsor_oro.png" },
   { id: "O2", label: "ORO 2", tier: "oro", estado: "libre", x: 460, y: 555, w: 75, h: 38 },
   { id: "O1", label: "ORO 1", tier: "oro", estado: "libre", x: 550, y: 555, w: 75, h: 38, empresa: "HA LOGIX", logo: "/sponsor/ha_logix_Sponsor_Oro_crop.png" },
 
