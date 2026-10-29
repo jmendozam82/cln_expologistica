@@ -34,9 +34,9 @@ const LABEL: Record<Tier, string> = { elite: "Elite", oro: "Oro", plata: "Plata"
 const STANDS: Stand[] = [
   // Pasillo Izquierdo (Frente Mombacho y Télica) — ORO 5 → ORO 1
   { id: "O5", label: "ORO 5", tier: "oro", estado: "libre", x: 190, y: 555, w: 75, h: 38 },
-  { id: "O4", label: "ORO 4", tier: "oro", estado: "libre", x: 280, y: 555, w: 75, h: 38 },
+  { id: "O4", label: "ORO 4", tier: "oro", estado: "libre", x: 280, y: 555, w: 75, h: 38, empresa: "SERLOG", logo: "/sponsor/serlog.png" },
   { id: "O3", label: "ORO 3", tier: "oro", estado: "libre", x: 370, y: 555, w: 75, h: 38, empresa: "IAMMSA", logo: "/sponsor/iammsa-Sponsor_oro.png" },
-  { id: "O2", label: "ORO 2", tier: "oro", estado: "libre", x: 460, y: 555, w: 75, h: 38 },
+  { id: "O2", label: "ORO 2", tier: "oro", estado: "libre", x: 460, y: 555, w: 75, h: 38, empresa: "I-CARGO", logo: "/sponsor/icargo.png" },
   { id: "O1", label: "ORO 1", tier: "oro", estado: "libre", x: 550, y: 555, w: 75, h: 38, empresa: "HA LOGIX", logo: "/sponsor/ha_logix_Sponsor_Oro_crop.png" },
 
   // Pasillo Central (Elite, vertical side by side)
@@ -45,7 +45,7 @@ const STANDS: Stand[] = [
   { id: "E3", label: "ELITE 3", tier: "elite", estado: "libre", x: 723, y: 340, w: 78, h: 38 },
 
   // Pasillo Derecho (Frente Momotombo) — PLATA 1..2
-  { id: "P1", label: "PLATA 1", tier: "plata", estado: "libre", x: 940, y: 555, w: 75, h: 38 },
+  { id: "P1", label: "PLATA 1", tier: "plata", estado: "libre", x: 940, y: 555, w: 75, h: 38, empresa: "ADENICA", logo: "/sponsor/adenica.png" },
   { id: "P2", label: "PLATA 2", tier: "plata", estado: "libre", x: 1030, y: 555, w: 75, h: 38 },
 ];
 

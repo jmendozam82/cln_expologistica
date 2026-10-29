@@ -37,7 +37,28 @@ export default function PatrocinadoresPage() {
         website: "https://ni.ha-logix.com/",
       },
     },
-    { id: "O2", name: "Sponsor 5", tier: "oro" },
+    {
+      id: "O2",
+      name: "I-CARGO",
+      tier: "oro",
+      logo: "/sponsor/icargo.png",
+      profile: {
+        headline: "Servicios logísticos internacionales integrados: marítimo, aéreo y terrestre.",
+        description:
+          "I-CARGO ofrece un conjunto de servicios logísticos internacionales integrados relacionados con el transporte de carga, depósitos aduaneros y transporte multimodal (aéreo, marítimo, terrestre, LCL y FCL). Su portafolio incluye asesoría logística, consolidación de carga, seguros y otras soluciones personalizadas para garantizar la excelencia en importaciones y exportaciones.",
+        services: [
+          "Transporte Marítimo",
+          "Transporte Aéreo",
+          "Transporte Terrestre (FTL y LTL)",
+          "Consolidación de Carga (LCL)",
+          "Despacho Aduanal",
+          "Seguros de Carga",
+          "Gestión de Proyectos",
+          "Asesoría Logística",
+        ],
+        website: "https://i-cargo.net/",
+      },
+    },
     {
       id: "O3",
       name: "IAMMSA",
@@ -58,9 +79,48 @@ export default function PatrocinadoresPage() {
         website: "https://iammsa.mx/",
       },
     },
-    { id: "O4", name: "Sponsor 7", tier: "oro" },
+    {
+      id: "O4",
+      name: "SERLOG",
+      tier: "oro",
+      logo: "/sponsor/serlog.png",
+      profile: {
+        headline: "Más de 25 años de experiencia en transporte y logística de carga terrestre nacional e internacional.",
+        description:
+          "Servicios Logísticos Nicaragua (SERLOG) es una empresa dedicada al transporte y la logística de carga terrestre nacional e internacional, con soluciones integrales para la distribución a la medida de las necesidades de sus clientes. Cuenta con flota propia equipada con GPS para monitoreo en tiempo real, personal especializado y cobertura en Centroamérica y México.",
+        services: [
+          "Transporte terrestre nacional e internacional",
+          "Distribución y transporte primario y secundario",
+          "Alquiler de unidades",
+          "Outsourcing de personal (estibadores, auxiliares, conductores)",
+          "Administración de flotas privadas",
+          "Administración de transportistas",
+          "Mantenimiento de flotas privadas",
+          "Monitoreo GPS y custodia de carga",
+        ],
+      },
+    },
     { id: "O5", name: "Sponsor 8", tier: "oro" },
-    { id: "P1", name: "Sponsor 9", tier: "plata" },
+    {
+      id: "P1",
+      name: "ADENICA",
+      tier: "plata",
+      logo: "/sponsor/adenica.png",
+      profile: {
+        headline: "Solución integral de logística aduanera y comercio internacional. Visibilidad total, riesgo cero.",
+        description:
+          "ADENICA es un operador logístico con un equipo altamente especializado en operaciones logísticas, legislación aduanera y regímenes aplicables a importaciones y exportaciones. Acompaña a las empresas en cada etapa de su cadena de suministro con soluciones integrales para Nicaragua, Costa Rica, Guatemala, El Salvador y Panamá, garantizando eficiencia y cumplimiento normativo.",
+        services: [
+          "Agenciamiento Aduanal Integral",
+          "Freight Forward",
+          "Almacén Fiscal (In Bond)",
+          "Asesoría Legal Aduanera",
+          "Administración de Inventarios (3PL)",
+          "Comercio Internacional",
+        ],
+        website: "https://adenica.com/",
+      },
+    },
     { id: "P2", name: "Sponsor 10", tier: "plata" },
     {
       id: "A1",
