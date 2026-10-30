@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import SpeakerModal from "@/components/SpeakerModal";
+import { getSpeakerByName, type Speaker } from "@/lib/speakers";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -65,7 +67,7 @@ const SLOTS: TimeSlot[] = [
       kind: "conferencia",
       title: "Supply Chain Blindada: Ciberseguridad y Continuidad Operativa en la Logística Digital",
       sub: "Qué ocurre cuando WMS, TMS, ERP, GPS o proveedores tecnológicos dejan de funcionar",
-      speakers: [""],
+      speakers: ["Kairo Quezada"],
     },
     telica: EMPTY,
   },
@@ -257,7 +259,15 @@ function Badge({ kind }: { kind: SlotKind }) {
   );
 }
 
-function Cell({ cell, salonKey }: { cell: Cell; salonKey: SalonKey }) {
+function Cell({
+  cell,
+  salonKey,
+  onSpeakerClick,
+}: {
+  cell: Cell;
+  salonKey: SalonKey;
+  onSpeakerClick?: (name: string) => void;
+}) {
   const salon = SALON_META[salonKey];
 
   // Celda vacía — altura mínima para alinear con las vecinas
@@ -293,15 +303,28 @@ function Cell({ cell, salonKey }: { cell: Cell; salonKey: SalonKey }) {
 
       {cell.speakers && cell.speakers.length > 0 && (
         <div className="mt-1.5 flex flex-col gap-0.5">
-          {cell.speakers.map((s, idx) => (
-            <span
-              key={idx}
-              className={`flex items-center gap-1.5 text-[11px] font-semibold ${isCierre ? "text-slate-300" : "text-slate-500"}`}
-            >
-              <span className={`w-1 h-1 rounded-full flex-shrink-0 ${isCierre ? "bg-orange-400" : "bg-orange-500"}`} aria-hidden />
-              {s || "Speaker"}
-            </span>
-          ))}
+          {cell.speakers.map((s, idx) => {
+            const hasProfile = s ? Boolean(getSpeakerByName(s)) : false;
+            return (
+              <span
+                key={idx}
+                className={`flex items-center gap-1.5 text-[11px] font-semibold ${isCierre ? "text-slate-300" : "text-slate-500"}`}
+              >
+                <span className={`w-1 h-1 rounded-full flex-shrink-0 ${isCierre ? "bg-orange-400" : "bg-orange-500"}`} aria-hidden />
+                {hasProfile && onSpeakerClick ? (
+                  <button
+                    type="button"
+                    onClick={() => onSpeakerClick(s)}
+                    className={`text-left underline decoration-dotted underline-offset-2 transition-colors cursor-pointer bg-transparent border-none p-0 font-semibold hover:text-orange-600 ${isCierre ? "text-slate-300 hover:text-orange-300" : "text-slate-500"}`}
+                  >
+                    {s}
+                  </button>
+                ) : (
+                  s || "Speaker"
+                )}
+              </span>
+            );
+          })}
         </div>
       )}
     </div>
@@ -340,6 +363,12 @@ function slotDotColor(slot: TimeSlot): string {
 
 export default function AgendaMatrix() {
   const [filter, setFilter] = useState<FilterKey>("todo");
+  const [activeSpeaker, setActiveSpeaker] = useState<Speaker | null>(null);
+
+  const openSpeaker = (name: string) => {
+    const speaker = getSpeakerByName(name);
+    if (speaker) setActiveSpeaker(speaker);
+  };
 
   return (
     <div className="w-full">
@@ -416,7 +445,7 @@ export default function AgendaMatrix() {
                   {/* Desktop */}
                   <div className="hidden md:grid md:grid-cols-3 gap-3">
                     {(["mambacho", "momotombo", "telica"] as SalonKey[]).map((key) => (
-                      <Cell key={key} cell={slot[key]} salonKey={key} />
+                      <Cell key={key} cell={slot[key]} salonKey={key} onSpeakerClick={openSpeaker} />
                     ))}
                   </div>
 
@@ -435,7 +464,7 @@ export default function AgendaMatrix() {
                               {SALON_META[key].label}
                             </p>
                           )}
-                          <Cell cell={cell} salonKey={key} />
+                          <Cell cell={cell} salonKey={key} onSpeakerClick={openSpeaker} />
                         </div>
                       );
                     })}
@@ -455,6 +484,10 @@ export default function AgendaMatrix() {
       <p className="mt-10 text-[11px] text-gray-400 text-center">
         * Este programa es preliminar y puede experimentar ajustes menores en horarios y contenidos.
       </p>
+
+      {activeSpeaker && (
+        <SpeakerModal speaker={activeSpeaker} onClose={() => setActiveSpeaker(null)} />
+      )}
     </div>
   );
 }

@@ -29,8 +29,8 @@ export const EVENT_HIGHLIGHTS: EventHighlight[] = [
     tag: "Aprender",
     subtitle: "Ideas globales. Impacto en nuestra realidad.",
     description: "Speakers internacionales y nacionales compartirán perspectivas, tendencias y experiencias para enfrentar los nuevos desafíos de Supply Chain en Nicaragua y la región.",
-    href: "#",
-    cta: "Próximamente →",
+    href: "/ponentes",
+    cta: "Conocer speakers →",
     photo: "https://nilogistic.com/wp-content/uploads/2026/09/card1-scaled.jpeg",
   },
   {
