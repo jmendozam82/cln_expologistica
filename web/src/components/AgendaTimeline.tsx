@@ -61,7 +61,7 @@ const SLOTS: TimeSlot[] = [
       kind: "conferencia",
       title: "De la Última Milla a la Última Experiencia",
       sub: "Cómo construir una ejecución logística Best-in-Class",
-      speakers: [""],
+      speakers: ["Oscar Soto Bravo"],
     },
     momotombo: {
       kind: "conferencia",

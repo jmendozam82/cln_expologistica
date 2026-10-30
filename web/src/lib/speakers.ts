@@ -30,6 +30,21 @@ export const SPEAKERS: Speaker[] = [
     confirmed: true,
     linkedin: "https://www.linkedin.com/in/yar-kairo-quezada/",
   },
+  {
+    id: "oscar",
+    name: "Oscar Soto Bravo",
+    role: "Gerente de Operaciones Logística",
+    company: "Grupo CCN",
+    country: "Nicaragua",
+    bio: "Ejecutivo nicaragüense con amplia trayectoria en logística, cadena de suministro y operaciones comerciales en las industrias de distribución y retail. Actualmente se desempeña como Gerente de Operaciones Logística en Grupo CCN. Cuenta con experiencia en el diseño de centros de distribución y la implementación de WMS y ERP, así como una Maestría en Administración de Empresas (MBA) por INCAE Business School. Se especializa en la integración de procesos, la eficiencia operativa y la construcción de ejecuciones logísticas Best-in-Class.",
+    photo: "/speaker/oscar_soto.png",
+    session: "Conferencia · Salón Mambacho",
+    topic: "De la Última Milla a la Última Experiencia",
+    topicSubtitle: "Cómo construir una ejecución logística Best-in-Class.",
+    time: "9:00 – 9:50 a.m.",
+    confirmed: true,
+    linkedin: "https://www.linkedin.com/in/oscar-soto-bravo-58141560/",
+  },
 ];
 
 export function getSpeakerByName(name: string): Speaker | undefined {
