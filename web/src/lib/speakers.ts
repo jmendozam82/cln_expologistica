@@ -45,6 +45,21 @@ export const SPEAKERS: Speaker[] = [
     confirmed: true,
     linkedin: "https://www.linkedin.com/in/oscar-soto-bravo-58141560/",
   },
+  {
+    id: "liczy",
+    name: "Liczy Pallares",
+    role: "Especialista en Material Handling y Soluciones de Almacenaje",
+    company: "3D Storage Systems by Euroroll",
+    country: "Canadá · Cobertura LATAM",
+    bio: "Profesional internacional con más de 25 años de experiencia en material handling, ventas y gestión, especializada en optimizar operaciones, mejorar la eficiencia y impulsar el crecimiento de los negocios. Su trayectoria abarca liderazgo de equipos, relaciones con clientes y optimización de procesos de supply chain. Actualmente forma parte de 3D Storage Systems (Euroroll), donde impulsa soluciones de almacenaje para México, Centroamérica y Sudamérica.",
+    photo: "/speaker/liczy.png",
+    session: "Magistral · Salón Mambacho",
+    topic: "Del Almacén Tradicional al Almacén Smart",
+    topicSubtitle: "Tecnología, automatización y decisiones para evolucionar sin sobredimensionar la inversión.",
+    time: "11:00 a.m. – 12:00 m.",
+    confirmed: true,
+    linkedin: "https://www.linkedin.com/in/liczy-pallares-95436741/",
+  },
 ];
 
 export function getSpeakerByName(name: string): Speaker | undefined {

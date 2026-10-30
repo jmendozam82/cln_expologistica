@@ -107,7 +107,7 @@ const SLOTS: TimeSlot[] = [
       kind: "magistral",
       title: "Magistral 1: Del Almacén Tradicional al Almacén Smart",
       sub: "Tecnología, automatización y decisiones para evolucionar sin sobredimensionar la inversión",
-      speakers: [""],
+      speakers: ["Liczy Pallares"],
     },
     momotombo: EMPTY,
     telica: EMPTY,
