@@ -23,14 +23,14 @@ const SLOTS = [
   },
   {
     time: "9:00 – 9:50 a.m.",
-    mombacho: { title: "De la Última Milla a la Última Experiencia (Oscar Soto)" },
-    momotombo: { title: "Ciberseguridad y Continuidad Operativa (Cairo Quezada)" },
+    mombacho: { title: "De la Última Milla a la Última Experiencia (Oscar Soto Bravo)" },
+    momotombo: { title: "Supply Chain Blindada: Ciberseguridad y Continuidad Operativa en la Logística Digital (Kairo Quezada)" },
     telica: EMPTY,
   },
   {
     time: "9:50 – 10:30 a.m.",
     mombacho: { title: "Panel de Expertos: El Nuevo Líder de Supply Chain" },
-    momotombo: { title: "Supply Chain Control Tower (Moises)" },
+    momotombo: { title: "Supply Chain Control Tower: de Datos Fragmentados a Visibilidad End-to-End (Moises)" },
     telica: { title: "Logistic Talk 1: Tu Carrera en Supply Chain (Cesar Escobar)" },
   },
   {
@@ -41,7 +41,7 @@ const SLOTS = [
   },
   {
     time: "11:00 a.m. – 12:00 m.",
-    mombacho: { title: "Magistral 1: Del Almacén Tradicional al Smart CEDIS (Luczy)" },
+    mombacho: { title: "Magistral 1: Del Almacén Tradicional al Almacén Smart (Liczy Pallares)" },
     momotombo: EMPTY,
     telica: EMPTY,
   },
@@ -53,7 +53,7 @@ const SLOTS = [
   },
   {
     time: "1:30 – 2:10 p.m.",
-    mombacho: { title: "Centroamérica Conectada (SIECA)" },
+    mombacho: { title: "Centroamérica Conectada: el Nuevo Corredor Logístico Regional (SIECA)" },
     momotombo: { title: "Logística Verde que Sí Hace Negocio (Carlos Palomino)" },
     telica: { title: "Logistic Talk 2: E-commerce y Última Milla (Mauricio Urroz)" },
   },
@@ -65,7 +65,7 @@ const SLOTS = [
   },
   {
     time: "2:40 – 3:40 p.m.",
-    mombacho: { title: "Magistral 2: IA en Logística (Antonio Espinoza)" },
+    mombacho: { title: "Magistral 2: IA en Logística: de la Tendencia a la Ventaja Competitiva (Antonio Espinoza)" },
     momotombo: EMPTY,
     telica: EMPTY,
   },
@@ -179,12 +179,13 @@ const html = `
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: 'networkidle0' });
+  const outputPath = path.join(__dirname, 'public', 'docs', 'agenda-cln-2026.pdf');
   await page.pdf({
-    path: 'Agenda_Oficial_CLN.pdf',
+    path: outputPath,
     format: 'Letter',
     printBackground: true,
     margin: { top: '30px', bottom: '30px', left: '40px', right: '40px' }
   });
   await browser.close();
-  console.log('PDF generado exitosamente: Agenda_Oficial_CLN.pdf');
+  console.log(`PDF generado exitosamente: ${outputPath}`);
 })();
