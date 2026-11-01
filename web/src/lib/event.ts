@@ -10,6 +10,7 @@ export const EVENT_LOCATION = "DoubleTree by Hilton Managua";
 export const EVENT_CITY = "Managua, Nicaragua";
 export const EVENT_START_ISO = "2026-11-20T08:00:00";
 export const EVENT_MOTTO = "APRENDER · CONECTAR · COMPARTIR";
+export const EVENT_TICKET_PRICE = 70;
 export const EVENT_HASHTAG = "#SoyCLN";
 export const CLN_SLOGAN = "Conectando Profesionales, Potenciando la Logística.";
 

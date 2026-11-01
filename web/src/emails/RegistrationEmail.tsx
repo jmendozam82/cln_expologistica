@@ -12,6 +12,7 @@ import {
   Row,
   Column,
 } from '@react-email/components';
+import { EVENT_TICKET_PRICE } from '@/lib/event';
 
 interface RegistrationEmailProps {
   nombre: string;
@@ -20,10 +21,8 @@ interface RegistrationEmailProps {
 export const RegistrationEmail = ({
   nombre,
 }: RegistrationEmailProps) => {
-  // TODO: Actualizar con la tarifa definitiva cuando se confirme
-  const price = 70;
-  const discount = 10;
-  const total = price - discount;
+  const price = EVENT_TICKET_PRICE;
+  const total = price;
 
   return (
     <Html>
@@ -82,12 +81,8 @@ export const RegistrationEmail = ({
             <Section style={paymentBox}>
               <Text style={paymentBoxTitle}>Resumen de pago</Text>
               <Row style={paymentRow}>
-                <Column><Text style={paymentLabel}>Acceso Congreso (Regular)</Text></Column>
+                <Column><Text style={paymentLabel}>Acceso Congreso</Text></Column>
                 <Column align="right"><Text style={paymentValue}>US$ {price.toFixed(2)}</Text></Column>
-              </Row>
-              <Row style={paymentRow}>
-                <Column><Text style={{...paymentLabel, color: '#16a34a'}}>Preventa (Hasta 30 Oct)</Text></Column>
-                <Column align="right"><Text style={{...paymentValue, color: '#16a34a'}}>- US$ {discount.toFixed(2)}</Text></Column>
               </Row>
               {/* IVA Eliminado de la vista del correo */}
               <Row style={paymentTotalRow}>

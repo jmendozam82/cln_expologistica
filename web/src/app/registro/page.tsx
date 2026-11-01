@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { submitRegistration } from "../actions/register";
-import { EVENT_DATE_LONG, EVENT_TIME, EVENT_LOCATION } from "@/lib/event";
+import { EVENT_TICKET_PRICE } from "@/lib/event";
 
 function Check() {
   return (
@@ -141,13 +141,12 @@ export default function RegistroPage() {
             </div>
             <div className="md:w-2/5 bg-cln-950 text-white p-8 md:p-12 flex flex-col justify-center items-center text-center">
               <p className="text-orange-400 font-bold tracking-widest uppercase mb-4 text-sm">UNA SOLA EXPERIENCIA</p>
-              <div className="inline-block bg-green-500/20 border border-green-500 text-green-300 px-3 py-1 rounded-full text-xs font-bold mb-4 uppercase tracking-wider">
-                Preventa: Antes del 30 Oct
+              <div className="inline-block bg-orange-500/20 border border-orange-500 text-orange-300 px-3 py-1 rounded-full text-xs font-bold mb-4 uppercase tracking-wider">
+                Tarifa regular
               </div>
               <p className="text-gray-300 text-sm mb-2">Tarifa única por persona</p>
               <div className="flex items-center gap-3 justify-center mb-2">
-                <p className="text-2xl font-bold text-gray-500 line-through">US$ 70.00</p>
-                <p className="text-5xl font-heading font-bold text-white">US$ 60.00</p>
+                <p className="text-5xl font-heading font-bold text-white">US$ {EVENT_TICKET_PRICE.toFixed(2)}</p>
               </div>
 
               <div className="bg-white/10 px-4 py-2 rounded-full text-sm font-medium text-cln-200 mb-8 mt-4">
@@ -427,10 +426,9 @@ export default function RegistroPage() {
                     <p className="font-bold text-cln-950 text-lg uppercase tracking-wider mb-1">ACCESO CONGRESO</p>
                     <div className="flex flex-col">
                       <p className="text-gray-600 font-medium">
-                        <span className="text-sm line-through text-gray-400 mr-2">US$ 70.00</span>
-                        <span className="text-xl font-bold text-green-600">US$ 60.00</span>
+                        <span className="text-xl font-bold text-cln-950">US$ {EVENT_TICKET_PRICE.toFixed(2)}</span>
                       </p>
-                      <p className="text-xs text-green-600 font-medium mt-1">Descuento de preventa válido hasta el 30 de Octubre</p>
+                      <p className="text-xs text-gray-500 font-medium mt-1">Tarifa regular por persona</p>
                     </div>
                   </div>
                   <button
