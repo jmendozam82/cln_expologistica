@@ -53,7 +53,7 @@ const SLOTS = [
   },
   {
     time: "1:30 – 2:10 p.m.",
-    mombacho: { title: "Centroamérica Conectada: el Nuevo Corredor Logístico Regional (SIECA)" },
+    mombacho: { title: "Movilidad y Logística Regional 2035 (Carlos Moreno · SIECA)" },
     momotombo: { title: "Logística Verde que Sí Hace Negocio (Carlos Palomino)" },
     telica: { title: "Logistic Talk 2: E-commerce y Última Milla (Mauricio Urroz)" },
   },

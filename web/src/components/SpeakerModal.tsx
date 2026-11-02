@@ -105,6 +105,10 @@ export default function SpeakerModal({
           )}
           {!speaker.topicSubtitle && <div className="mb-6" />}
 
+          {speaker.abstract && (
+            <p className="text-sm leading-relaxed text-gray-600 mb-6">{speaker.abstract}</p>
+          )}
+
           {speaker.bio && (
             <p className="text-sm leading-relaxed text-gray-600 mb-6">{speaker.bio}</p>
           )}

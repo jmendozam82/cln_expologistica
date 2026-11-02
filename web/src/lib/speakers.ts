@@ -8,6 +8,7 @@ export interface Speaker {
   session: string;
   topic: string;
   topicSubtitle?: string;
+  abstract?: string;
   time: string;
   confirmed: boolean;
   photo?: string;
@@ -59,6 +60,22 @@ export const SPEAKERS: Speaker[] = [
     time: "11:00 a.m. – 12:00 m.",
     confirmed: true,
     linkedin: "https://www.linkedin.com/in/liczy-pallares-95436741/",
+  },
+  {
+    id: "carlos",
+    name: "Carlos Moreno",
+    role: "Director de Movilidad y Logística",
+    company: "SIECA · Secretaría de Integración Económica Centroamericana",
+    country: "Guatemala · Centroamérica",
+    bio: "Economista con Maestría en Economía por la Universidad de Chicago y una amplia trayectoria en integración económica, transporte y logística regional. Actualmente es Director de Movilidad y Logística de la SIECA, desde donde impulsa la Política Marco Regional y el Plan Maestro Regional de Movilidad y Logística 2035. Fue Director Ejecutivo para la Movilidad y Logística y Gerente de Desarrollo y Planificación Institucional en el Ministerio de Obras Públicas de El Salvador, Director de Política Comercial en el Ministerio de Economía y especialista del BID. También ha integrado consejos directivos del Banco Central de Reserva, OSARTEC y la Superintendencia de Competencia de El Salvador.",
+    photo: "/speaker/carlos_moreno.jpg",
+    session: "Conferencia · Salón Mombacho",
+    topic: "Movilidad y Logística Regional 2035",
+    topicSubtitle: "Una visión estratégica sobre integración centroamericana, infraestructura, conectividad, corredores logísticos, facilitación del comercio y competitividad regional.",
+    abstract: "Para los ejecutivos y líderes logísticos, conocer estos avances significa comprender mejor los cambios que pueden impactar las decisiones operativas, comerciales y de inversión de nuestras organizaciones.",
+    time: "1:30 – 2:10 p.m.",
+    confirmed: true,
+    linkedin: "https://www.linkedin.com/in/carlos-alberto-moreno-carmona-58175128/",
   },
 ];
 

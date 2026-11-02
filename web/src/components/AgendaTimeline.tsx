@@ -124,9 +124,9 @@ const SLOTS: TimeSlot[] = [
     time: "1:30 – 2:10 p.m.",
     mombacho: {
       kind: "conferencia",
-      title: "Centroamérica Conectada: el Nuevo Corredor Logístico Regional",
-      sub: "Fronteras, trazabilidad, digitalización y oportunidades para mover mercancías con mayor velocidad y menor costo",
-      speakers: [""],
+      title: "Movilidad y Logística Regional 2035",
+      sub: "Una visión estratégica sobre integración centroamericana, infraestructura, conectividad, corredores logísticos, facilitación del comercio y competitividad regional",
+      speakers: ["Carlos Moreno"],
     },
     momotombo: {
       kind: "conferencia",
