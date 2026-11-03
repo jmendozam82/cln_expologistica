@@ -30,7 +30,7 @@ const SLOTS = [
   {
     time: "9:50 – 10:30 a.m.",
     mombacho: { title: "Panel de Expertos: El Nuevo Líder de Supply Chain" },
-    momotombo: { title: "Supply Chain Control Tower: de Datos Fragmentados a Visibilidad End-to-End (Moises)" },
+    momotombo: { title: "Supply Chain Control Tower: de Datos Fragmentados a Visibilidad End-to-End (Moisés Núñez · MNGLOBAL)" },
     telica: { title: "Logistic Talk 1: Tu Carrera en Supply Chain (Cesar Escobar)" },
   },
   {

@@ -84,7 +84,7 @@ const SLOTS: TimeSlot[] = [
       kind: "conferencia",
       title: "Supply Chain Control Tower: de Datos Fragmentados a Visibilidad End-to-End",
       sub: "Cómo convertir información logística en decisiones oportunas",
-      speakers: [""],
+      speakers: ["Moisés Núñez Balladares"],
     },
     telica: {
       kind: "talk",
