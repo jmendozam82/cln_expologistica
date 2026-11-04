@@ -22,12 +22,17 @@ const SLOTS = [
   {
     time: "9:00 – 9:50 a.m.",
     mombacho: { title: "De la Última Milla a la Última Experiencia (Oscar Soto Bravo)" },
+    momotombo: EMPTY,
+  },
+  {
+    time: "9:30 – 10:30 a.m.",
+    mombacho: EMPTY,
     momotombo: { title: "Supply Chain Blindada: Ciberseguridad y Continuidad Operativa en la Logística Digital (Kairo Quezada)" },
   },
   {
     time: "9:50 – 10:30 a.m.",
-    mombacho: { title: "Panel de Expertos: El Nuevo Líder de Supply Chain" },
-    momotombo: { title: "Supply Chain Control Tower: de Datos Fragmentados a Visibilidad End-to-End (Moisés Núñez · MNGLOBAL)" },
+    mombacho: { title: "Conferencia y Presentación del Libro: Evoluciona o desaparece — Las 10 leyes de la brontosauriedad y por qué las empresas se vuelven irrelevantes (Antonio Espinoza Ruiz)" },
+    momotombo: EMPTY,
   },
   {
     time: "10:30 – 11:00 a.m.",
@@ -47,7 +52,7 @@ const SLOTS = [
   {
     time: "1:30 – 2:10 p.m.",
     mombacho: { title: "Movilidad y Logística Regional 2035 (Carlos Moreno · SIECA)" },
-    momotombo: { title: "Logística Verde que Sí Hace Negocio (Carlos Palomino)" },
+    momotombo: { title: "Torre de Control Logística: de Datos Dispersos a Decisiones en Tiempo Real (Moisés Núñez Balladares · MNGLOBAL)" },
   },
   {
     time: "2:10 – 2:40 p.m.",
@@ -76,17 +81,12 @@ let slotsHtml = SLOTS.map(slot => {
   if (!slot.mombacho.empty) events.push({ room: 'Mombacho', title: slot.mombacho.title });
   if (!slot.momotombo.empty) events.push({ room: 'Momotombo', title: slot.momotombo.title });
 
-  let content = '';
-  if (events.length === 1) {
-    content = `<span style="font-size: 15px; font-weight: bold;">${events[0].title}</span>`;
-  } else {
-    content = events.map(e => `
-      <div style="margin-bottom: 6px;">
-        <span style="color: #0f8be7; font-weight: bold; font-size: 12px; text-transform: uppercase;">${e.room}</span><br/>
-        <span style="font-size: 14px; font-weight: 500;">${e.title}</span>
-      </div>
-    `).join('');
-  }
+  const content = events.map(e => `
+    <div style="margin-bottom: 6px;">
+      <span style="color: #0f8be7; font-weight: bold; font-size: 12px; text-transform: uppercase;">${e.room}</span><br/>
+      <span style="font-size: 14px; font-weight: 500;">${e.title}</span>
+    </div>
+  `).join('');
 
   return `
     <tr style="border-bottom: 1px solid #e2e8f0;">

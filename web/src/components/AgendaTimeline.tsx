@@ -22,6 +22,8 @@ interface Cell {
   title?: string;
   sub?: string;
   speakers?: string[];
+  time?: string;
+  badge?: string;
   empty?: boolean;
 }
 
@@ -29,6 +31,7 @@ interface TimeSlot {
   time: string;
   mombacho: Cell;
   momotombo: Cell;
+  overlapNext?: boolean;
 }
 
 // ─── Celda vacía reutilizable ─────────────────────────────────────────────────
@@ -50,9 +53,10 @@ const SLOTS: TimeSlot[] = [
     mombacho: { kind: "plenary", title: "Ceremonia de Apertura", sub: "EXPO LOGÍSTICA · CLN · 2026" },
     momotombo: EMPTY,
   },
-  // 9:00 – 9:50 → Mombacho + Momotombo
+  // 9:00 – 9:50 → Oscar Soto (Mombacho) + Kairo Quezada (Momotombo, 9:30 – 10:30)
   {
     time: "9:00 – 9:50 a.m.",
+    overlapNext: true,
     mombacho: {
       kind: "conferencia",
       title: "De la Última Milla a la Última Experiencia",
@@ -64,23 +68,20 @@ const SLOTS: TimeSlot[] = [
       title: "Supply Chain Blindada: Ciberseguridad y Continuidad Operativa en la Logística Digital",
       sub: "Qué ocurre cuando WMS, TMS, ERP, GPS o proveedores tecnológicos dejan de funcionar",
       speakers: ["Kairo Quezada"],
+      time: "9:30 – 10:30 a.m.",
     },
   },
-  // 9:50 – 10:30 → Mombacho + Momotombo
+  // 9:50 – 10:30 → Conferencia y presentación del libro (Mombacho)
   {
     time: "9:50 – 10:30 a.m.",
     mombacho: {
-      kind: "panel",
-      title: "Panel de Expertos: El Nuevo Líder de Supply Chain",
-      sub: "¿Qué Tendrá que Hacer Diferente para Competir hacia 2030?",
-      speakers: ["", "", ""],
-    },
-    momotombo: {
       kind: "conferencia",
-      title: "Supply Chain Control Tower: de Datos Fragmentados a Visibilidad End-to-End",
-      sub: "Cómo convertir información logística en decisiones oportunas",
-      speakers: ["Moisés Núñez Balladares"],
+      badge: "Conferencia y Presentación del Libro",
+      title: "Evoluciona o desaparece",
+      sub: "Las 10 leyes de la brontosauriedad y por qué las empresas se vuelven irrelevantes",
+      speakers: ["Antonio Espinoza Ruiz"],
     },
+    momotombo: EMPTY,
   },
   // 10:30 – 11:00 → Coffee Break en Momotombo
   {
@@ -116,9 +117,9 @@ const SLOTS: TimeSlot[] = [
     },
     momotombo: {
       kind: "conferencia",
-      title: "Logística Verde que Sí Hace Negocio",
-      sub: "Cómo reducir consumo, emisiones y costos en almacenes y flota",
-      speakers: [""],
+      title: "Torre de Control Logística: de Datos Dispersos a Decisiones en Tiempo Real",
+      sub: "Cómo integrar información para lograr visibilidad End-to-End de la Supply Chain",
+      speakers: ["Moisés Núñez Balladares"],
     },
   },
   // 2:10 – 2:40 → Coffee Break PM en Momotombo
@@ -214,12 +215,12 @@ const KIND_BADGE: Record<SlotKind, { label: string; cls: string } | null> = {
 
 // ─── Sub-componentes ──────────────────────────────────────────────────────────
 
-function Badge({ kind }: { kind: SlotKind }) {
+function Badge({ kind, label }: { kind: SlotKind; label?: string }) {
   const b = KIND_BADGE[kind];
   if (!b) return null;
   return (
     <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${b.cls}`}>
-      {b.label}
+      {label ?? b.label}
     </span>
   );
 }
@@ -228,17 +229,19 @@ function Cell({
   cell,
   salonKey,
   onSpeakerClick,
+  className = "",
 }: {
   cell: Cell;
   salonKey: SalonKey;
   onSpeakerClick?: (name: string) => void;
+  className?: string;
 }) {
   const salon = SALON_META[salonKey];
 
   // Celda vacía — altura mínima para alinear con las vecinas
   if (cell.empty) {
     return (
-      <div className="min-h-[72px]" />
+      <div className={`min-h-[72px] ${className}`} />
     );
   }
 
@@ -252,9 +255,17 @@ function Cell({
         "transition-shadow duration-150 hover:shadow-md",
         salon.borderL,
         KIND_CARD[cell.kind],
+        className,
       ].join(" ")}
     >
-      <Badge kind={cell.kind} />
+      <div className="flex items-center justify-between gap-2">
+        <Badge kind={cell.kind} label={cell.badge} />
+        {cell.time && (
+          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 whitespace-nowrap">
+            {cell.time}
+          </span>
+        )}
+      </div>
 
       <p className={`text-sm font-heading font-bold leading-snug ${KIND_TITLE[cell.kind]} ${cell.kind === "plenary" ? "mt-0" : "mt-0.5"}`}>
         {cell.title}
@@ -323,6 +334,120 @@ function slotDotColor(slot: TimeSlot): string {
   return map[active.kind] ?? "#D1D5DB";
 }
 
+// ─── Bloque con solape (Kairo inicia a mitad de Oscar y termina con el Panel) ───
+
+function OverlapSlot({
+  slot,
+  nextSlot,
+  filter,
+  onSpeakerClick,
+  showSeparator,
+}: {
+  slot: TimeSlot;
+  nextSlot: TimeSlot;
+  filter: FilterKey;
+  onSpeakerClick?: (name: string) => void;
+  showSeparator: boolean;
+}) {
+  return (
+    <div>
+      {/* Desktop: dos filas visuales; Kairo arranca a la mitad y termina con el Panel */}
+      <div className="hidden md:grid md:grid-cols-[100px_1fr_1fr] md:gap-x-3 md:grid-rows-[1fr_1fr_auto]">
+        <div className="relative flex flex-col items-end pt-3 row-start-1 row-span-2 col-start-1">
+          <div
+            className="absolute right-0 top-0 bottom-0 w-px"
+            style={{ background: "linear-gradient(to bottom, #E5E7EB 80%, transparent)" }}
+            aria-hidden
+          />
+          <div
+            className="absolute right-[-4px] top-[18px] w-2 h-2 rounded-full ring-2 ring-white z-10"
+            style={{ background: slotDotColor(slot) }}
+            aria-hidden
+          />
+          <time className="text-[11px] font-semibold text-gray-400 text-right leading-tight pr-4 pt-[14px] whitespace-nowrap">
+            {slot.time}
+          </time>
+        </div>
+
+        <div className="row-start-1 row-span-2 col-start-2 py-2">
+          <Cell cell={slot.mombacho} salonKey="mombacho" onSpeakerClick={onSpeakerClick} className="h-full" />
+        </div>
+
+        <div className="row-start-2 row-span-2 col-start-3 relative">
+          <div className="absolute inset-x-0 top-0 bottom-2">
+            <Cell cell={slot.momotombo} salonKey="momotombo" onSpeakerClick={onSpeakerClick} className="h-full" />
+          </div>
+        </div>
+
+        <div className="relative flex flex-col items-end pt-3 row-start-3 col-start-1 border-t border-gray-100">
+          <div
+            className="absolute right-0 top-0 bottom-0 w-px"
+            style={{ background: "linear-gradient(to bottom, #E5E7EB 80%, transparent)" }}
+            aria-hidden
+          />
+          <div
+            className="absolute right-[-4px] top-[18px] w-2 h-2 rounded-full ring-2 ring-white z-10"
+            style={{ background: slotDotColor(nextSlot) }}
+            aria-hidden
+          />
+          <time className="text-[11px] font-semibold text-gray-400 text-right leading-tight pr-4 pt-[14px] whitespace-nowrap">
+            {nextSlot.time}
+          </time>
+        </div>
+
+        <div className="row-start-3 col-start-2 py-2 border-t border-gray-100">
+          <Cell cell={nextSlot.mombacho} salonKey="mombacho" onSpeakerClick={onSpeakerClick} />
+        </div>
+      </div>
+
+      {/* Móvil: mismo contenido, apilado por horario */}
+      <div className="md:hidden flex flex-col">
+        {[slot, nextSlot].map((s) => {
+          const keys = (filter === "todo" ? (["mombacho", "momotombo"] as SalonKey[]) : ([filter] as SalonKey[]))
+            .filter((key) => !s[key].empty);
+          if (keys.length === 0) return null;
+
+          return (
+            <div key={s.time} className="grid grid-cols-[72px_1fr] gap-3 py-2">
+              <div className="relative flex flex-col items-end pt-3">
+                <div
+                  className="absolute right-0 top-0 bottom-0 w-px"
+                  style={{ background: "linear-gradient(to bottom, #E5E7EB 80%, transparent)" }}
+                  aria-hidden
+                />
+                <div
+                  className="absolute right-[-4px] top-[18px] w-2 h-2 rounded-full ring-2 ring-white z-10"
+                  style={{ background: slotDotColor(s) }}
+                  aria-hidden
+                />
+                <time className="text-[10px] font-semibold text-gray-400 text-right leading-tight pr-4 pt-[14px] whitespace-nowrap">
+                  {s.time}
+                </time>
+              </div>
+              <div className="min-w-0 flex flex-col gap-2">
+                {keys.map((key) => (
+                  <div key={key}>
+                    {filter === "todo" && (
+                      <p className={`text-[9px] font-bold uppercase tracking-wider mb-1 ${SALON_META[key].trackColor}`}>
+                        {SALON_META[key].label}
+                      </p>
+                    )}
+                    <Cell cell={s[key]} salonKey={key} onSpeakerClick={onSpeakerClick} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {showSeparator && (
+        <div className="mx-[100px] border-t border-gray-100" />
+      )}
+    </div>
+  );
+}
+
 // ─── Componente principal ─────────────────────────────────────────────────────
 
 export default function AgendaMatrix() {
@@ -376,6 +501,22 @@ export default function AgendaMatrix() {
       {/* ── Timeline ────────────────────────────────────────────────────────── */}
       <div className="flex flex-col">
         {SLOTS.map((slot, idx) => {
+          if (idx > 0 && SLOTS[idx - 1].overlapNext) return null;
+
+          const nextSlot = SLOTS[idx + 1];
+          if (slot.overlapNext && nextSlot) {
+            return (
+              <OverlapSlot
+                key={slot.time}
+                slot={slot}
+                nextSlot={nextSlot}
+                filter={filter}
+                onSpeakerClick={openSpeaker}
+                showSeparator={idx + 1 < SLOTS.length - 1}
+              />
+            );
+          }
+
           const isLast = idx === SLOTS.length - 1;
           const dotColor = slotDotColor(slot);
 

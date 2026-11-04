@@ -9,6 +9,9 @@ export interface Speaker {
   topic: string;
   topicSubtitle?: string;
   abstract?: string;
+  bookTitle?: string;
+  bookUrl?: string;
+  bookReview?: string;
   time: string;
   confirmed: boolean;
   photo?: string;
@@ -16,21 +19,6 @@ export interface Speaker {
 }
 
 export const SPEAKERS: Speaker[] = [
-  {
-    id: "kairo",
-    name: "Kairo Quezada",
-    role: "Jefe de Seguridad de la Información (CISO)",
-    company: "Auditor Líder ISO 27001 · ISO 22301",
-    country: "Nicaragua",
-    bio: "Profesional nicaragüense especializado en seguridad de la información, gestión de riesgos tecnológicos y continuidad de negocio, con trayectoria en el Banco Central de Nicaragua y el sector privado. Auditor líder en ISO 27001, ISO 22301, ISO 9001 e ISO 45001, lidera la implementación de sistemas de gestión de seguridad y continuidad operativa en organizaciones de la región.",
-    photo: "/speaker/kairo.png",
-    session: "Conferencia · Salón Momotombo",
-    topic: "Supply Chain Blindada: Ciberseguridad y Continuidad Operativa en la Logística Digital",
-    topicSubtitle: "Qué ocurre cuando WMS, TMS, ERP, GPS o proveedores tecnológicos dejan de funcionar.",
-    time: "9:00 – 9:50 a.m.",
-    confirmed: true,
-    linkedin: "https://www.linkedin.com/in/yar-kairo-quezada/",
-  },
   {
     id: "oscar",
     name: "Oscar Soto Bravo",
@@ -47,19 +35,37 @@ export const SPEAKERS: Speaker[] = [
     linkedin: "https://www.linkedin.com/in/oscar-soto-bravo-58141560/",
   },
   {
-    id: "moises",
-    name: "Moisés Núñez Balladares",
-    role: "Director General",
-    company: "MNGLOBAL",
+    id: "kairo",
+    name: "Kairo Quezada",
+    role: "Jefe de Seguridad de la Información (CISO)",
+    company: "Auditor Líder ISO 27001 · ISO 22301",
     country: "Nicaragua",
-    bio: "Nicaragüense con más de 15 años de experiencia en gestión de cadenas de suministro, desarrollo comercial, retail y operaciones logísticas. Desde 2017 es Director General de MNGLOBAL, donde lidera la dirección estratégica y operativa de la cadena de suministro con enfoque en compras internacionales, logística, almacenamiento y distribución, gestionando operaciones entre centros logísticos en Estados Unidos, China, Panamá y Nicaragua. Su trayectoria abarca planificación estratégica, previsión de demanda, optimización de procesos y operaciones especializadas de carga aérea y transporte marítimo FCL y LCL. Su visión empresarial integra sourcing, logística y almacenamiento bajo un modelo orientado a optimizar recursos, fortalecer la competitividad y garantizar un flujo eficiente de mercancías.",
-    photo: "/speaker/moises.png",
+    bio: "Profesional nicaragüense especializado en seguridad de la información, gestión de riesgos tecnológicos y continuidad de negocio, con trayectoria en el Banco Central de Nicaragua y el sector privado. Auditor líder en ISO 27001, ISO 22301, ISO 9001 e ISO 45001, lidera la implementación de sistemas de gestión de seguridad y continuidad operativa en organizaciones de la región.",
+    photo: "/speaker/kairo.png",
     session: "Conferencia · Salón Momotombo",
-    topic: "Supply Chain Control Tower: de Datos Fragmentados a Visibilidad End-to-End",
-    topicSubtitle: "Cómo convertir información logística en decisiones oportunas.",
+    topic: "Supply Chain Blindada: Ciberseguridad y Continuidad Operativa en la Logística Digital",
+    topicSubtitle: "Qué ocurre cuando WMS, TMS, ERP, GPS o proveedores tecnológicos dejan de funcionar.",
+    time: "9:30 – 10:30 a.m.",
+    confirmed: true,
+    linkedin: "https://www.linkedin.com/in/yar-kairo-quezada/",
+  },
+  {
+    id: "antonio",
+    name: "Antonio Espinoza Ruiz",
+    role: "Director de PMO y Sistemas de Gestión",
+    company: "Industria Farmacéutica · Nicaragua",
+    country: "Nicaragua",
+    bio: "Alto ejecutivo en Estrategia y Arquitectura Organizacional con más de 13 años de experiencia liderando operaciones complejas y transformaciones de negocio en telecomunicaciones, seguros, manufactura y distribución. Actualmente es Director de PMO y Sistemas de Gestión en una de las principales distribuidoras farmacéuticas de Nicaragua, articulando la estrategia corporativa con la ejecución operativa mediante OKRs, Lean Six Sigma y estándares internacionales ISO 9001, 22301, 27001 y 45001. Ingeniero Industrial, con MBA en Transformación Digital por IEBS Business School (primer lugar de promoción con honores), certificado PMP, Lean Six Sigma Black Belt y experto en Organizaciones Exponenciales. Autor de La Ecuación del Liderazgo, Diálogos con Kahlú, Pasos y Evoluciona o Desaparece.",
+    photo: "/speaker/antonio.png",
+    session: "Conferencia y Presentación del Libro · Salón Mombacho",
+    topic: "Evoluciona o desaparece",
+    topicSubtitle: "Las 10 leyes de la brontosauriedad y por qué las empresas se vuelven irrelevantes.",
+    bookTitle: "Evoluciona o desaparece",
+    bookUrl: "https://www.amazon.com/Antonio-Espinoza-Ruiz-ebook/dp/B0GX7L1VL9",
+    bookReview: "Las empresas no desaparecen por crisis externas, sino por patrones internos que se niegan a cambiar. Antonio Espinoza Ruiz define la “brontosauriedad organizacional” y expone 10 leyes que explican por qué organizaciones exitosas se vuelven irrelevantes. El libro incluye el Índice de Evolución Empresarial (IEE), una autoevaluación de 50 preguntas para medir la madurez, adaptación y riesgo de estancamiento de una empresa.",
     time: "9:50 – 10:30 a.m.",
     confirmed: true,
-    linkedin: "https://www.linkedin.com/in/moises-nu%C3%B1ez-balladares-25002b39/",
+    linkedin: "https://www.linkedin.com/in/antonio-espinoza-ruiz/",
   },
   {
     id: "liczy",
@@ -91,6 +97,21 @@ export const SPEAKERS: Speaker[] = [
     time: "1:30 – 2:10 p.m.",
     confirmed: true,
     linkedin: "https://www.linkedin.com/in/carlos-alberto-moreno-carmona-58175128/",
+  },
+  {
+    id: "moises",
+    name: "Moisés Núñez Balladares",
+    role: "Director General",
+    company: "MNGLOBAL",
+    country: "Nicaragua",
+    bio: "Nicaragüense con más de 15 años de experiencia en gestión de cadenas de suministro, desarrollo comercial, retail y operaciones logísticas. Desde 2017 es Director General de MNGLOBAL, donde lidera la dirección estratégica y operativa de la cadena de suministro con enfoque en compras internacionales, logística, almacenamiento y distribución, gestionando operaciones entre centros logísticos en Estados Unidos, China, Panamá y Nicaragua. Su trayectoria abarca planificación estratégica, previsión de demanda, optimización de procesos y operaciones especializadas de carga aérea y transporte marítimo FCL y LCL. Su visión empresarial integra sourcing, logística y almacenamiento bajo un modelo orientado a optimizar recursos, fortalecer la competitividad y garantizar un flujo eficiente de mercancías.",
+    photo: "/speaker/moises.png",
+    session: "Conferencia · Salón Momotombo",
+    topic: "Torre de Control Logística: de Datos Dispersos a Decisiones en Tiempo Real",
+    topicSubtitle: "Cómo integrar información para lograr visibilidad End-to-End de la Supply Chain.",
+    time: "1:30 – 2:10 p.m.",
+    confirmed: true,
+    linkedin: "https://www.linkedin.com/in/moises-nu%C3%B1ez-balladares-25002b39/",
   },
 ];
 

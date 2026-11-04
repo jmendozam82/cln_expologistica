@@ -105,6 +105,15 @@ export default function SpeakerModal({
           )}
           {!speaker.topicSubtitle && <div className="mb-6" />}
 
+          {speaker.bookReview && (
+            <div className="mb-6 rounded-xl border border-orange-200 bg-orange-50/60 p-4">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-orange-700 mb-1">
+                Sobre el libro{speaker.bookTitle ? `: ${speaker.bookTitle}` : ""}
+              </p>
+              <p className="text-sm leading-relaxed text-gray-700">{speaker.bookReview}</p>
+            </div>
+          )}
+
           {speaker.abstract && (
             <p className="text-sm leading-relaxed text-gray-600 mb-6">{speaker.abstract}</p>
           )}
@@ -150,6 +159,17 @@ export default function SpeakerModal({
                 className="inline-flex items-center gap-1.5 text-sm font-bold text-cln-600 hover:text-cln-800 transition-colors"
               >
                 Perfil en LinkedIn <span aria-hidden>↗</span>
+              </a>
+            )}
+
+            {speaker.bookUrl && (
+              <a
+                href={speaker.bookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm font-bold text-orange-600 hover:text-orange-700 transition-colors"
+              >
+                Ver libro en Amazon <span aria-hidden>↗</span>
               </a>
             )}
           </div>
