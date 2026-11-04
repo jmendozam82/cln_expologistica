@@ -9,11 +9,10 @@ import { getSpeakerByName, type Speaker } from "@/lib/speakers";
 type SlotKind =
   | "plenary"        // Registro, Apertura (Mombacho)
   | "magistral"      // Magistral 1 y 2 (Mombacho)
-  | "break"          // Coffee Breaks (Telica)
+  | "break"          // Coffee Breaks (Momotombo)
   | "almuerzo"       // Almuerzo (Momotombo)
   | "cierre"         // Cóctel de cierre (Momotombo)
   | "reconocimiento" // Actividad Patrocinadores (Momotombo)
-  | "talk"           // Logistic Talk (Telica)
   | "panel"          // Panel de Expertos (Mombacho)
   | "conferencia"    // Conferencia regular
   | "empty";         // Celda vacía
@@ -30,14 +29,13 @@ interface TimeSlot {
   time: string;
   mombacho: Cell;
   momotombo: Cell;
-  telica: Cell;
 }
 
 // ─── Celda vacía reutilizable ─────────────────────────────────────────────────
 
 const EMPTY: Cell = { kind: "empty", empty: true };
 
-// ─── Datos de agenda — cada fila siempre tiene las 3 columnas ────────────────
+// ─── Datos de agenda — cada fila siempre tiene las 2 columnas ────────────────
 
 const SLOTS: TimeSlot[] = [
   // 7:30 – 8:30 → Registro solo en Mombacho
@@ -45,16 +43,14 @@ const SLOTS: TimeSlot[] = [
     time: "7:30 – 8:30 a.m.",
     mombacho: { kind: "plenary", title: "Registro de asistentes" },
     momotombo: EMPTY,
-    telica: EMPTY,
   },
   // 8:30 – 9:00 → Apertura solo en Mombacho
   {
     time: "8:30 – 9:00 a.m.",
     mombacho: { kind: "plenary", title: "Ceremonia de Apertura", sub: "EXPO LOGÍSTICA · CLN · 2026" },
     momotombo: EMPTY,
-    telica: EMPTY,
   },
-  // 9:00 – 9:50 → Mombacho + Momotombo, Telica vacío
+  // 9:00 – 9:50 → Mombacho + Momotombo
   {
     time: "9:00 – 9:50 a.m.",
     mombacho: {
@@ -69,9 +65,8 @@ const SLOTS: TimeSlot[] = [
       sub: "Qué ocurre cuando WMS, TMS, ERP, GPS o proveedores tecnológicos dejan de funcionar",
       speakers: ["Kairo Quezada"],
     },
-    telica: EMPTY,
   },
-  // 9:50 – 10:30 → Los 3 salones activos
+  // 9:50 – 10:30 → Mombacho + Momotombo
   {
     time: "9:50 – 10:30 a.m.",
     mombacho: {
@@ -86,19 +81,12 @@ const SLOTS: TimeSlot[] = [
       sub: "Cómo convertir información logística en decisiones oportunas",
       speakers: ["Moisés Núñez Balladares"],
     },
-    telica: {
-      kind: "talk",
-      title: "Logistic Talk 1: Tu Carrera en Supply Chain",
-      sub: "Las Competencias que Definirán al Profesional Logístico del Futuro",
-      speakers: [""],
-    },
   },
-  // 10:30 – 11:00 → Coffee Break solo en Telica
+  // 10:30 – 11:00 → Coffee Break en Momotombo
   {
     time: "10:30 – 11:00 a.m.",
     mombacho: EMPTY,
-    momotombo: EMPTY,
-    telica: { kind: "break", title: "Coffee Break AM · Visita a Stands de Patrocinadores" },
+    momotombo: { kind: "break", title: "Coffee Break AM · Visita a Stands de Patrocinadores" },
   },
   // 11:00 – 12:00 → Magistral 1 solo en Mombacho
   {
@@ -110,16 +98,14 @@ const SLOTS: TimeSlot[] = [
       speakers: ["Liczy Pallares"],
     },
     momotombo: EMPTY,
-    telica: EMPTY,
   },
   // 12:15 – 1:30 → Almuerzo solo en Momotombo
   {
     time: "12:15 – 1:30 p.m.",
     mombacho: EMPTY,
     momotombo: { kind: "almuerzo", title: "Almuerzo Ejecutivo" },
-    telica: EMPTY,
   },
-  // 1:30 – 2:10 → Los 3 salones activos
+  // 1:30 – 2:10 → Mombacho + Momotombo
   {
     time: "1:30 – 2:10 p.m.",
     mombacho: {
@@ -134,19 +120,12 @@ const SLOTS: TimeSlot[] = [
       sub: "Cómo reducir consumo, emisiones y costos en almacenes y flota",
       speakers: [""],
     },
-    telica: {
-      kind: "talk",
-      title: "Logistic Talk 2: E-commerce y Última Milla",
-      sub: "Cómo la Logística Está Cambiando la Forma de Hacer Negocios en Nicaragua y C.A.",
-      speakers: [""],
-    },
   },
-  // 2:10 – 2:40 → Coffee Break PM solo en Telica
+  // 2:10 – 2:40 → Coffee Break PM en Momotombo
   {
     time: "2:10 – 2:40 p.m.",
     mombacho: EMPTY,
-    momotombo: EMPTY,
-    telica: { kind: "break", title: "Coffee Break PM · Visita a Stands de Patrocinadores" },
+    momotombo: { kind: "break", title: "Coffee Break PM · Visita a Stands de Patrocinadores" },
   },
   // 2:40 – 3:40 → Magistral 2 solo en Mombacho
   {
@@ -158,21 +137,18 @@ const SLOTS: TimeSlot[] = [
       speakers: [""],
     },
     momotombo: EMPTY,
-    telica: EMPTY,
   },
   // 3:40 – 4:00 → Reconocimiento solo en Momotombo
   {
     time: "3:40 – 4:00 p.m.",
     mombacho: EMPTY,
     momotombo: { kind: "reconocimiento", title: "Actividad Patrocinadores · Reconocimiento CLN" },
-    telica: EMPTY,
   },
   // 4:00 – 5:30 → Cóctel solo en Momotombo
   {
     time: "4:00 – 5:30 p.m.",
     mombacho: EMPTY,
     momotombo: { kind: "cierre", title: "Cóctel Networking de Cierre" },
-    telica: EMPTY,
   },
 ];
 
@@ -195,14 +171,6 @@ const SALON_META = {
     trackColor: "text-cln-700",
     trackStyle: { color: "var(--color-cln-100)" } as React.CSSProperties,
   },
-  telica: {
-    label: "Salón Telica",
-    track: "CLN CONNECT",
-    headerBg: "bg-orange-500",
-    borderL: "border-l-orange-500",
-    trackColor: "text-orange-500",
-    trackStyle: { color: "#fff", opacity: 0.8 } as React.CSSProperties,
-  },
 } as const;
 
 type SalonKey = keyof typeof SALON_META;
@@ -211,7 +179,6 @@ type SalonKey = keyof typeof SALON_META;
 const KIND_CARD: Record<SlotKind, string> = {
   conferencia: "bg-white border-gray-100",
   panel: "bg-cln-50 border-cln-200",
-  talk: "bg-orange-50 border-orange-100",
   magistral: "bg-orange-50 border-orange-200",
   plenary: "bg-cln-50 border-cln-200",
   break: "bg-gray-50 border-gray-200",
@@ -224,7 +191,6 @@ const KIND_CARD: Record<SlotKind, string> = {
 const KIND_TITLE: Record<SlotKind, string> = {
   conferencia: "text-gray-900",
   panel: "text-cln-900",
-  talk: "text-gray-900",
   magistral: "text-orange-900",
   plenary: "text-cln-900",
   break: "text-gray-600",
@@ -237,7 +203,6 @@ const KIND_TITLE: Record<SlotKind, string> = {
 const KIND_BADGE: Record<SlotKind, { label: string; cls: string } | null> = {
   conferencia: { label: "Conferencia", cls: "bg-cln-50 text-cln-700" },
   panel: { label: "Panel", cls: "bg-cln-100 text-cln-900" },
-  talk: { label: "Logistic Talk", cls: "bg-orange-100 text-orange-800" },
   magistral: { label: "Magistral", cls: "bg-orange-100 text-orange-700 border border-orange-200" },
   plenary: null,
   break: { label: "Receso", cls: "bg-gray-100 text-gray-500" },
@@ -339,12 +304,11 @@ const FILTERS: { key: FilterKey; label: string }[] = [
   { key: "todo", label: "Todos" },
   { key: "mombacho", label: "Mombacho" },
   { key: "momotombo", label: "Momotombo" },
-  { key: "telica", label: "Telica" },
 ];
 
 // Dot color para el timeline según el tipo más relevante del slot
 function slotDotColor(slot: TimeSlot): string {
-  const active = (["mombacho", "momotombo", "telica"] as SalonKey[])
+  const active = (["mombacho", "momotombo"] as SalonKey[])
     .map((k) => slot[k])
     .find((c) => !c.empty);
   if (!active) return "#D1D5DB";
@@ -393,9 +357,9 @@ export default function AgendaMatrix() {
         </div>
 
         {/* Cabeceras de salón — solo desktop */}
-        <div className="hidden md:grid md:grid-cols-[100px_1fr_1fr_1fr] gap-3">
+        <div className="hidden md:grid md:grid-cols-[100px_1fr_1fr] gap-3">
           <div /> {/* espacio reservado para la columna de hora */}
-          {(["mombacho", "momotombo", "telica"] as SalonKey[]).map((key) => {
+          {(["mombacho", "momotombo"] as SalonKey[]).map((key) => {
             const s = SALON_META[key];
             return (
               <div key={key} className={`${s.headerBg} rounded-lg px-4 py-3`}>
@@ -439,12 +403,12 @@ export default function AgendaMatrix() {
                   </time>
                 </div>
 
-                {/* Contenido — desktop: 3 columnas / mobile: filtrado */}
+                {/* Contenido — desktop: 2 columnas / mobile: filtrado */}
                 <div className="min-w-0">
 
                   {/* Desktop */}
-                  <div className="hidden md:grid md:grid-cols-3 gap-3">
-                    {(["mombacho", "momotombo", "telica"] as SalonKey[]).map((key) => (
+                  <div className="hidden md:grid md:grid-cols-2 gap-3">
+                    {(["mombacho", "momotombo"] as SalonKey[]).map((key) => (
                       <Cell key={key} cell={slot[key]} salonKey={key} onSpeakerClick={openSpeaker} />
                     ))}
                   </div>
@@ -452,7 +416,7 @@ export default function AgendaMatrix() {
                   {/* Mobile */}
                   <div className="md:hidden flex flex-col gap-2">
                     {(filter === "todo"
-                      ? (["mombacho", "momotombo", "telica"] as SalonKey[])
+                      ? (["mombacho", "momotombo"] as SalonKey[])
                       : ([filter] as SalonKey[])
                     ).map((key) => {
                       const cell = slot[key];

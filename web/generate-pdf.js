@@ -13,73 +13,61 @@ const SLOTS = [
     time: "7:30 – 8:30 a.m.",
     mombacho: { kind: "plenary", title: "Registro de asistentes" },
     momotombo: EMPTY,
-    telica: EMPTY,
   },
   {
     time: "8:30 – 9:00 a.m.",
     mombacho: { kind: "plenary", title: "Ceremonia de Apertura", sub: "EXPO LOGÍSTICA · CLN · 2026" },
     momotombo: EMPTY,
-    telica: EMPTY,
   },
   {
     time: "9:00 – 9:50 a.m.",
     mombacho: { title: "De la Última Milla a la Última Experiencia (Oscar Soto Bravo)" },
     momotombo: { title: "Supply Chain Blindada: Ciberseguridad y Continuidad Operativa en la Logística Digital (Kairo Quezada)" },
-    telica: EMPTY,
   },
   {
     time: "9:50 – 10:30 a.m.",
     mombacho: { title: "Panel de Expertos: El Nuevo Líder de Supply Chain" },
     momotombo: { title: "Supply Chain Control Tower: de Datos Fragmentados a Visibilidad End-to-End (Moisés Núñez · MNGLOBAL)" },
-    telica: { title: "Logistic Talk 1: Tu Carrera en Supply Chain (Cesar Escobar)" },
   },
   {
     time: "10:30 – 11:00 a.m.",
     mombacho: EMPTY,
-    momotombo: EMPTY,
-    telica: { title: "Coffee Break AM · Visita a Stands de Patrocinadores" },
+    momotombo: { title: "Coffee Break AM · Visita a Stands de Patrocinadores" },
   },
   {
     time: "11:00 a.m. – 12:00 m.",
     mombacho: { title: "Magistral 1: Del Almacén Tradicional al Almacén Smart (Liczy Pallares)" },
     momotombo: EMPTY,
-    telica: EMPTY,
   },
   {
     time: "12:15 – 1:30 p.m.",
     mombacho: EMPTY,
     momotombo: { title: "Almuerzo Ejecutivo" },
-    telica: EMPTY,
   },
   {
     time: "1:30 – 2:10 p.m.",
     mombacho: { title: "Movilidad y Logística Regional 2035 (Carlos Moreno · SIECA)" },
     momotombo: { title: "Logística Verde que Sí Hace Negocio (Carlos Palomino)" },
-    telica: { title: "Logistic Talk 2: E-commerce y Última Milla (Mauricio Urroz)" },
   },
   {
     time: "2:10 – 2:40 p.m.",
     mombacho: EMPTY,
-    momotombo: EMPTY,
-    telica: { title: "Coffee Break PM · Visita a Stands de Patrocinadores" },
+    momotombo: { title: "Coffee Break PM · Visita a Stands de Patrocinadores" },
   },
   {
     time: "2:40 – 3:40 p.m.",
     mombacho: { title: "Magistral 2: IA en Logística: de la Tendencia a la Ventaja Competitiva (Antonio Espinoza)" },
     momotombo: EMPTY,
-    telica: EMPTY,
   },
   {
     time: "3:40 – 4:00 p.m.",
     mombacho: EMPTY,
     momotombo: { title: "Actividad Patrocinadores · Reconocimiento CLN" },
-    telica: EMPTY,
   },
   {
     time: "4:00 – 5:30 p.m.",
     mombacho: EMPTY,
     momotombo: { title: "Cóctel Networking de Cierre" },
-    telica: EMPTY,
   },
 ];
 
@@ -87,7 +75,6 @@ let slotsHtml = SLOTS.map(slot => {
   const events = [];
   if (!slot.mombacho.empty) events.push({ room: 'Mombacho', title: slot.mombacho.title });
   if (!slot.momotombo.empty) events.push({ room: 'Momotombo', title: slot.momotombo.title });
-  if (!slot.telica.empty) events.push({ room: 'Telica', title: slot.telica.title });
 
   let content = '';
   if (events.length === 1) {
