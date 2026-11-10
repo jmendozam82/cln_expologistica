@@ -31,7 +31,7 @@ const SLOTS = [
   },
   {
     time: "9:50 – 10:30 a.m.",
-    mombacho: { title: "Conferencia y Presentación del Libro: Evoluciona o desaparece — Las 10 leyes de la brontosauriedad y por qué las empresas se vuelven irrelevantes (Antonio Espinoza Ruiz)" },
+    mombacho: { title: "Conferencia y Presentación del Libro: Evoluciona o Desaparece — Las 10 leyes de la brontosauriedad y por qué las empresas se vuelven irrelevantes (Antonio Espinoza Ruiz)" },
     momotombo: EMPTY,
   },
   {

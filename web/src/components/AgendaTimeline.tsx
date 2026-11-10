@@ -77,7 +77,7 @@ const SLOTS: TimeSlot[] = [
     mombacho: {
       kind: "conferencia",
       badge: "Conferencia y Presentación del Libro",
-      title: "Evoluciona o desaparece",
+      title: "Evoluciona o Desaparece",
       sub: "Las 10 leyes de la brontosauriedad y por qué las empresas se vuelven irrelevantes",
       speakers: ["Antonio Espinoza Ruiz"],
     },
