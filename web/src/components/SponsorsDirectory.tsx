@@ -5,12 +5,25 @@ import { useEffect, useRef, useState } from "react";
 
 export type SponsorTier = "elite" | "oro" | "plata" | "aliado";
 
+export type SponsorSocial = {
+  label: string;
+  url: string;
+};
+
+export type SponsorContact = {
+  manager?: string;
+  email?: string;
+  phones?: string[];
+};
+
 export type SponsorProfile = {
   headline: string;
   description: string;
   services: string[];
   website?: string;
   websiteLabel?: string;
+  socials?: SponsorSocial[];
+  contact?: SponsorContact;
 };
 
 export type Sponsor = {
@@ -21,14 +34,16 @@ export type Sponsor = {
   profile?: SponsorProfile;
 };
 
+const FLEX_LAYOUT = "flex flex-wrap justify-center gap-6 lg:gap-8";
+
 const TIERS: {
   key: SponsorTier; label: string; role: string; desc: string;
-  color: string; text: string; card: string; logo: string;
+  color: string; text: string; card: string; logo: string; layout: string; logoPad: string;
 }[] = [
-  { key: "elite", label: "Sponsors Elite", role: "Patrocinador Elite", desc: "Máxima visibilidad y exclusividad", color: "#B8860B", text: "#FFFBEB", card: "w-full sm:w-[380px] p-8", logo: "text-xl" },
-  { key: "oro", label: "Sponsors Oro", role: "Patrocinador Oro", desc: "Alta presencia corporativa", color: "#1B3A6B", text: "#EFF6FF", card: "w-full sm:w-[260px] p-5", logo: "text-base" },
-  { key: "plata", label: "Sponsors Plata", role: "Patrocinador Plata", desc: "Presencia profesional estratégica", color: "#2E6B8F", text: "#F0F9FF", card: "w-full sm:w-[200px] p-4", logo: "text-sm" },
-  { key: "aliado", label: "Aliados CLN", role: "Aliado CLN", desc: "Organizaciones aliadas de la comunidad", color: "#0F8BE7", text: "#F0F9FF", card: "w-full sm:w-[170px] p-3", logo: "text-xs" },
+  { key: "elite", label: "Sponsors Elite", role: "Patrocinador Elite", desc: "Máxima visibilidad y exclusividad", color: "#B8860B", text: "#FFFBEB", card: "w-full sm:w-[380px] p-8", logo: "text-xl", layout: FLEX_LAYOUT, logoPad: "p-4" },
+  { key: "oro", label: "Sponsors Oro", role: "Patrocinador Oro", desc: "Alta presencia corporativa", color: "#1B3A6B", text: "#EFF6FF", card: "w-full sm:w-[260px] p-5", logo: "text-base", layout: "grid grid-cols-1 sm:grid-cols-3 justify-items-center gap-6 lg:gap-8", logoPad: "p-4" },
+  { key: "plata", label: "Sponsors Plata", role: "Patrocinador Plata", desc: "Presencia profesional estratégica", color: "#2E6B8F", text: "#F0F9FF", card: "w-full sm:w-[200px] p-4", logo: "text-sm", layout: FLEX_LAYOUT, logoPad: "p-1" },
+  { key: "aliado", label: "Aliados CLN", role: "Aliado CLN", desc: "Organizaciones aliadas de la comunidad", color: "#0F8BE7", text: "#F0F9FF", card: "w-full sm:w-[170px] p-3", logo: "text-xs", layout: FLEX_LAYOUT, logoPad: "p-4" },
 ];
 
 export default function SponsorsDirectory({ sponsors }: { sponsors: Sponsor[] }) {
@@ -63,7 +78,7 @@ export default function SponsorsDirectory({ sponsors }: { sponsors: Sponsor[] })
               </span>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-6 lg:gap-8">
+            <div className={tier.layout}>
               {groupSponsors.map((sponsor) => {
                 const inner = (
                   <>
@@ -73,7 +88,7 @@ export default function SponsorsDirectory({ sponsors }: { sponsors: Sponsor[] })
                         alt={sponsor.name}
                         fill
                         sizes="(max-width: 640px) 100vw, 260px"
-                        className="object-contain p-4 group-hover:scale-105 transition-transform"
+                        className={`object-contain ${tier.logoPad} group-hover:scale-105 transition-transform`}
                       />
                     ) : (
                       <div
@@ -199,7 +214,63 @@ export default function SponsorsDirectory({ sponsors }: { sponsors: Sponsor[] })
                     <path d="M7 17L17 7M9 7h8v8" />
                   </svg>
                 </a>
-              )}            </div>
+              )}
+
+              {active.profile!.socials && active.profile!.socials.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="mb-3 font-bold text-cln-950">Enlaces oficiales</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {active.profile!.socials.map((social) => (
+                      <a
+                        key={social.label}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-cln-900 transition-colors hover:border-orange-300 hover:text-orange-600"
+                      >
+                        {social.label}
+                        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M7 17L17 7M9 7h8v8" />
+                        </svg>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {active.profile!.contact && (
+                <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
+                  <h4 className="mb-2 font-bold text-cln-950">Contacto comercial</h4>
+                  {active.profile!.contact.manager && (
+                    <p className="mb-1 font-medium text-cln-900">{active.profile!.contact.manager}</p>
+                  )}
+                  {active.profile!.contact.email && (
+                    <p className="mb-1">
+                      Correo:{" "}
+                      <a href={`mailto:${active.profile!.contact.email}`} className="font-semibold text-orange-600 hover:underline">
+                        {active.profile!.contact.email}
+                      </a>
+                    </p>
+                  )}
+                  {active.profile!.contact.phones && active.profile!.contact.phones.length > 0 && (
+                    <p>
+                      WhatsApp:{" "}
+                      {active.profile!.contact.phones.map((phone, i) => {
+                        const digits = `505${phone.replace(/\D/g, "")}`;
+                        return (
+                          <span key={phone}>
+                            {i > 0 && " / "}
+                            <a href={`https://wa.me/${digits}`} target="_blank" rel="noopener noreferrer" className="font-semibold text-orange-600 hover:underline">
+                              {phone}
+                            </a>
+                          </span>
+                        );
+                      })}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </dialog>

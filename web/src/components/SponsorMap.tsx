@@ -1,189 +1,28 @@
-"use client";
-
-import { useState, useCallback } from "react";
-
-/* ─── TIPOS ─────────────────────────── */
-type Tier = "elite" | "oro" | "plata";
-type Estado = "libre" | "reservado";
-
-export interface Stand {
-  id: string;
-  label: string;
-  tier: Tier;
-  estado: Estado;
-  empresa?: string;
-  logo?: string;
-  x: number; y: number; w: number; h: number;
-  rotate?: number;
-  labelSize?: number;
-  textRotate?: number;
-}
+import Image from "next/image";
 
 /* ─── PALETA CORPORATIVA LOGÍSTICA ───────────────────── */
 const C = {
-  elite: { fill: "#B8860B", fillH: "#D4A017", border: "#8B6508", text: "#FFFBEB", sub: "#FDE68A", badge: "#78350F", legend: "#B8860B" },
-  oro: { fill: "#1B3A6B", fillH: "#1E4080", border: "#0F2547", text: "#EFF6FF", sub: "#93C5FD", badge: "#1E3A5F", legend: "#1B3A6B" },
-  plata: { fill: "#2E6B8F", fillH: "#357AAA", border: "#1A4F6E", text: "#F0F9FF", sub: "#BAE6FD", badge: "#164E63", legend: "#2E6B8F" },
-  res: { fill: "#374151", border: "#1F2937", text: "#D1D5DB", sub: "#9CA3AF" },
+  elite: { fill: "#B8860B" },
+  oro: { fill: "#1B3A6B" },
+  plata: { fill: "#2E6B8F" },
 };
 
-const LABEL: Record<Tier, string> = { elite: "Elite", oro: "Oro", plata: "Plata" };
+const LABEL = { elite: "Elite", oro: "Oro", plata: "Plata" } as const;
+const TIER_DESC = {
+  elite: "Máxima visibilidad y exclusividad",
+  oro: "Alta presencia corporativa",
+  plata: "Presencia profesional estratégica",
+} as const;
 
-/* ─── STANDS NUEVO PLANO FONDO IMAGEN ────────────────────────────── */
-// Ajustadas para un viewBox de 1200 x 750 — 3 Elite · 5 Oro · 2 Plata
-const STANDS: Stand[] = [
-  // Pasillo Izquierdo (Frente Mombacho y Télica) — ORO 5 → ORO 1
-  { id: "O5", label: "ORO 5", tier: "oro", estado: "libre", x: 190, y: 555, w: 75, h: 38 },
-  { id: "O4", label: "ORO 4", tier: "oro", estado: "libre", x: 280, y: 555, w: 75, h: 38, empresa: "SERLOG", logo: "/sponsor/serlog.png" },
-  { id: "O3", label: "ORO 3", tier: "oro", estado: "libre", x: 370, y: 555, w: 75, h: 38, empresa: "IAMMSA", logo: "/sponsor/iammsa-Sponsor_oro.png" },
-  { id: "O2", label: "ORO 2", tier: "oro", estado: "libre", x: 460, y: 555, w: 75, h: 38, empresa: "I-CARGO", logo: "/sponsor/icargo.png" },
-  { id: "O1", label: "ORO 1", tier: "oro", estado: "libre", x: 550, y: 555, w: 75, h: 38, empresa: "HA LOGIX", logo: "/sponsor/ha_logix_Sponsor_Oro_crop.png" },
-
-  // Pasillo Central (Elite, vertical side by side)
-  { id: "E1", label: "ELITE 1", tier: "elite", estado: "libre", x: 785, y: 415, w: 38, h: 78, textRotate: 90 },
-  { id: "E2", label: "ELITE 2", tier: "elite", estado: "libre", x: 700, y: 415, w: 38, h: 78, textRotate: -90 },
-  { id: "E3", label: "ELITE 3", tier: "elite", estado: "libre", x: 723, y: 340, w: 78, h: 38 },
-
-  // Pasillo Derecho (Frente Momotombo) — PLATA 1..2
-  { id: "P1", label: "PLATA 1", tier: "plata", estado: "libre", x: 940, y: 555, w: 75, h: 38, empresa: "ADENICA", logo: "/sponsor/adenica.png" },
-  { id: "P2", label: "PLATA 2", tier: "plata", estado: "libre", x: 1030, y: 555, w: 75, h: 38 },
-];
-
-/* ─── TOOLTIP ────────────────────────── */
-function Tooltip({ s, px, py }: { s: Stand; px: number; py: number }) {
-  const isRes = s.estado === "reservado";
-  return (
-    <div className="fixed z-50 pointer-events-none" style={{ left: px + 18, top: py - 10 }}>
-      <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden w-64">
-        <div className="h-1.5 w-full" style={{ background: isRes ? C.res.fill : C[s.tier].fill }} />
-        <div className="p-5">
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase mb-0.5">{LABEL[s.tier]}</p>
-              <p className="text-xl font-extrabold text-gray-900 leading-none">Stand {s.label}</p>
-            </div>
-            <span
-              className="mt-0.5 px-2.5 py-1 rounded-md text-[9px] font-bold uppercase text-white"
-              style={{ background: isRes ? C.res.fill : C[s.tier].fill }}
-            >
-              {isRes ? "reservado" : s.empresa ? "confirmado" : "libre"}
-            </span>
-          </div>
-          <div className="h-px bg-gray-100 my-3" />
-          {(isRes || s.empresa) && (
-            <div className="rounded-xl p-3 border border-gray-100 bg-gray-50 mb-3">
-              <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mb-1">Empresa Patrocinadora</p>
-              <p className="text-base font-bold text-gray-800">{s.empresa ?? "Reservado — Confirmado"}</p>
-            </div>
-          )}
-          {!isRes && !s.empresa && (
-            <>
-              <p className="text-[13px] text-gray-500 mb-3 leading-snug">
-                Maximice su presencia ante líderes del sector logístico centroamericano.
-              </p>
-              <a
-                href="mailto:cln@nilogistic.com"
-                className="pointer-events-auto flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-sm font-bold text-white"
-                style={{ background: C[s.tier].fill }}
-              >
-                Solicitar Cotización →
-              </a>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── STAND SVG ───────────────────────── */
-function StandRect({ s, onEnter, onLeave, onMove }: {
-  s: Stand;
-  onEnter: (s: Stand, e: React.MouseEvent) => void;
-  onLeave: () => void;
-  onMove: (e: React.MouseEvent) => void;
-}) {
-  const [hov, setHov] = useState(false);
-  const isRes = s.estado === "reservado";
-  const fill = isRes ? C.res.fill : (hov ? C[s.tier].fillH : C[s.tier].fill);
-  const border = isRes ? C.res.border : C[s.tier].border;
-  const textC = isRes ? C.res.text : C[s.tier].text;
-  const subC = isRes ? C.res.sub : C[s.tier].sub;
-
-  const cx = s.x + s.w / 2;
-  const cy = s.y + s.h / 2;
-  const transform = s.rotate ? `rotate(${s.rotate} ${cx} ${cy})` : undefined;
-  const textTransform = s.textRotate ? `rotate(${s.textRotate} ${cx} ${cy})` : transform;
-
-  return (
-    <g style={{ cursor: "pointer" }}
-      onMouseEnter={e => { setHov(true); onEnter(s, e); }}
-      onMouseMove={onMove}
-      onMouseLeave={() => { setHov(false); onLeave(); }}>
-      {hov && <rect x={s.x + 2} y={s.y + 3} width={s.w} height={s.h} rx={4} fill="rgba(0,0,0,0.18)" transform={transform} />}
-      <rect
-        x={s.x} y={s.y} width={s.w} height={s.h} rx={6}
-        fill={fill} stroke={border} strokeWidth={hov ? 2 : 1.5}
-        style={{ transition: "fill .15s" }}
-        transform={transform}
-      />
-      <rect x={s.x + 1} y={s.y + 1} width={s.w - 2} height={6} rx={4} fill="rgba(255,255,255,0.12)" transform={transform} />
-      {s.logo ? (
-        <>
-          <rect x={s.x + 3} y={s.y + 3} width={s.w - 6} height={s.h - 6} rx={4} fill="#FFFFFF" transform={transform} />
-          <image
-            href={s.logo}
-            x={s.x + 7} y={s.y + 7} width={s.w - 14} height={s.h - 14}
-            preserveAspectRatio="xMidYMid meet"
-            transform={transform}
-          />
-        </>
-      ) : (
-        <>
-          <text
-            x={cx} y={cy - 6}
-            textAnchor="middle" dominantBaseline="middle"
-            fontSize={s.labelSize ?? 11} fontWeight="800" fill={textC}
-            fontFamily="system-ui, -apple-system, sans-serif"
-            transform={textTransform}
-          >
-            {s.label}
-          </text>
-          <text
-            x={cx} y={cy + 8}
-            textAnchor="middle" dominantBaseline="middle"
-            fontSize={9} fill={subC}
-            fontFamily="system-ui, sans-serif"
-            transform={textTransform}
-          >
-            {isRes ? "RESERVADO" : "DISPONIBLE"}
-          </text>
-        </>
-      )}
-    </g>
-  );
-}
+const TIERS = ["elite", "oro", "plata"] as const;
 
 /* ─── MAIN ────────────────────────────── */
 export default function SponsorMap() {
-  const [tip, setTip] = useState<{ s: Stand; px: number; py: number } | null>(null);
-
-  const enter = useCallback((s: Stand, e: React.MouseEvent) => setTip({ s, px: e.clientX, py: e.clientY }), []);
-  const move = useCallback((e: React.MouseEvent) => setTip(p => p ? { ...p, px: e.clientX, py: e.clientY } : null), []);
-  const leave = useCallback(() => setTip(null), []);
-
-  const TIER_DESC: Record<Tier, string> = {
-    elite: "Máxima visibilidad y exclusividad",
-    oro: "Alta presencia corporativa",
-    plata: "Presencia profesional estratégica",
-  };
-
-  const sp = { onEnter: enter, onLeave: leave, onMove: move };
-
   return (
-    <div className="relative w-full overflow-hidden"
-      style={{ background: "#F4F7FB", borderRadius: 20, border: "1px solid #D1D9E6", padding: "2rem 1.5rem" }}>
-
+    <div
+      className="relative w-full overflow-hidden"
+      style={{ background: "#F4F7FB", borderRadius: 20, border: "1px solid #D1D9E6", padding: "2rem 1.5rem" }}
+    >
       <div className="text-center mb-6">
         <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", color: "#64748B", marginBottom: 4, textTransform: "uppercase" }}>
           DoubleTree by Hilton — Managua
@@ -195,7 +34,7 @@ export default function SponsorMap() {
       </div>
 
       <div className="flex flex-wrap justify-center gap-3 mb-6">
-        {(["elite", "oro", "plata"] as Tier[]).map(t => (
+        {TIERS.map(t => (
           <div key={t} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 14px", background: "white", border: "1px solid #D1D9E6", borderRadius: 100 }}>
             <div style={{ width: 12, height: 12, borderRadius: 3, background: C[t].fill }} />
             <span style={{ fontSize: 12, fontWeight: 700, color: "#1E293B" }}>{LABEL[t]}</span>
@@ -205,28 +44,16 @@ export default function SponsorMap() {
         ))}
       </div>
 
-      <div style={{ width: "100%", overflowX: "auto", background: "white", borderRadius: 16, border: "1px solid #D1D9E6", padding: "0.5rem", boxShadow: "0 4px 20px rgba(15,28,46,.08)" }}>
-        <svg viewBox="0 0 1200 750" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", maxWidth: 1200, margin: "0 auto", display: "block", minWidth: 800 }} onMouseMove={move}>
-
-          {/* IMAGEN DEL PLANO DE FONDO */}
-          <image href="https://nilogistic.com/wp-content/uploads/2026/09/mapa_sponsor-2-scaled.jpg" x="0" y="0" width="1200" height="750" preserveAspectRatio="xMidYMid meet" />
-
-          {/* STANDS (Interactivos) */}
-          {STANDS.map(s => <StandRect key={s.id} s={s} {...sp} />)}
-
-          {/* REGISTRO (Estático) */}
-          <rect x={835} y={528} width={95} height={28} rx={6} fill="#F97316" stroke="#C2410C" strokeWidth={1.5} />
-          <rect x={835} y={530} width={93} height={6} rx={4} fill="rgba(255,255,255,0.2)" />
-          <text x={887} y={545} textAnchor="middle" dominantBaseline="middle" fontSize={10} fontWeight="800" fill="white" fontFamily="system-ui,sans-serif" letterSpacing="0.4">REGISTRO</text>
-
-          {/* FLECHA DE ACCESO (Verde) */}
-          <line x1={859} y1={640} x2={859} y2={590} stroke="#16A34A" strokeWidth={4} strokeLinecap="round" />
-          <polygon points={`859,572 854,590 864,590`} fill="#16A34A" />
-          <text x={859} y={664} textAnchor="middle" dominantBaseline="middle" fontSize={12} fontWeight="800" fill="#16A34A" fontFamily="system-ui,sans-serif" letterSpacing="1">ACCESO</text>
-        </svg>
+      <div style={{ width: "100%", background: "white", borderRadius: 16, border: "1px solid #D1D9E6", padding: "0.5rem", boxShadow: "0 4px 20px rgba(15,28,46,.08)" }}>
+        <Image
+          src="https://nilogistic.com/wp-content/uploads/2026/11/mapa-sponsor-final-scaled.png"
+          alt="Mapa del piso de exhibición — EXPO LOGÍSTICA · CLN · 2026"
+          width={2560}
+          height={1440}
+          sizes="(max-width: 768px) 100vw, 1200px"
+          style={{ width: "100%", height: "auto", display: "block", borderRadius: 12 }}
+        />
       </div>
-
-      {tip && <Tooltip {...tip} />}
     </div>
   );
 }

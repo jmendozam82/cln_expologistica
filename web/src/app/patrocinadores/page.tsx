@@ -10,9 +10,41 @@ export const metadata: Metadata = {
 
 export default function PatrocinadoresPage() {
   const sponsors: Sponsor[] = [
-    { id: "E1", name: "Sponsor 1", tier: "elite" },
-    { id: "E2", name: "Sponsor 2", tier: "elite" },
-    { id: "E3", name: "Sponsor 3", tier: "elite" },
+    {
+      id: "E1",
+      name: "MANISA",
+      tier: "elite",
+      logo: "/sponsor/manisa.png",
+      profile: {
+        headline:
+          "Integrador de soluciones intralogísticas con más de 40 años de experiencia.",
+        description:
+          "MANISA es un integrador de soluciones intralogísticas especializado en sistemas de almacenaje y equipos para manejo de materiales. Con más de 40 años de trayectoria en la industria, diseña y transforma almacenes en operaciones de alta eficiencia, ayudando a maximizar la capacidad de almacenamiento y acelerar el procesamiento de pedidos. Como distribuidor y taller de servicio certificado autorizado de Crown Equipment Corp, Mecalux, Interroll, EnerSys, Kardex y SPX Flow, garantiza soluciones y tecnologías confiables con un servicio de postventa continuo.",
+        services: [
+          "Venta y renta de montacargas",
+          "Mantenimiento preventivo, correctivo y asistencia técnica",
+          "Diseño, suministro e instalación de racks industriales",
+          "Almacenes automáticos y sistemas conveyor",
+          "Transportadores, clasificadores (sorters) y bandas transportadoras",
+          "Baterías y cargadores de ion-litio, plomo-ácido y carga de oportunidad (TPP)",
+          "Equipos para cocina, lavandería industrial y refrigeración",
+          "Elevadores y rampas industriales, puertas rápidas y equipamiento para bahías de carga",
+        ],
+        website: "https://www.manisa.cc",
+        websiteLabel: "Visitar sitio web",
+        socials: [
+          { label: "LinkedIn", url: "https://ni.linkedin.com/company/montacargas-y-accesorios-de-nicaragua-s-a" },
+          { label: "Facebook", url: "https://www.facebook.com/manisanicaragua" },
+          { label: "TikTok", url: "https://www.tiktok.com/@montacargasyaccesorios" },
+          { label: "WhatsApp", url: "https://wa.me/50578255836" },
+        ],
+        contact: {
+          manager: "Gerencia comercial",
+          email: "mgonzalez@manisa.cc",
+          phones: ["8285-3540", "7825-5184"],
+        },
+      },
+    },
     {
       id: "O1",
       name: "HA LOGIX",
@@ -80,8 +112,98 @@ export default function PatrocinadoresPage() {
         ],
       },
     },
-    { id: "O4", name: "Sponsor 7", tier: "oro" },
-    { id: "O5", name: "Sponsor 8", tier: "oro" },
+    {
+      id: "O4",
+      name: "TRANSTAINER · KING OCEAN",
+      tier: "oro",
+      logo: "/sponsor/transtainer-kingocean.png",
+      profile: {
+        headline:
+          "Dos líderes en logística internacional y transporte marítimo, reunidos en un solo espacio.",
+        description:
+          "Transtainer y King Ocean Services unen fuerzas para ofrecer una cadena logística integral desde y hacia Centroamérica. Transtainer es un líder regional en agenciamiento de carga, transporte terrestre, agenciamiento aduanero y portuario, almacenamiento y distribución, con presencia en Centroamérica, México y Perú. King Ocean Services, con más de 40 años de experiencia en transporte marítimo, conecta Nicaragua y la región con Estados Unidos, el Caribe, Centroamérica y Sudamérica mediante salidas semanales fijas y servicios FCL, LCL, carga refrigerada, proyectos especiales, vehículos y carga a granel. Juntos brindan una solución de extremo a extremo respaldada por los más altos estándares de seguridad.",
+        services: [
+          "Agencia de carga aérea, marítima y terrestre",
+          "Transporte terrestre y distribución regional",
+          "Agenciamiento aduanero y portuario",
+          "Almacén, distribución y seguro de carga",
+          "Proyectos especiales y carga sobredimensionada",
+          "Transporte marítimo FCL y LCL",
+          "Carga refrigerada, vehículos y carga a granel",
+          "Servicios charter y consolidación de carga",
+          "Salidas semanales fijas desde EE. UU., Caribe y Sudamérica",
+        ],
+        website: "https://transtainer.net/",
+        websiteLabel: "Visitar Transtainer",
+        socials: [
+          { label: "King Ocean", url: "https://kingocean.com/" },
+          { label: "LinkedIn", url: "https://www.linkedin.com/company/transtainer-regional/" },
+          { label: "Instagram", url: "https://instagram.com/transtainer_" },
+          { label: "Facebook", url: "https://www.facebook.com/transtainerregional/" },
+        ],
+      },
+    },
+    {
+      id: "O5",
+      name: "MN GLOBAL",
+      tier: "oro",
+      logo: "/sponsor/mn-global.png",
+      profile: {
+        headline:
+          "Integramos tu cadena de suministro: sourcing, logística internacional y almacenamiento.",
+        description:
+          "MNGLOBAL es una empresa nicaragüense especializada en la integración de la cadena de suministro, con 9 años de trayectoria conectando empresas con proveedores y mercados internacionales. Coordina sourcing, abastecimiento, logística internacional, almacenamiento, control de inventarios y distribución bajo un enfoque integral, con hubs logísticos en Panamá, China y Estados Unidos. Más que gestionar el traslado de mercancías, conecta procesos y recursos para mejorar la eficiencia, visibilidad y control de las operaciones de sus clientes, con más de 1,500 clientes y 600 proyectos en 3 continentes.",
+        services: [
+          "Sourcing de materias primas y maquinaria amarilla",
+          "Búsqueda, selección y certificación de proveedores",
+          "Seguimiento de fabricación e inspección en origen",
+          "Priority Air Cargo (transporte aéreo prioritario)",
+          "Transporte terrestre de México a Panamá",
+          "Transporte marítimo FCL y LCL",
+          "Almacenamiento y gestión de inventarios",
+          "Picking, packing y cross-docking",
+          "Reacondicionamiento y distribución",
+        ],
+        website: "https://mnglobal.solutions/",
+        websiteLabel: "Visitar sitio web",
+        contact: {
+          email: "kevin@mnglobal.solutions",
+          phones: ["7828-9231"],
+        },
+      },
+    },
+    {
+      id: "O6",
+      name: "ISUZU",
+      tier: "oro",
+      logo: "/sponsor/isuzu.png",
+      profile: {
+        headline:
+          "Más de 100 años de calidad insuperable en vehículos comerciales y motores diésel.",
+        description:
+          "ISUZU es una marca global con más de 100 años de experiencia en la fabricación de motores diésel y vehículos comerciales, reconocida por su durabilidad, eficiencia y calidad insuperable. En Nicaragua es distribuida por Grupo El Chele (GEC), un grupo empresarial familiar con más de 35 años de trayectoria en la industria automotriz, comprometido con ofrecer venta, renta, repuestos genuinos, talleres especializados y carrocerías. Su red incluye salas de venta en Managua y Matagalpa, además de un servicio de postventa que acompaña a cada cliente durante toda la vida útil de su vehículo.",
+        services: [
+          "Venta de camiones, camionetas y vehículos comerciales Isuzu",
+          "Pick-ups, SUVs y flotas para uso comercial",
+          "Renta de vehículos y flotas corporativas (GEC Flex)",
+          "Talleres de mantenimiento y reparación especializados",
+          "Repuestos genuinos y accesorios originales",
+          "Fabricación y adaptación de carrocerías",
+          "Asesoría comercial y opciones de financiamiento",
+          "Respaldo de postventa y garantía",
+        ],
+        website: "https://grupo-gec.com/",
+        websiteLabel: "Visitar Grupo GEC",
+        socials: [
+          { label: "Instagram", url: "https://www.instagram.com/grupoelchele_" },
+          { label: "LinkedIn", url: "https://www.linkedin.com/company/grupo-el-chele" },
+        ],
+        contact: {
+          manager: "Grupo El Chele (GEC)",
+          email: "GEC@grupoelchele.com",
+        },
+      },
+    },
     {
       id: "P1",
       name: "ADENICA",
@@ -102,7 +224,6 @@ export default function PatrocinadoresPage() {
         website: "https://adenica.com/",
       },
     },
-    { id: "P2", name: "Sponsor 10", tier: "plata" },
     {
       id: "O3",
       name: "IAMMSA",
@@ -144,8 +265,6 @@ export default function PatrocinadoresPage() {
         websiteLabel: "Ver en Instagram",
       },
     },
-    { id: "A2", name: "Aliado 2", tier: "aliado" },
-    { id: "A3", name: "Aliado 3", tier: "aliado" },
   ];
 
   return (
