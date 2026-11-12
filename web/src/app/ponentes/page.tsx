@@ -3,16 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { SPEAKERS, type Speaker } from "@/lib/speakers";
+import { SPEAKERS, getSpeakerByName, type Speaker } from "@/lib/speakers";
+import { CONFERENCE_SCHEDULE } from "@/lib/agenda";
 import SpeakerModal from "@/components/SpeakerModal";
 
-function Avatar({ speaker, size = 48 }: { speaker: Speaker; size?: number }) {
-  const initials = speaker.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
-  if (speaker.photo) {
+function Avatar({ name, photo, size = 48 }: { name: string; photo?: string; size?: number }) {
+  const initials = name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+  if (photo) {
     return (
       <Image
-        src={speaker.photo}
-        alt={speaker.name}
+        src={photo}
+        alt={name}
         width={size}
         height={size}
         className="rounded-full object-cover block flex-shrink-0"
@@ -31,6 +32,60 @@ function Avatar({ speaker, size = 48 }: { speaker: Speaker; size?: number }) {
   );
 }
 
+function ScheduleSpeakerRow({
+  name,
+  displayName,
+  roleLabel,
+  profile,
+  onSelect,
+}: {
+  name: string;
+  displayName?: string;
+  roleLabel?: string;
+  profile?: Speaker;
+  onSelect: (speaker: Speaker) => void;
+}) {
+  if (profile) {
+    return (
+      <button
+        id={`timeline-${profile.id}`}
+        type="button"
+        onClick={() => onSelect(profile)}
+        className="group/sp w-full flex items-center gap-4 text-left rounded-lg p-2 -mx-2 hover:bg-cln-50/70 transition-colors cursor-pointer scroll-mt-24"
+        aria-label={`Ver perfil de ${profile.name}`}
+      >
+        <Avatar name={profile.name} photo={profile.photo} size={48} />
+        <div className="flex-1 min-w-0">
+          <p className="font-heading font-bold text-cln-950 group-hover/sp:text-orange-600 text-base md:text-lg leading-tight transition-colors">
+            {profile.name}
+          </p>
+          <p className="text-sm md:text-base text-gray-500">
+            {roleLabel ? `${roleLabel} · ` : ""}
+            {profile.role} · {profile.company}
+          </p>
+        </div>
+        <span className="text-sm font-bold text-cln-600 opacity-70 group-hover/sp:opacity-100 group-hover/sp:translate-x-0.5 transition-all flex-shrink-0">
+          Ver perfil →
+        </span>
+      </button>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-4 py-1">
+      <Avatar name={name} size={48} />
+      <div className="flex-1 min-w-0">
+        <p className="font-heading font-bold text-cln-950 text-base md:text-lg leading-tight">
+          {displayName ?? name}
+        </p>
+        <p className="text-xs md:text-sm text-gray-400">
+          {roleLabel ? `${roleLabel} · ` : ""}Perfil próximamente
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function SpeakerCard({ speaker, onClick }: { speaker: Speaker; onClick: () => void }) {
   return (
     <button
@@ -40,7 +95,7 @@ function SpeakerCard({ speaker, onClick }: { speaker: Speaker; onClick: () => vo
       aria-label={`Ver perfil de ${speaker.name}`}
     >
       <div className="flex-shrink-0">
-        <Avatar speaker={speaker} size={72} />
+        <Avatar name={speaker.name} photo={speaker.photo} size={72} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-heading font-extrabold text-lg text-gray-900 group-hover:text-orange-600 transition-colors leading-tight">
@@ -163,30 +218,40 @@ export default function PonentesPage() {
 
           <div className="relative">
             <div className="absolute top-0 bottom-0 left-[100px] md:left-[120px] w-px bg-gray-300" aria-hidden />
-            {SPEAKERS.filter((s) => s.id !== "mayerling").map((speaker) => (
-              <div key={speaker.id} id={`timeline-${speaker.id}`} className="relative flex items-start mb-6 last:mb-0 scroll-mt-24">
+            {CONFERENCE_SCHEDULE.map((item) => (
+              <div key={item.id} className="relative flex items-start mb-6 last:mb-0">
                 <div className="w-24 md:w-28 flex-shrink-0 pt-5 pr-3 text-right">
-                  <span className="text-base md:text-lg font-bold text-cln-700">{speaker.time}</span>
+                  <span className="text-base md:text-lg font-bold text-cln-700">{item.time}</span>
                 </div>
                 <div className="w-3 h-3 rounded-full bg-orange-500 mt-7 relative z-10 flex-shrink-0 ring-4 ring-gray-50" aria-hidden />
-                <button
-                  type="button"
-                  onClick={() => setActive(speaker)}
-                  className="flex-1 min-w-0 bg-white rounded-xl border border-gray-200 shadow-sm p-6 ml-4 hover:shadow-md hover:border-cln-300 transition-all text-left cursor-pointer"
-                >
-                  <p className="text-xs font-bold uppercase tracking-wider text-cln-600 mb-1">{speaker.session}</p>
-                  <p className="font-heading font-bold text-orange-600 text-lg md:text-xl mb-0.5">{speaker.topic}</p>
-                  {speaker.topicSubtitle && (
-                    <p className="text-sm md:text-base text-gray-500 italic mb-3">{speaker.topicSubtitle}</p>
+                <div className="flex-1 min-w-0 bg-white rounded-xl border border-gray-200 shadow-sm p-6 ml-4 hover:shadow-md hover:border-cln-300 transition-all text-left">
+                  <p className="text-xs font-bold uppercase tracking-wider text-cln-600 mb-1">{item.sessionLabel}</p>
+                  <p className={`font-heading font-bold text-orange-600 text-lg md:text-xl ${item.subtitle ? "mb-0.5" : "mb-3"}`}>
+                    {item.title}
+                  </p>
+                  {item.subtitle && (
+                    <p className="text-sm md:text-base text-gray-500 italic mb-3">{item.subtitle}</p>
                   )}
-                  <div className="flex items-center gap-4">
-                    <Avatar speaker={speaker} size={48} />
-                    <div>
-                      <p className="font-heading font-bold text-cln-950 text-base md:text-lg leading-tight">{speaker.name}</p>
-                      <p className="text-sm md:text-base text-gray-500">{speaker.role} · {speaker.company}</p>
-                    </div>
+                  <div className="flex flex-col gap-2">
+                    {item.speakers.map((entry, idx) => (
+                      <ScheduleSpeakerRow
+                        key={`${entry.name}-${idx}`}
+                        name={entry.name}
+                        displayName={entry.displayName}
+                        profile={getSpeakerByName(entry.name)}
+                        onSelect={setActive}
+                      />
+                    ))}
+                    {item.moderator && (
+                      <ScheduleSpeakerRow
+                        name={item.moderator}
+                        roleLabel="Moderador"
+                        profile={getSpeakerByName(item.moderator)}
+                        onSelect={setActive}
+                      />
+                    )}
                   </div>
-                </button>
+                </div>
               </div>
             ))}
           </div>

@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Image from "next/image";
 import SponsorMap from "@/components/SponsorMap";
 import SponsorsDirectory, { type Sponsor } from "@/components/SponsorsDirectory";
@@ -51,12 +51,12 @@ export default function PatrocinadoresPage() {
       tier: "oro",
       logo: "/sponsor/ha_logix_Sponsor_Oro_crop.png",
       profile: {
-        headline: "90 años de trayectoria como operador de soluciones logísticas para el comercio internacional.",
+        headline: "96 años de trayectoria como operador de soluciones logísticas para el comercio internacional.",
         description:
           "HA Logix es una plataforma integrada de servicios logísticos con presencia en Nicaragua y la región centroamericana. Une transporte, aduanas, almacenamiento y distribución con una plataforma tecnológica propia, comprometida en generar eficiencia y tranquilidad a sus clientes, con altos estándares de transparencia, ética y responsabilidad.",
         services: [
           "Servicios Aduaneros",
-          "Almacén Fiscal",
+          "Almacén de Depósito Aduanero",
           "Almacén Logístico",
           "Distribución",
           "Transporte Terrestre",
@@ -64,7 +64,6 @@ export default function PatrocinadoresPage() {
           "Transporte Marítimo",
           "Agenciamiento Portuario",
           "Logística de Proyectos",
-          "Courier",
         ],
         website: "https://ni.ha-logix.com/",
       },

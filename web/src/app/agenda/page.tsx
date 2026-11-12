@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import AgendaTimeline from "@/components/AgendaTimeline";
+import { TOTAL_AGENDA_SESSIONS } from "@/lib/agenda";
 
 export const metadata: Metadata = {
   title: "Agenda | EXPO LOGÍSTICA · CLN · 2026",
@@ -71,8 +72,8 @@ export default function AgendaPage() {
               Asegurar mi lugar {svgArrow}
             </Link>
             <a
-              href="/docs/agenda-cln-2026.pdf"
-              download
+              href="/docs/agenda_expologistica_cln2026.pdf"
+              download="agenda_expologistica_cln2026.pdf"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-transparent hover:bg-white/10 text-white border border-white/30 px-8 py-4 rounded-lg font-bold text-lg transition-all backdrop-blur-sm"
             >
               Descargar agenda {svgDownload}
@@ -103,7 +104,7 @@ export default function AgendaPage() {
             </p>
           </div>
           <span className="text-xs font-bold text-gray-500 bg-gray-100 rounded-full px-3 py-1.5 whitespace-nowrap">
-            12 sesiones
+            {TOTAL_AGENDA_SESSIONS} sesiones
           </span>
         </div>
 

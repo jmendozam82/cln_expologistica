@@ -97,13 +97,15 @@ export default function SpeakerModal({
             {speaker.name}
           </h2>
 
-          {speaker.topicSubtitle && (
-            <p className="text-base font-semibold text-orange-600 mb-1">{speaker.topic}</p>
+          {speaker.topic && (
+            <p className={`text-base font-semibold text-orange-600 ${speaker.topicSubtitle ? "mb-1" : "mb-6"}`}>
+              {speaker.topic}
+            </p>
           )}
           {speaker.topicSubtitle && (
             <p className="text-sm text-gray-500 italic mb-6">{speaker.topicSubtitle}</p>
           )}
-          {!speaker.topicSubtitle && <div className="mb-6" />}
+          {!speaker.topic && !speaker.topicSubtitle && <div className="mb-6" />}
 
           {speaker.bookReview && (
             <div className="mb-6 rounded-xl border border-orange-200 bg-orange-50/60 p-4">
