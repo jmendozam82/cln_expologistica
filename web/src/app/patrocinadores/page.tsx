@@ -178,18 +178,16 @@ export default function PatrocinadoresPage() {
       logo: "/sponsor/isuzu.png",
       profile: {
         headline:
-          "Más de 100 años de calidad insuperable en vehículos comerciales y motores diésel.",
+          "Más de 100 años de trayectoria impulsando el trabajo y los negocios.",
         description:
-          "ISUZU es una marca global con más de 100 años de experiencia en la fabricación de motores diésel y vehículos comerciales, reconocida por su durabilidad, eficiencia y calidad insuperable. En Nicaragua es distribuida por Grupo El Chele (GEC), un grupo empresarial familiar con más de 35 años de trayectoria en la industria automotriz, comprometido con ofrecer venta, renta, repuestos genuinos, talleres especializados y carrocerías. Su red incluye salas de venta en Managua y Matagalpa, además de un servicio de postventa que acompaña a cada cliente durante toda la vida útil de su vehículo.",
+          "ISUZU es una marca japonesa de vehículos comerciales y motores diésel, reconocida por su durabilidad, eficiencia y calidad insuperable. En Nicaragua, es distribuida por SAMSA Automotriz, con el respaldo de Grupo El Chele. Su portafolio de camiones, pick-ups y SUVs ofrece soluciones para el transporte de carga, la movilidad empresarial y las necesidades de distintos sectores productivos. Esta oferta se complementa con asesoría comercial, talleres especializados y repuestos genuinos para apoyar la continuidad operativa de cada negocio.",
         services: [
-          "Venta de camiones, camionetas y vehículos comerciales Isuzu",
-          "Pick-ups, SUVs y flotas para uso comercial",
-          "Renta de vehículos y flotas corporativas (GEC Flex)",
-          "Talleres de mantenimiento y reparación especializados",
-          "Repuestos genuinos y accesorios originales",
-          "Fabricación y adaptación de carrocerías",
-          "Asesoría comercial y opciones de financiamiento",
-          "Respaldo de postventa y garantía",
+          "Venta de camiones, pick-ups y SUVs ISUZU",
+          "Asesoría para empresas y flotas",
+          "Mantenimiento y reparación especializada",
+          "Repuestos genuinos y accesorios",
+          "Asesoría sobre opciones de financiamiento",
+          "Respaldo posventa y atención de garantías",
         ],
         website: "https://grupo-gec.com/",
         websiteLabel: "Visitar Grupo GEC",
