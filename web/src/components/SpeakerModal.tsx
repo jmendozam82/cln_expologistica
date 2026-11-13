@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import type { Speaker } from "@/lib/speakers";
+import CountryFlag, { COUNTRY_LABELS } from "@/components/CountryFlag";
 
 export default function SpeakerModal({
   speaker,
@@ -86,12 +87,20 @@ export default function SpeakerModal({
         </div>
 
         <div className="flex-1 min-w-0 p-8 md:p-10">
-          <span
-            className={`inline-block rounded-full px-3 py-1 text-[11px] font-bold tracking-wide mb-4 ${speaker.confirmed ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"
-              }`}
-          >
-            {speaker.confirmed ? "Participación Confirmada" : "Pendiente de Confirmación"}
-          </span>
+          <div className="flex flex-wrap items-center gap-2 pr-8 mb-4">
+            <span
+              className={`inline-block rounded-full px-3 py-1 text-[11px] font-bold tracking-wide ${speaker.confirmed ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"
+                }`}
+            >
+              {speaker.confirmed ? "Participación Confirmada" : "Pendiente de Confirmación"}
+            </span>
+            {speaker.countryCode && (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 border border-gray-200 px-3 py-1 text-[11px] font-semibold text-gray-700">
+                <CountryFlag code={speaker.countryCode} variant="rect" className="w-4 h-[11px] ring-1 ring-black/10" />
+                {COUNTRY_LABELS[speaker.countryCode]}
+              </span>
+            )}
+          </div>
 
           <h2 id="modal-speaker-name" className="font-heading font-extrabold text-2xl md:text-[26px] text-cln-950 leading-tight mb-2">
             {speaker.name}

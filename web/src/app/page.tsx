@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import HeroVideo from "@/components/HeroVideo";
 import NetworkingGallery from "@/components/NetworkingGallery";
+import LeadersSection from "@/components/LeadersSection";
 import {
   EVENT_SLOGAN,
   EVENT_TAGLINE,
@@ -487,6 +488,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ════════════════════════════════ 11. LÍDERES CLN ════════════════════════════════ */}
+      <LeadersSection />
     </div>
   );
 }

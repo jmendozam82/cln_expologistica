@@ -6,28 +6,49 @@ import Image from "next/image";
 import { SPEAKERS, getSpeakerByName, type Speaker } from "@/lib/speakers";
 import { CONFERENCE_SCHEDULE } from "@/lib/agenda";
 import SpeakerModal from "@/components/SpeakerModal";
+import CountryFlag, { type CountryCode } from "@/components/CountryFlag";
 
-function Avatar({ name, photo, size = 48 }: { name: string; photo?: string; size?: number }) {
+function Avatar({
+  name,
+  photo,
+  countryCode,
+  size = 48,
+}: {
+  name: string;
+  photo?: string;
+  countryCode?: CountryCode;
+  size?: number;
+}) {
   const initials = name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
-  if (photo) {
-    return (
-      <Image
-        src={photo}
-        alt={name}
-        width={size}
-        height={size}
-        className="rounded-full object-cover block flex-shrink-0"
-        style={{ width: size, height: size }}
-      />
-    );
-  }
+  const badgeCls = size >= 64 ? "w-6 h-6" : "w-[18px] h-[18px]";
+
   return (
-    <div
-      className="rounded-full bg-cln-100 text-cln-700 font-heading font-extrabold flex items-center justify-center flex-shrink-0"
-      style={{ width: size, height: size, fontSize: size * 0.32 }}
-      aria-hidden
-    >
-      {initials}
+    <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
+      {photo ? (
+        <Image
+          src={photo}
+          alt={name}
+          width={size}
+          height={size}
+          className="rounded-full object-cover block"
+          style={{ width: size, height: size }}
+        />
+      ) : (
+        <div
+          className="rounded-full bg-cln-100 text-cln-700 font-heading font-extrabold flex items-center justify-center"
+          style={{ width: size, height: size, fontSize: size * 0.32 }}
+          aria-hidden
+        >
+          {initials}
+        </div>
+      )}
+      {countryCode && (
+        <CountryFlag
+          code={countryCode}
+          variant="circle"
+          className={`absolute -bottom-0.5 -right-0.5 ${badgeCls} ring-2 ring-white shadow-sm`}
+        />
+      )}
     </div>
   );
 }
@@ -54,7 +75,7 @@ function ScheduleSpeakerRow({
         className="group/sp w-full flex items-center gap-4 text-left rounded-lg p-2 -mx-2 hover:bg-cln-50/70 transition-colors cursor-pointer scroll-mt-24"
         aria-label={`Ver perfil de ${profile.name}`}
       >
-        <Avatar name={profile.name} photo={profile.photo} size={48} />
+        <Avatar name={profile.name} photo={profile.photo} countryCode={profile.countryCode} size={48} />
         <div className="flex-1 min-w-0">
           <p className="font-heading font-bold text-cln-950 group-hover/sp:text-orange-600 text-base md:text-lg leading-tight transition-colors">
             {profile.name}
@@ -95,7 +116,7 @@ function SpeakerCard({ speaker, onClick }: { speaker: Speaker; onClick: () => vo
       aria-label={`Ver perfil de ${speaker.name}`}
     >
       <div className="flex-shrink-0">
-        <Avatar name={speaker.name} photo={speaker.photo} size={72} />
+        <Avatar name={speaker.name} photo={speaker.photo} countryCode={speaker.countryCode} size={72} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-heading font-extrabold text-lg text-gray-900 group-hover:text-orange-600 transition-colors leading-tight">
