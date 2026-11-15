@@ -1,7 +1,6 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import LayoutChrome from "@/components/LayoutChrome";
 import "./globals.css";
 
 const inter = Inter({
@@ -31,11 +30,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${inter.variable} ${manrope.variable} h-full antialiased scroll-smooth`}>
       <body className="min-h-full flex flex-col font-sans bg-gray-50 text-gray-900">
-        <Navbar />
-        <main className="flex-grow flex flex-col">
-          {children}
-        </main>
-        <Footer />
+        <LayoutChrome>{children}</LayoutChrome>
         <SpeedInsights />
         <Analytics />
       </body>

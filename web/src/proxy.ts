@@ -1,11 +1,11 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function proxy(req: NextRequest) {
   const basicAuth = req.headers.get('authorization');
   const url = req.nextUrl;
 
-  if (url.pathname.startsWith('/admin')) {
+  if (url.pathname.startsWith('/admin') || url.pathname.startsWith('/api/admin')) {
     if (basicAuth) {
       const authValue = basicAuth.split(' ')[1];
       // Edge runtime supports atob
@@ -29,5 +29,5 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/api/admin/:path*'],
 };

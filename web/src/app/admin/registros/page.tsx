@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { sql } from '@vercel/postgres';
 import { StatusSelect } from './StatusSelect';
 
@@ -38,15 +39,23 @@ export default async function AdminRegistros() {
             <h1 className="text-3xl font-bold text-gray-900">Panel de Administración</h1>
             <p className="text-sm text-gray-500 mt-1">EXPO LOGÍSTICA · CLN · 2026 — 20 de noviembre, DoubleTree by Hilton Managua</p>
           </div>
-          <a 
-            href="/admin/export"
-            className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            Exportar a Excel
-          </a>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              href="/admin/trivia"
+              className="inline-flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold rounded-lg transition-colors shadow-sm"
+            >
+              Trivia en Vivo (QR)
+            </Link>
+            <a 
+              href="/admin/export"
+              className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Exportar a Excel
+            </a>
+          </div>
         </div>
 
         {/* Tarjetas de Resumen */}
