@@ -41,7 +41,7 @@ export default function TriviaQrCode({
   if (!dataUrl) {
     return (
       <div
-        className={`bg-white rounded-2xl flex items-center justify-center text-xs text-gray-400 ${className}`}
+        className={`mx-auto bg-white rounded-2xl flex items-center justify-center text-xs text-gray-400 ${className}`}
         style={{ width: size, height: size }}
       >
         Generando QR...
@@ -56,7 +56,7 @@ export default function TriviaQrCode({
       width={size}
       height={size}
       unoptimized
-      className={`rounded-2xl bg-white p-2 shadow-lg block ${className}`}
+      className={`mx-auto rounded-2xl bg-white p-2 block ${className}`}
       style={{ width: size, height: size }}
     />
   );

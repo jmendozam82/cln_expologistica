@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useState, useSyncExternalStore } from "r
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import {
+  getRevealCorrectIndices,
   OPTION_THEMES,
   type TriviaPublicQuestion,
   type TriviaRevealSnapshot,
@@ -75,6 +76,7 @@ interface PlayerStateResponse {
   reveal: TriviaRevealSnapshot | null;
   playerExists: boolean;
   mySelectedOption: number | null;
+  mySelectedOptions?: number[] | null;
   me: {
     name: string;
     score: number;
@@ -82,6 +84,7 @@ interface PlayerStateResponse {
     rank: number;
     lastAnswer: {
       optionIndex: number;
+      optionIndices?: number[];
       isCorrect: boolean;
       points: number;
       elapsedMs: number;
@@ -126,8 +129,14 @@ export default function PlayTriviaRoomPage() {
   const [localSelection, setLocalSelection] = useState<{
     qIdx: number;
     version: number;
-    option: number;
+    options: number[];
   } | null>(null);
+  const [draftMultiple, setDraftMultiple] = useState<{
+    qIdx: number;
+    version: number;
+    options: number[];
+  } | null>(null);
+  const [submitting, setSubmitting] = useState<boolean>(false);
   const [submittingOption, setSubmittingOption] = useState<number | null>(null);
   const [answerErrorState, setAnswerErrorState] = useState<{
     qIdx: number;
@@ -138,12 +147,29 @@ export default function PlayTriviaRoomPage() {
   const currentQIdx = state?.currentQuestionIndex ?? -1;
   const currentVersion = state?.stateVersion ?? -1;
 
-  const localSelectedOption =
+  const localSelectedOptions =
     localSelection &&
     localSelection.qIdx === currentQIdx &&
     localSelection.version === currentVersion
-      ? localSelection.option
+      ? localSelection.options
       : null;
+
+  const serverSelectedOptions =
+    state?.mySelectedOptions && state.mySelectedOptions.length > 0
+      ? state.mySelectedOptions
+      : state?.mySelectedOption !== null && state?.mySelectedOption !== undefined
+        ? [state.mySelectedOption]
+        : null;
+
+  const selectedOptions = localSelectedOptions ?? serverSelectedOptions;
+  const hasSubmitted = selectedOptions !== null && selectedOptions.length > 0;
+
+  const draftOptions =
+    draftMultiple &&
+    draftMultiple.qIdx === currentQIdx &&
+    draftMultiple.version === currentVersion
+      ? draftMultiple.options
+      : [];
 
   const answerError =
     answerErrorState &&
@@ -151,8 +177,6 @@ export default function PlayTriviaRoomPage() {
     answerErrorState.version === currentVersion
       ? answerErrorState.message
       : null;
-
-  const selectedOption = localSelectedOption ?? state?.mySelectedOption ?? null;
 
   function saveStoredPlayer(next: StoredPlayer | null) {
     if (next) {
@@ -209,7 +233,7 @@ export default function PlayTriviaRoomPage() {
           const inOpenAnswerWindow =
             data.status === "question" &&
             data.mySelectedOption === null &&
-            localSelectedOption === null;
+            localSelectedOptions === null;
           nextDelay = inOpenAnswerWindow ? 2000 : 1200;
         }
       } catch {
@@ -226,7 +250,7 @@ export default function PlayTriviaRoomPage() {
       active = false;
       if (timerId !== null) window.clearTimeout(timerId);
     };
-  }, [hydrated, code, player, storageKey, localSelectedOption]);
+  }, [hydrated, code, player, storageKey, localSelectedOptions]);
 
   async function handleJoin(e: FormEvent) {
     e.preventDefault();
@@ -262,14 +286,16 @@ export default function PlayTriviaRoomPage() {
     }
   }
 
-  async function handleSelectOption(optionIndex: number) {
+  async function submitAnswer(optionIndices: number[]) {
     if (!player || !state?.question) return;
-    if (selectedOption !== null || submittingOption !== null) return;
+    if (hasSubmitted || submitting) return;
     if (!timer.isActiveWindow) return;
+    if (optionIndices.length === 0) return;
 
     const qIdx = state.currentQuestionIndex;
     const version = state.stateVersion;
-    setSubmittingOption(optionIndex);
+    setSubmitting(true);
+    setSubmittingOption(optionIndices[0]);
     setAnswerErrorState(null);
 
     try {
@@ -280,7 +306,7 @@ export default function PlayTriviaRoomPage() {
           code,
           playerId: player.playerId,
           questionIndex: qIdx,
-          optionIndex,
+          optionIndices,
         }),
       });
       const data = await res.json();
@@ -300,10 +326,13 @@ export default function PlayTriviaRoomPage() {
         return;
       }
 
+      const confirmed: number[] = Array.isArray(data.selectedOptions)
+        ? data.selectedOptions
+        : optionIndices;
       setLocalSelection({
         qIdx,
         version,
-        option: data.selectedOption ?? optionIndex,
+        options: confirmed,
       });
     } catch {
       setAnswerErrorState({
@@ -312,8 +341,24 @@ export default function PlayTriviaRoomPage() {
         message: "Error de red al enviar. Intenta tocar de nuevo.",
       });
     } finally {
+      setSubmitting(false);
       setSubmittingOption(null);
     }
+  }
+
+  function handleOptionTap(optionIndex: number) {
+    if (!state?.question) return;
+    if (state.question.type === "multiple") {
+      const qIdx = state.currentQuestionIndex;
+      const version = state.stateVersion;
+      const exists = draftOptions.includes(optionIndex);
+      const next = exists
+        ? draftOptions.filter((x) => x !== optionIndex)
+        : [...draftOptions, optionIndex].sort((a, b) => a - b);
+      setDraftMultiple({ qIdx, version, options: next });
+      return;
+    }
+    void submitAnswer([optionIndex]);
   }
 
   if (!hydrated || (!state && !stateError)) {
@@ -486,15 +531,22 @@ export default function PlayTriviaRoomPage() {
                   {Math.ceil(timer.leadRemainingMs / 1000)}
                 </div>
               </div>
-            ) : selectedOption !== null ? (
+            ) : hasSubmitted && selectedOptions ? (
               <div className="space-y-4 rounded-3xl border border-emerald-400/30 bg-emerald-950/30 p-8 text-center">
                 <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-400" />
                 <h2 className="font-heading text-2xl font-extrabold">
                   ¡Respuesta enviada!
                 </h2>
-                <div className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-sm font-bold">
-                  <span>{OPTION_THEMES[selectedOption]?.shape}</span>
-                  <span>{state.question.options[selectedOption]}</span>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {selectedOptions.map((optIdx) => (
+                    <div
+                      key={optIdx}
+                      className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-sm font-bold"
+                    >
+                      <span>{OPTION_THEMES[optIdx]?.shape}</span>
+                      <span>{state.question!.options[optIdx]}</span>
+                    </div>
+                  ))}
                 </div>
                 <p className="text-xs text-slate-300">
                   Esperando que cierre el reloj para ver si acertaste...
@@ -526,6 +578,16 @@ export default function PlayTriviaRoomPage() {
                 </div>
 
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                  {state.question.type === "multiple" && (
+                    <span className="mb-2 inline-block rounded-full border border-sky-400/40 bg-sky-500/20 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider text-sky-200">
+                      Selección múltiple · Marca todas las correctas
+                    </span>
+                  )}
+                  {state.question.type === "boolean" && (
+                    <span className="mb-2 inline-block rounded-full border border-amber-400/40 bg-amber-500/20 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider text-amber-200">
+                      Verdadero o Falso
+                    </span>
+                  )}
                   <h2 className="font-heading text-xl font-bold leading-snug">
                     {state.question.text}
                   </h2>
@@ -540,27 +602,60 @@ export default function PlayTriviaRoomPage() {
                 <div className="grid gap-3">
                   {state.question.options.map((opt, idx) => {
                     const theme = OPTION_THEMES[idx];
-                    const isSendingThis = submittingOption === idx;
+                    const isMultiple = state.question!.type === "multiple";
+                    const isDraftChecked = isMultiple && draftOptions.includes(idx);
+                    const isSendingThis = !isMultiple && submittingOption === idx;
                     return (
                       <button
                         key={idx}
                         type="button"
-                        disabled={submittingOption !== null}
-                        onClick={() => handleSelectOption(idx)}
-                        className={`flex min-h-[74px] w-full items-center gap-3.5 rounded-2xl p-4 text-left font-bold text-white shadow-lg transition active:scale-[0.98] disabled:opacity-70 ${theme.bg}`}
+                        disabled={submitting}
+                        onClick={() => handleOptionTap(idx)}
+                        className={`flex min-h-[74px] w-full items-center justify-between gap-3.5 rounded-2xl p-4 text-left font-bold text-white shadow-lg transition active:scale-[0.98] disabled:opacity-70 ${theme.bg} ${
+                          isDraftChecked ? "ring-4 ring-white" : ""
+                        }`}
                       >
-                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-black/25 text-xl font-black">
-                          {isSendingThis ? (
-                            <Loader2 className="h-5 w-5 animate-spin" />
-                          ) : (
-                            theme.shape
-                          )}
-                        </span>
-                        <span className="text-base leading-snug">{opt}</span>
+                        <div className="flex items-center gap-3.5">
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-black/25 text-xl font-black">
+                            {isSendingThis ? (
+                              <Loader2 className="h-5 w-5 animate-spin" />
+                            ) : (
+                              theme.shape
+                            )}
+                          </span>
+                          <span className="text-base leading-snug">{opt}</span>
+                        </div>
+                        {isMultiple && (
+                          <span
+                            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 text-sm font-black ${
+                              isDraftChecked
+                                ? "border-white bg-white text-slate-900"
+                                : "border-white/50 bg-black/20 text-transparent"
+                            }`}
+                          >
+                            ✓
+                          </span>
+                        )}
                       </button>
                     );
                   })}
                 </div>
+
+                {state.question.type === "multiple" && (
+                  <button
+                    type="button"
+                    disabled={draftOptions.length === 0 || submitting}
+                    onClick={() => submitAnswer(draftOptions)}
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-4 font-heading text-base font-extrabold text-cln-950 shadow-xl transition hover:bg-slate-100 disabled:opacity-40"
+                  >
+                    {submitting ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <Send className="h-5 w-5" />
+                    )}
+                    Enviar {draftOptions.length > 0 ? `(${draftOptions.length} seleccionadas)` : "respuesta"}
+                  </button>
+                )}
               </>
             )}
           </div>
@@ -581,6 +676,30 @@ export default function PlayTriviaRoomPage() {
                   Respondido en {(lastAnswer.elapsedMs / 1000).toFixed(2)} s
                 </p>
               </div>
+            ) : lastAnswer && lastAnswer.points > 0 ? (
+              <div className="space-y-3 rounded-3xl border border-amber-400/50 bg-amber-950/40 p-8 shadow-xl">
+                <CheckCircle2 className="mx-auto h-14 w-14 text-amber-400" />
+                <h2 className="font-heading text-2xl font-black text-amber-200">
+                  ¡Parcialmente correcto!
+                </h2>
+                <p className="font-heading text-2xl font-extrabold text-white">
+                  +{lastAnswer.points.toLocaleString("es-NI")} pts
+                </p>
+                <p className="text-xs text-amber-200">
+                  Puntaje ponderado · {(lastAnswer.elapsedMs / 1000).toFixed(2)} s
+                </p>
+                {state.reveal && (
+                  <p className="pt-1 text-sm text-slate-300">
+                    Correctas:{" "}
+                    <strong className="text-emerald-300">
+                      {getRevealCorrectIndices(state.reveal)
+                        .map((idx) => state.question!.options[idx])
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </strong>
+                  </p>
+                )}
+              </div>
             ) : lastAnswer ? (
               <div className="space-y-3 rounded-3xl border border-rose-400/40 bg-rose-950/40 p-8">
                 <XCircle className="mx-auto h-14 w-14 text-rose-400" />
@@ -591,7 +710,10 @@ export default function PlayTriviaRoomPage() {
                   <p className="text-sm text-slate-300">
                     Correcta:{" "}
                     <strong className="text-emerald-300">
-                      {state.question.options[state.reveal.correctIndex]}
+                      {getRevealCorrectIndices(state.reveal)
+                        .map((idx) => state.question!.options[idx])
+                        .filter(Boolean)
+                        .join(" · ")}
                     </strong>
                   </p>
                 )}
@@ -606,7 +728,10 @@ export default function PlayTriviaRoomPage() {
                   <p className="text-sm text-slate-300">
                     Correcta:{" "}
                     <strong className="text-emerald-300">
-                      {state.question.options[state.reveal.correctIndex]}
+                      {getRevealCorrectIndices(state.reveal)
+                        .map((idx) => state.question!.options[idx])
+                        .filter(Boolean)
+                        .join(" · ")}
                     </strong>
                   </p>
                 )}

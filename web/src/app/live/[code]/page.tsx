@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import TriviaQrCode from "@/components/TriviaQrCode";
 import {
+  getRevealCorrectIndices,
   OPTION_THEMES,
   type TriviaPublicQuestion,
   type TriviaRevealSnapshot,
@@ -302,9 +303,13 @@ export default function LiveProjectorPage() {
               </div>
             </div>
 
-            <div className="flex flex-col items-center lg:col-span-5">
-              <div className="rounded-3xl bg-white p-6 text-center text-slate-900 shadow-2xl">
-                {joinUrl && <TriviaQrCode url={joinUrl} size={290} />}
+            <div className="flex flex-col items-center justify-center lg:col-span-5">
+              <div className="flex w-full max-w-[390px] flex-col items-center rounded-3xl bg-white p-6 text-center text-slate-900 shadow-2xl sm:p-8">
+                {joinUrl && (
+                  <div className="flex w-full items-center justify-center">
+                    <TriviaQrCode url={joinUrl} size={280} />
+                  </div>
+                )}
                 <p className="mt-4 text-xs font-bold uppercase tracking-widest text-slate-500">
                   O entra manualmente a
                 </p>
@@ -322,9 +327,21 @@ export default function LiveProjectorPage() {
         {state.status === "question" && state.question && (
           <div className="space-y-8">
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <span className="rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm font-bold text-slate-200">
-                Pregunta {state.currentQuestionIndex + 1} de {state.totalQuestions}
-              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm font-bold text-slate-200">
+                  Pregunta {state.currentQuestionIndex + 1} de {state.totalQuestions}
+                </span>
+                {state.question.type === "multiple" && (
+                  <span className="rounded-full border border-sky-400/40 bg-sky-500/20 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-sky-200">
+                    Selección múltiple · Varias correctas
+                  </span>
+                )}
+                {state.question.type === "boolean" && (
+                  <span className="rounded-full border border-amber-400/40 bg-amber-500/20 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-amber-200">
+                    Verdadero o Falso
+                  </span>
+                )}
+              </div>
 
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2 text-lg font-bold text-emerald-300">
@@ -421,7 +438,8 @@ export default function LiveProjectorPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               {state.question.options.map((opt, idx) => {
                 const theme = OPTION_THEMES[idx];
-                const isCorrect = idx === state.reveal!.correctIndex;
+                const correctSet = getRevealCorrectIndices(state.reveal);
+                const isCorrect = correctSet.includes(idx);
                 const count = state.reveal!.counts[idx] ?? 0;
                 const total = Math.max(1, state.reveal!.totalAnswers);
                 const pct = Math.round((count / total) * 100);

@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
 import {
   ANSWER_GRACE_MS,
-  calculatePoints,
+  evaluateAnswerScore,
   getSessionByCode,
+  normalizeSelectedIndices,
 } from "@/lib/trivia";
 
 export const dynamic = "force-dynamic";
@@ -16,13 +17,9 @@ export async function POST(req: Request) {
     const code = typeof body.code === "string" ? body.code : "";
     const playerId = typeof body.playerId === "string" ? body.playerId.trim() : "";
     const questionIndex = Number(body.questionIndex);
-    const optionIndex = Number(body.optionIndex);
 
     if (!UUID_REGEX.test(playerId)) {
       return NextResponse.json({ error: "Participante inválido. Vuelve a unirte." }, { status: 400 });
-    }
-    if (!Number.isInteger(optionIndex) || optionIndex < 0 || optionIndex > 3) {
-      return NextResponse.json({ error: "Opción inválida." }, { status: 400 });
     }
 
     const session = await getSessionByCode(code);
@@ -48,6 +45,21 @@ export async function POST(req: Request) {
     if (!question) {
       return NextResponse.json({ error: "Pregunta no válida." }, { status: 400 });
     }
+
+    const rawSelections = Array.isArray(body.optionIndices)
+      ? body.optionIndices.map(Number)
+      : body.optionIndex !== undefined
+        ? [Number(body.optionIndex)]
+        : [];
+
+    const selectedIndices = normalizeSelectedIndices(rawSelections, question.options.length);
+
+    if (selectedIndices.length === 0) {
+      return NextResponse.json({ error: "Selecciona al menos una opción." }, { status: 400 });
+    }
+
+    const finalIndices =
+      question.type === "multiple" ? selectedIndices : [selectedIndices[0]];
 
     const playerCheck = await sql`
       SELECT id FROM trivia_players
@@ -80,8 +92,11 @@ export async function POST(req: Request) {
     }
 
     const clampedElapsedMs = Math.min(limitMs, Math.max(0, Math.round(rawElapsedMs)));
-    const isCorrect = optionIndex === question.correctIndex;
-    const points = calculatePoints(isCorrect, clampedElapsedMs, question.timeLimitSec);
+    const { isCorrect, points } = evaluateAnswerScore(
+      question,
+      finalIndices,
+      clampedElapsedMs
+    );
 
     const insertRes = await sql`
       INSERT INTO trivia_answers (
@@ -89,6 +104,7 @@ export async function POST(req: Request) {
         question_index,
         player_id,
         option_index,
+        option_indices,
         is_correct,
         points,
         elapsed_ms
@@ -97,7 +113,8 @@ export async function POST(req: Request) {
         ${session.id},
         ${questionIndex},
         ${playerId}::uuid,
-        ${optionIndex},
+        ${finalIndices[0]},
+        ${JSON.stringify(finalIndices)}::jsonb,
         ${isCorrect},
         ${points},
         ${clampedElapsedMs}
@@ -108,12 +125,12 @@ export async function POST(req: Request) {
 
     const alreadyAnswered = insertRes.rows.length === 0;
 
-    if (!alreadyAnswered && isCorrect) {
+    if (!alreadyAnswered && points > 0) {
       await sql`
         UPDATE trivia_players
         SET
           score = score + ${points},
-          correct_count = correct_count + 1,
+          correct_count = correct_count + ${isCorrect ? 1 : 0},
           total_time_ms = total_time_ms + ${clampedElapsedMs}
         WHERE id = ${playerId}::uuid AND session_id = ${session.id}
       `;
@@ -122,11 +139,11 @@ export async function POST(req: Request) {
     return NextResponse.json({
       accepted: true,
       alreadyAnswered,
-      selectedOption: optionIndex,
+      selectedOption: finalIndices[0],
+      selectedOptions: finalIndices,
     });
   } catch (error) {
     console.error("Error submitting answer:", error);
     return NextResponse.json({ error: "Error al registrar tu respuesta." }, { status: 500 });
   }
 }
-

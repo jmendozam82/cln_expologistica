@@ -76,6 +76,7 @@ export default function AdminTriviaListPage() {
         ? [
             {
               id: "sample-1",
+              type: "single",
               text: "¿Cuál es el objetivo principal de una Torre de Control Logística?",
               options: [
                 "Aumentar el tamaño físico del almacén",
@@ -83,20 +84,29 @@ export default function AdminTriviaListPage() {
                 "Reemplazar el transporte marítimo",
                 "Eliminar los inventarios de seguridad",
               ],
-              correctIndex: 1,
+              correctIndices: [1],
               timeLimitSec: 20,
             },
             {
               id: "sample-2",
-              text: "¿Qué permite evaluar la visibilidad End-to-End en Supply Chain?",
+              type: "boolean",
+              text: "La visibilidad End-to-End permite monitorear el flujo completo desde el proveedor hasta la entrega final.",
+              options: ["Verdadero", "Falso"],
+              correctIndices: [0],
+              timeLimitSec: 15,
+            },
+            {
+              id: "sample-3",
+              type: "multiple",
+              text: "¿Cuáles de los siguientes son pilares clave de la logística moderna? (Selecciona varias)",
               options: [
-                "Solo la facturación mensual",
-                "Únicamente el mantenimiento de montacargas",
-                "El flujo completo desde el proveedor hasta la entrega final",
-                "Exclusivamente el consumo eléctrico",
+                "Trazabilidad en tiempo real",
+                "Optimización de rutas y costos",
+                "Ignorar los niveles de inventario",
+                "Colaboración en la cadena de suministro",
               ],
-              correctIndex: 2,
-              timeLimitSec: 20,
+              correctIndices: [0, 1, 3],
+              timeLimitSec: 25,
             },
           ]
         : [];

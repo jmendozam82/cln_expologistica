@@ -7,11 +7,18 @@ import TriviaQrCode from "@/components/TriviaQrCode";
 import {
   OPTION_THEMES,
   type TriviaQuestion,
+  type TriviaQuestionType,
   type TriviaRevealSnapshot,
   type TriviaSessionRecord,
   type TriviaStatus,
 } from "@/lib/trivia";
 import { useSyncedTimer } from "@/lib/useSyncedTimer";
+
+const QUESTION_TYPE_LABELS: Record<TriviaQuestionType, string> = {
+  single: "Selección Única",
+  multiple: "Selección Múltiple",
+  boolean: "Verdadero / Falso",
+};
 
 interface PresenterState {
   id: number;
@@ -32,13 +39,14 @@ interface PresenterState {
   } | null;
 }
 
-function emptyQuestion(index: number): TriviaQuestion {
+function emptyQuestion(index: number, type: TriviaQuestionType = "single"): TriviaQuestion {
   return {
     id: `q-${Date.now()}-${index}`,
+    type,
     text: "",
-    options: ["", "", "", ""],
-    correctIndex: 0,
-    timeLimitSec: 20,
+    options: type === "boolean" ? ["Verdadero", "Falso"] : ["", "", "", ""],
+    correctIndices: [0],
+    timeLimitSec: type === "boolean" ? 15 : 20,
   };
 }
 
@@ -193,12 +201,18 @@ export default function AdminTriviaDetailPage() {
     setError("");
     setNotice("");
 
-    const validQuestions = editQuestions.filter(
-      (q) => q.text.trim() && q.options.every((o) => o.trim())
-    );
+    const validQuestions = editQuestions.filter((q) => {
+      const expectedLen = q.type === "boolean" ? 2 : 4;
+      return (
+        q.text.trim() &&
+        q.options.length === expectedLen &&
+        q.options.every((o) => o.trim()) &&
+        q.correctIndices.length > 0
+      );
+    });
 
     if (validQuestions.length !== editQuestions.length) {
-      setError("Completa el texto y las 4 opciones en todas las preguntas antes de guardar.");
+      setError("Completa el texto, todas las opciones y al menos una respuesta correcta en cada pregunta.");
       return;
     }
 
@@ -240,9 +254,68 @@ export default function AdminTriviaDetailPage() {
     setEditQuestions((prev) =>
       prev.map((q, i) => {
         if (i !== qIdx) return q;
-        const nextOpts = [...q.options] as [string, string, string, string];
+        const nextOpts = [...q.options];
         nextOpts[optIdx] = value;
         return { ...q, options: nextOpts };
+      })
+    );
+  };
+
+  const changeQuestionType = (qIdx: number, nextType: TriviaQuestionType) => {
+    setEditQuestions((prev) =>
+      prev.map((q, i) => {
+        if (i !== qIdx || q.type === nextType) return q;
+        if (nextType === "boolean") {
+          return {
+            ...q,
+            type: "boolean",
+            options: ["Verdadero", "Falso"],
+            correctIndices: [q.correctIndices[0] === 1 ? 1 : 0],
+          };
+        }
+        const wasBooleanDefault =
+          q.type === "boolean" &&
+          q.options[0] === "Verdadero" &&
+          q.options[1] === "Falso";
+        const nextOptions = wasBooleanDefault
+          ? ["", "", "", ""]
+          : [
+              q.options[0] ?? "",
+              q.options[1] ?? "",
+              q.options[2] ?? "",
+              q.options[3] ?? "",
+            ];
+        const nextCorrect =
+          nextType === "single"
+            ? [q.correctIndices[0] ?? 0]
+            : q.correctIndices.length > 0
+              ? q.correctIndices
+              : [0];
+        return {
+          ...q,
+          type: nextType,
+          options: nextOptions,
+          correctIndices: nextCorrect,
+        };
+      })
+    );
+  };
+
+  const toggleCorrectOption = (qIdx: number, optIdx: number) => {
+    setEditQuestions((prev) =>
+      prev.map((q, i) => {
+        if (i !== qIdx) return q;
+        if (q.type !== "multiple") {
+          return { ...q, correctIndices: [optIdx] };
+        }
+        const exists = q.correctIndices.includes(optIdx);
+        if (exists && q.correctIndices.length === 1) {
+          return q; // siempre debe quedar al menos 1 correcta
+        }
+        const next = exists
+          ? q.correctIndices.filter((x) => x !== optIdx)
+          : [...q.correctIndices, optIdx].sort((a, b) => a - b);
+        return { ...q, correctIndices: next };
       })
     );
   };
@@ -396,7 +469,7 @@ export default function AdminTriviaDetailPage() {
                   <div className="rounded-xl bg-gray-50 border border-gray-200 p-5 mb-6">
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                       <span className="text-xs font-bold uppercase tracking-wider text-cln-600">
-                        Pregunta {qIndex + 1} de {totalQ} · {currentQuestion.timeLimitSec}s
+                        Pregunta {qIndex + 1} de {totalQ} · {QUESTION_TYPE_LABELS[currentQuestion.type]} · {currentQuestion.timeLimitSec}s
                       </span>
                       {status === "question" && (
                         <span className="font-mono text-sm font-extrabold text-orange-600">
@@ -413,7 +486,7 @@ export default function AdminTriviaDetailPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       {currentQuestion.options.map((opt, idx) => {
                         const t = OPTION_THEMES[idx];
-                        const isCorrect = idx === currentQuestion.correctIndex;
+                        const isCorrect = currentQuestion.correctIndices.includes(idx);
                         return (
                           <div
                             key={idx}
@@ -677,7 +750,20 @@ export default function AdminTriviaDetailPage() {
                     Pregunta {qIdx + 1}
                   </span>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <select
+                      value={q.type}
+                      onChange={(e) =>
+                        changeQuestionType(qIdx, e.target.value as TriviaQuestionType)
+                      }
+                      className="rounded-lg border border-gray-300 px-2.5 py-1.5 text-xs font-bold bg-white text-cln-900"
+                      aria-label="Tipo de pregunta"
+                    >
+                      <option value="single">Selección Única (4 opciones)</option>
+                      <option value="multiple">Selección Múltiple (varias correctas)</option>
+                      <option value="boolean">Verdadero / Falso</option>
+                    </select>
+
                     <select
                       value={q.timeLimitSec}
                       onChange={(e) =>
@@ -735,7 +821,7 @@ export default function AdminTriviaDetailPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {q.options.map((opt, optIdx) => {
                     const t = OPTION_THEMES[optIdx];
-                    const isCorrect = q.correctIndex === optIdx;
+                    const isCorrect = q.correctIndices.includes(optIdx);
                     return (
                       <div
                         key={optIdx}
@@ -747,21 +833,29 @@ export default function AdminTriviaDetailPage() {
                       >
                         <button
                           type="button"
-                          onClick={() =>
-                            updateQuestion(qIdx, { correctIndex: optIdx as 0 | 1 | 2 | 3 })
-                          }
+                          onClick={() => toggleCorrectOption(qIdx, optIdx)}
                           className={`w-9 h-9 rounded-lg font-extrabold text-white text-xs flex items-center justify-center flex-shrink-0 cursor-pointer ${
                             isCorrect ? "bg-emerald-600 ring-2 ring-emerald-300" : t.solid
                           }`}
-                          title="Marcar como respuesta correcta"
+                          title={
+                            q.type === "multiple"
+                              ? "Activar/desactivar como respuesta correcta"
+                              : "Marcar como respuesta correcta"
+                          }
                         >
-                          {isCorrect ? "✓" : t.letter}
+                          {isCorrect ? "✓" : q.type === "boolean" ? (optIdx === 0 ? "V" : "F") : t.letter}
                         </button>
                         <input
                           type="text"
                           value={opt}
                           onChange={(e) => updateOption(qIdx, optIdx, e.target.value)}
-                          placeholder={`Opción ${t.letter}`}
+                          placeholder={
+                            q.type === "boolean"
+                              ? optIdx === 0
+                                ? "Verdadero"
+                                : "Falso"
+                              : `Opción ${t.letter}`
+                          }
                           className="flex-1 bg-transparent text-sm px-2 py-1 focus:outline-none"
                           required
                         />
@@ -770,21 +864,45 @@ export default function AdminTriviaDetailPage() {
                   })}
                 </div>
                 <p className="text-[11px] text-gray-400">
-                  Haz clic en el cuadro de color (A, B, C o D) para marcar la respuesta correcta.
+                  {q.type === "multiple"
+                    ? "Selección múltiple: haz clic en A, B, C o D para marcar una o varias respuestas correctas."
+                    : q.type === "boolean"
+                      ? "Verdadero / Falso: marca V o F para definir la respuesta correcta (puedes personalizar las etiquetas si deseas)."
+                      : "Selección única: haz clic en el cuadro de color (A, B, C o D) para marcar la respuesta correcta."}
                 </p>
               </div>
             ))}
 
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <button
-                type="button"
-                onClick={() =>
-                  setEditQuestions((prev) => [...prev, emptyQuestion(prev.length)])
-                }
-                className="bg-white border-2 border-dashed border-cln-300 hover:border-cln-500 text-cln-700 font-bold text-sm px-5 py-3 rounded-xl transition-colors cursor-pointer"
-              >
-                + Agregar Pregunta
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setEditQuestions((prev) => [...prev, emptyQuestion(prev.length, "single")])
+                  }
+                  className="bg-white border-2 border-dashed border-cln-300 hover:border-cln-500 text-cln-700 font-bold text-sm px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
+                >
+                  + Selección Única
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setEditQuestions((prev) => [...prev, emptyQuestion(prev.length, "multiple")])
+                  }
+                  className="bg-white border-2 border-dashed border-sky-300 hover:border-sky-500 text-sky-700 font-bold text-sm px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
+                >
+                  + Selección Múltiple
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setEditQuestions((prev) => [...prev, emptyQuestion(prev.length, "boolean")])
+                  }
+                  className="bg-white border-2 border-dashed border-orange-300 hover:border-orange-500 text-orange-700 font-bold text-sm px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
+                >
+                  + Verdadero / Falso
+                </button>
+              </div>
 
               <button
                 type="submit"

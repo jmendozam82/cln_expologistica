@@ -83,7 +83,7 @@ export async function POST(
         const snapshot = await buildRevealSnapshot(
           sessionId,
           session.currentQuestionIndex,
-          session.questions[session.currentQuestionIndex]?.correctIndex ?? 0
+          session.questions[session.currentQuestionIndex]
         );
         await sql`
           UPDATE trivia_sessions
@@ -110,7 +110,7 @@ export async function POST(
       const snapshot = await buildRevealSnapshot(
         sessionId,
         session.currentQuestionIndex,
-        q?.correctIndex ?? 0
+        q
       );
       await sql`
         UPDATE trivia_sessions
@@ -125,7 +125,7 @@ export async function POST(
       const snapshot = await buildRevealSnapshot(
         sessionId,
         session.currentQuestionIndex,
-        q?.correctIndex ?? 0
+        q
       );
       await sql`
         UPDATE trivia_sessions

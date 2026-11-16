@@ -1,19 +1,22 @@
 import { sql } from "@vercel/postgres";
 
 export type TriviaStatus = "lobby" | "question" | "reveal" | "leaderboard" | "podium";
+export type TriviaQuestionType = "single" | "multiple" | "boolean";
 
 export interface TriviaQuestion {
   id: string;
+  type: TriviaQuestionType;
   text: string;
-  options: [string, string, string, string];
-  correctIndex: 0 | 1 | 2 | 3;
+  options: string[];
+  correctIndices: number[];
   timeLimitSec: number;
 }
 
 export interface TriviaPublicQuestion {
   index: number;
+  type: TriviaQuestionType;
   text: string;
-  options: [string, string, string, string];
+  options: string[];
   timeLimitSec: number;
 }
 
@@ -28,8 +31,11 @@ export interface TriviaRankingRow {
 
 export interface TriviaRevealSnapshot {
   questionIndex: number;
-  correctIndex: number;
-  counts: [number, number, number, number];
+  type?: TriviaQuestionType;
+  correctIndices: number[];
+  /** Campo legado mantenido por compatibilidad con sesiones previas en DB */
+  correctIndex?: number;
+  counts: number[];
   totalAnswers: number;
   totalPlayers: number;
   leaderboard: TriviaRankingRow[];
@@ -133,12 +139,18 @@ export async function ensureTriviaTables(): Promise<void> {
           question_index INTEGER NOT NULL,
           player_id UUID NOT NULL REFERENCES trivia_players(id) ON DELETE CASCADE,
           option_index INTEGER NOT NULL,
+          option_indices JSONB,
           is_correct BOOLEAN NOT NULL,
           points INTEGER NOT NULL DEFAULT 0,
           elapsed_ms INTEGER NOT NULL DEFAULT 0,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
           UNIQUE (session_id, question_index, player_id)
         );
+      `;
+
+      await sql`
+        ALTER TABLE trivia_answers
+        ADD COLUMN IF NOT EXISTS option_indices JSONB;
       `;
 
       await sql`
@@ -170,12 +182,108 @@ export function generateRoomCode(): string {
   return code;
 }
 
-export function calculatePoints(isCorrect: boolean, elapsedMs: number, timeLimitSec: number): number {
-  if (!isCorrect) return 0;
+export function calculatePoints(
+  accuracy: boolean | number,
+  elapsedMs: number,
+  timeLimitSec: number
+): number {
+  const factor =
+    typeof accuracy === "boolean"
+      ? accuracy
+        ? 1
+        : 0
+      : Math.min(1, Math.max(0, accuracy));
+  if (factor <= 0) return 0;
   const limitMs = Math.max(1000, timeLimitSec * 1000);
   const clamped = Math.min(limitMs, Math.max(0, elapsedMs));
-  // 1000 pts al instante (0ms), 500 pts justo al expirar el tiempo
-  return Math.round(1000 * (1 - clamped / (2 * limitMs)));
+  // 1000 pts al instante (0ms), 500 pts justo al expirar el tiempo, ponderado por factor de acierto
+  return Math.round(1000 * (1 - clamped / (2 * limitMs)) * factor);
+}
+
+export function normalizeSelectedIndices(
+  indices: number[],
+  optionCount: number
+): number[] {
+  const unique = new Set<number>();
+  for (const val of indices) {
+    const n = Number(val);
+    if (Number.isInteger(n) && n >= 0 && n < optionCount) {
+      unique.add(n);
+    }
+  }
+  return Array.from(unique).sort((a, b) => a - b);
+}
+
+export function evaluateAnswerScore(
+  question: TriviaQuestion,
+  selectedIndices: number[],
+  elapsedMs: number
+): { isCorrect: boolean; points: number; accuracyRatio: number } {
+  const selected = normalizeSelectedIndices(selectedIndices, question.options.length);
+  const expected = normalizeSelectedIndices(question.correctIndices, question.options.length);
+
+  if (selected.length === 0 || expected.length === 0) {
+    return { isCorrect: false, points: 0, accuracyRatio: 0 };
+  }
+
+  if (question.type !== "multiple") {
+    const exact =
+      selected.length === expected.length &&
+      expected.every((val, i) => selected[i] === val);
+    return {
+      isCorrect: exact,
+      points: calculatePoints(exact, elapsedMs, question.timeLimitSec),
+      accuracyRatio: exact ? 1 : 0,
+    };
+  }
+
+  const expectedSet = new Set(expected);
+  let hits = 0;
+  let wrong = 0;
+  for (const idx of selected) {
+    if (expectedSet.has(idx)) hits += 1;
+    else wrong += 1;
+  }
+
+  // Si marca absolutamente todas las opciones existiendo opciones falsas, anula para evitar trampa
+  const pickedAllOptions =
+    selected.length >= question.options.length &&
+    expected.length < question.options.length;
+  // Cada acierto suma 1/expected.length; cada error descuenta medio peso (0.5/expected.length)
+  const accuracyRatio = pickedAllOptions
+    ? 0
+    : Math.max(0, (hits - wrong * 0.5) / expected.length);
+  const isFullMatch = hits === expected.length && wrong === 0;
+  const points = calculatePoints(accuracyRatio, elapsedMs, question.timeLimitSec);
+
+  return {
+    isCorrect: isFullMatch,
+    points,
+    accuracyRatio,
+  };
+}
+
+export function isAnswerCorrect(
+  question: TriviaQuestion,
+  selectedIndices: number[]
+): boolean {
+  const selected = normalizeSelectedIndices(selectedIndices, question.options.length);
+  const expected = normalizeSelectedIndices(question.correctIndices, question.options.length);
+  if (selected.length === 0 || selected.length !== expected.length) {
+    return false;
+  }
+  return expected.every((val, i) => selected[i] === val);
+}
+
+export function getRevealCorrectIndices(reveal: TriviaRevealSnapshot | null | undefined): number[] {
+  if (!reveal) return [0];
+  if (Array.isArray(reveal.correctIndices) && reveal.correctIndices.length > 0) {
+    return reveal.correctIndices;
+  }
+  if (typeof reveal.correctIndex === "number" && Number.isInteger(reveal.correctIndex)) {
+    return [reveal.correctIndex];
+  }
+  return [0];
 }
 
 export function sanitizeQuestions(input: unknown): TriviaQuestion[] {
@@ -187,18 +295,45 @@ export function sanitizeQuestions(input: unknown): TriviaQuestion[] {
       const text = typeof item.text === "string" ? item.text.trim() : "";
       if (!text) return null;
 
+      const rawType = item.type;
+      const type: TriviaQuestionType =
+        rawType === "multiple" || rawType === "boolean" || rawType === "single"
+          ? rawType
+          : "single";
+
       const rawOptions = Array.isArray(item.options) ? item.options : [];
-      const opts: [string, string, string, string] = [
-        typeof rawOptions[0] === "string" ? rawOptions[0].trim() : "",
-        typeof rawOptions[1] === "string" ? rawOptions[1].trim() : "",
-        typeof rawOptions[2] === "string" ? rawOptions[2].trim() : "",
-        typeof rawOptions[3] === "string" ? rawOptions[3].trim() : "",
-      ];
 
-      if (opts.some((o) => !o)) return null;
+      let opts: string[];
+      if (type === "boolean") {
+        const t0 = typeof rawOptions[0] === "string" && rawOptions[0].trim()
+          ? rawOptions[0].trim()
+          : "Verdadero";
+        const t1 = typeof rawOptions[1] === "string" && rawOptions[1].trim()
+          ? rawOptions[1].trim()
+          : "Falso";
+        opts = [t0, t1];
+      } else {
+        opts = [
+          typeof rawOptions[0] === "string" ? rawOptions[0].trim() : "",
+          typeof rawOptions[1] === "string" ? rawOptions[1].trim() : "",
+          typeof rawOptions[2] === "string" ? rawOptions[2].trim() : "",
+          typeof rawOptions[3] === "string" ? rawOptions[3].trim() : "",
+        ];
+        if (opts.some((o) => !o)) return null;
+      }
 
-      const ci = Number(item.correctIndex);
-      const correctIndex = (ci >= 0 && ci <= 3 ? ci : 0) as 0 | 1 | 2 | 3;
+      const rawCorrectArr = Array.isArray(item.correctIndices)
+        ? item.correctIndices.map(Number)
+        : Number.isInteger(Number(item.correctIndex))
+          ? [Number(item.correctIndex)]
+          : [0];
+
+      let correctIndices = normalizeSelectedIndices(rawCorrectArr, opts.length);
+      if (correctIndices.length === 0) {
+        correctIndices = [0];
+      } else if (type !== "multiple") {
+        correctIndices = [correctIndices[0]];
+      }
 
       const tl = Number(item.timeLimitSec);
       const timeLimitSec = Number.isFinite(tl) ? Math.min(120, Math.max(5, Math.round(tl))) : 20;
@@ -208,7 +343,7 @@ export function sanitizeQuestions(input: unknown): TriviaQuestion[] {
           ? item.id.trim()
           : `q-${idx + 1}-${Math.random().toString(36).slice(2, 7)}`;
 
-      return { id, text, options: opts, correctIndex, timeLimitSec };
+      return { id, type, text, options: opts, correctIndices, timeLimitSec };
     })
     .filter((q): q is TriviaQuestion => q !== null);
 }
@@ -238,8 +373,7 @@ export async function getSessionByCode(code: string): Promise<TriviaSessionRecor
   `;
 
   if (rows.length === 0) return null;
-  const row = rows[0];
-  return mapSessionRow(row);
+  return mapSessionRow(rows[0]);
 }
 
 export async function getSessionById(id: number): Promise<TriviaSessionRecord | null> {
@@ -291,14 +425,16 @@ function mapSessionRow(row: Record<string, unknown>): TriviaSessionRecord {
 export async function buildRevealSnapshot(
   sessionId: number,
   questionIndex: number,
-  correctIndex: number
+  question?: TriviaQuestion | null
 ): Promise<TriviaRevealSnapshot> {
-  const [distRes, countRes, rankRes] = await Promise.all([
+  const optionCount = question?.options.length ?? 4;
+  const correctIndices = question?.correctIndices ?? [0];
+
+  const [answersRes, countRes, rankRes] = await Promise.all([
     sql`
-      SELECT option_index, COUNT(*)::int AS total
+      SELECT option_index, option_indices
       FROM trivia_answers
       WHERE session_id = ${sessionId} AND question_index = ${questionIndex}
-      GROUP BY option_index
     `,
     sql`
       SELECT COUNT(*)::int AS total_players
@@ -314,14 +450,16 @@ export async function buildRevealSnapshot(
     `,
   ]);
 
-  const counts: [number, number, number, number] = [0, 0, 0, 0];
-  let totalAnswers = 0;
-  for (const r of distRes.rows) {
-    const idx = Number(r.option_index);
-    const total = Number(r.total ?? 0);
-    if (idx >= 0 && idx <= 3) {
-      counts[idx] = total;
-      totalAnswers += total;
+  const counts = Array.from({ length: optionCount }, () => 0);
+  const totalAnswers = answersRes.rows.length;
+
+  for (const r of answersRes.rows) {
+    const rawIndices = Array.isArray(r.option_indices)
+      ? r.option_indices.map(Number)
+      : [Number(r.option_index)];
+    const uniqueSelected = normalizeSelectedIndices(rawIndices, optionCount);
+    for (const idx of uniqueSelected) {
+      counts[idx] += 1;
     }
   }
 
@@ -337,11 +475,12 @@ export async function buildRevealSnapshot(
 
   return {
     questionIndex,
-    correctIndex,
+    type: question?.type ?? "single",
+    correctIndices,
+    correctIndex: correctIndices[0] ?? 0,
     counts,
     totalAnswers,
     totalPlayers,
     leaderboard,
   };
 }
-

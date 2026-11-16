@@ -25,6 +25,7 @@ export async function GET(req: Request) {
     const question: TriviaPublicQuestion | null = q
       ? {
           index: session.currentQuestionIndex,
+          type: q.type,
           text: q.text,
           options: q.options,
           timeLimitSec: q.timeLimitSec,
@@ -67,6 +68,7 @@ export async function GET(req: Request) {
 
     let playerExists = false;
     let mySelectedOption: number | null = null;
+    let mySelectedOptions: number[] | null = null;
     let me: {
       name: string;
       score: number;
@@ -74,6 +76,7 @@ export async function GET(req: Request) {
       rank: number;
       lastAnswer: {
         optionIndex: number;
+        optionIndices: number[];
         isCorrect: boolean;
         points: number;
         elapsedMs: number;
@@ -94,7 +97,7 @@ export async function GET(req: Request) {
 
         if (session.status === "question") {
           const ansRes = await sql`
-            SELECT option_index
+            SELECT option_index, option_indices
             FROM trivia_answers
             WHERE session_id = ${session.id}
               AND question_index = ${session.currentQuestionIndex}
@@ -102,7 +105,12 @@ export async function GET(req: Request) {
             LIMIT 1
           `;
           if (ansRes.rows.length > 0) {
-            mySelectedOption = Number(ansRes.rows[0].option_index);
+            const rawArr = ansRes.rows[0].option_indices;
+            const parsed = Array.isArray(rawArr)
+              ? rawArr.map(Number).filter(Number.isInteger)
+              : [Number(ansRes.rows[0].option_index)];
+            mySelectedOptions = parsed;
+            mySelectedOption = parsed[0] ?? Number(ansRes.rows[0].option_index);
           }
         } else if (session.status !== "lobby") {
           const score = Number(p.score ?? 0);
@@ -120,7 +128,7 @@ export async function GET(req: Request) {
                 )
             `,
             sql`
-              SELECT option_index, is_correct, points, elapsed_ms
+              SELECT option_index, option_indices, is_correct, points, elapsed_ms
               FROM trivia_answers
               WHERE session_id = ${session.id}
                 AND question_index = ${session.currentQuestionIndex}
@@ -129,20 +137,27 @@ export async function GET(req: Request) {
             `,
           ]);
 
+          const ansRow = ansRes.rows[0];
+          const ansIndices = ansRow
+            ? Array.isArray(ansRow.option_indices)
+              ? ansRow.option_indices.map(Number).filter(Number.isInteger)
+              : [Number(ansRow.option_index)]
+            : [];
+
           me = {
             name: String(p.name),
             score,
             correctCount: Number(p.correct_count ?? 0),
             rank: Number(rankRes.rows[0]?.rank ?? 1),
-            lastAnswer:
-              ansRes.rows.length > 0
-                ? {
-                    optionIndex: Number(ansRes.rows[0].option_index),
-                    isCorrect: Boolean(ansRes.rows[0].is_correct),
-                    points: Number(ansRes.rows[0].points ?? 0),
-                    elapsedMs: Number(ansRes.rows[0].elapsed_ms ?? 0),
-                  }
-                : null,
+            lastAnswer: ansRow
+              ? {
+                  optionIndex: ansIndices[0] ?? Number(ansRow.option_index),
+                  optionIndices: ansIndices,
+                  isCorrect: Boolean(ansRow.is_correct),
+                  points: Number(ansRow.points ?? 0),
+                  elapsedMs: Number(ansRow.elapsed_ms ?? 0),
+                }
+              : null,
           };
         }
       }
@@ -165,6 +180,7 @@ export async function GET(req: Request) {
         presenter: presenterData,
         playerExists,
         mySelectedOption,
+        mySelectedOptions,
         me,
       },
       { headers: { "Cache-Control": "no-store" } }
