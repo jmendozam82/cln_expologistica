@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { CONFERENCE_SCHEDULE } from "@/lib/agenda";
+import type { TriviaSessionMode } from "@/lib/trivia";
 
 interface SessionSummary {
   id: number;
   code: string;
+  mode: TriviaSessionMode;
   title: string;
   conferenceTitle: string | null;
   status: string;
@@ -32,6 +34,7 @@ export default function AdminTriviaListPage() {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState("");
 
+  const [mode, setMode] = useState<TriviaSessionMode>("trivia");
   const [title, setTitle] = useState("");
   const [conferenceTitle, setConferenceTitle] = useState(CONFERENCE_OPTIONS[0] ?? "");
   const [customConference, setCustomConference] = useState("");
@@ -73,48 +76,73 @@ export default function AdminTriviaListPage() {
         conferenceTitle === "__custom__" ? customConference.trim() : conferenceTitle;
 
       const sampleQuestions = seedExample
-        ? [
-            {
-              id: "sample-1",
-              type: "single",
-              text: "¿Cuál es el objetivo principal de una Torre de Control Logística?",
-              options: [
-                "Aumentar el tamaño físico del almacén",
-                "Integrar datos dispersos para tomar decisiones en tiempo real",
-                "Reemplazar el transporte marítimo",
-                "Eliminar los inventarios de seguridad",
-              ],
-              correctIndices: [1],
-              timeLimitSec: 20,
-            },
-            {
-              id: "sample-2",
-              type: "boolean",
-              text: "La visibilidad End-to-End permite monitorear el flujo completo desde el proveedor hasta la entrega final.",
-              options: ["Verdadero", "Falso"],
-              correctIndices: [0],
-              timeLimitSec: 15,
-            },
-            {
-              id: "sample-3",
-              type: "multiple",
-              text: "¿Cuáles de los siguientes son pilares clave de la logística moderna? (Selecciona varias)",
-              options: [
-                "Trazabilidad en tiempo real",
-                "Optimización de rutas y costos",
-                "Ignorar los niveles de inventario",
-                "Colaboración en la cadena de suministro",
-              ],
-              correctIndices: [0, 1, 3],
-              timeLimitSec: 25,
-            },
-          ]
+        ? mode === "poll"
+          ? [
+              {
+                id: "poll-1",
+                type: "single",
+                text: "¿Cuál es hoy el mayor reto en su operación logística?",
+                options: [
+                  "Visibilidad y trazabilidad en tiempo real",
+                  "Costos de transporte y distribución",
+                  "Planeación y control de inventarios",
+                  "Digitalización y automatización de procesos",
+                ],
+                correctIndices: [0],
+                timeLimitSec: 20,
+              },
+              {
+                id: "poll-2",
+                type: "boolean",
+                text: "¿Su empresa ya utiliza herramientas de Analítica o IA en la cadena de suministro?",
+                options: ["Sí, ya implementamos", "Aún estamos evaluando"],
+                correctIndices: [0],
+                timeLimitSec: 20,
+              },
+            ]
+          : [
+              {
+                id: "sample-1",
+                type: "single",
+                text: "¿Cuál es el objetivo principal de una Torre de Control Logística?",
+                options: [
+                  "Aumentar el tamaño físico del almacén",
+                  "Integrar datos dispersos para tomar decisiones en tiempo real",
+                  "Reemplazar el transporte marítimo",
+                  "Eliminar los inventarios de seguridad",
+                ],
+                correctIndices: [1],
+                timeLimitSec: 20,
+              },
+              {
+                id: "sample-2",
+                type: "boolean",
+                text: "La visibilidad End-to-End permite monitorear el flujo completo desde el proveedor hasta la entrega final.",
+                options: ["Verdadero", "Falso"],
+                correctIndices: [0],
+                timeLimitSec: 15,
+              },
+              {
+                id: "sample-3",
+                type: "multiple",
+                text: "¿Cuáles de los siguientes son pilares clave de la logística moderna? (Selecciona varias)",
+                options: [
+                  "Trazabilidad en tiempo real",
+                  "Optimización de rutas y costos",
+                  "Ignorar los niveles de inventario",
+                  "Colaboración en la cadena de suministro",
+                ],
+                correctIndices: [0, 1, 3],
+                timeLimitSec: 25,
+              },
+            ]
         : [];
 
       const res = await fetch("/api/admin/trivia", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          mode,
           title: title.trim(),
           conferenceTitle: resolvedConference || null,
           code: code.trim() || undefined,
@@ -165,10 +193,10 @@ export default function AdminTriviaListPage() {
               EXPO LOGÍSTICA · CLN · 2026
             </p>
             <h1 className="font-heading font-extrabold text-3xl text-cln-950">
-              Administrador de Preguntas Interactivas
+              Trivia y Encuestas en Vivo
             </h1>
             <p className="text-sm text-gray-500 mt-1">
-              Crea trivias por conferencia, proyecta el código QR en el salón y controla el ranking y podio Top 3 en vivo.
+              Crea trivias competitivas con podio Top 3 o encuestas de opinión con gráfico animado en tiempo real por QR.
             </p>
           </div>
 
@@ -186,7 +214,7 @@ export default function AdminTriviaListPage() {
           className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8"
         >
           <h2 className="font-heading font-bold text-lg text-cln-950 mb-4">
-            Nueva Trivia / Sesión Interactiva
+            Nueva Sesión Interactiva (Trivia o Encuesta)
           </h2>
 
           {error && (
@@ -195,16 +223,57 @@ export default function AdminTriviaListPage() {
             </div>
           )}
 
+          {/* Selector de modalidad */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+            <button
+              type="button"
+              onClick={() => setMode("trivia")}
+              className={`text-left rounded-xl border-2 p-4 transition-all cursor-pointer ${
+                mode === "trivia"
+                  ? "border-orange-500 bg-orange-50/70"
+                  : "border-gray-200 bg-gray-50 hover:border-gray-300"
+              }`}
+            >
+              <p className="font-heading font-extrabold text-sm text-cln-950">
+                🏆 Trivia Competitiva
+              </p>
+              <p className="text-xs text-gray-600 mt-0.5">
+                Pide nombre, evalúa respuestas correctas con tiempo límite y genera Ranking y Podio Top 3.
+              </p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMode("poll")}
+              className={`text-left rounded-xl border-2 p-4 transition-all cursor-pointer ${
+                mode === "poll"
+                  ? "border-sky-600 bg-sky-50/70"
+                  : "border-gray-200 bg-gray-50 hover:border-gray-300"
+              }`}
+            >
+              <p className="font-heading font-extrabold text-sm text-cln-950">
+                📊 Encuesta en Vivo (Gráfico en tiempo real)
+              </p>
+              <p className="text-xs text-gray-600 mt-0.5">
+                Entrada directa anónima por QR (sin nombre), sin puntaje ni podio; barras horizontales animadas al instante.
+              </p>
+            </button>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">
-                Nombre de la Trivia *
+                {mode === "poll" ? "Nombre de la Encuesta *" : "Nombre de la Trivia *"}
               </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Ej. Reto Torre de Control"
+                placeholder={
+                  mode === "poll"
+                    ? "Ej. Pulso del Sector Logístico"
+                    : "Ej. Reto Torre de Control"
+                }
                 className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm focus:border-cln-600 focus:outline-none"
                 required
               />
@@ -268,7 +337,7 @@ export default function AdminTriviaListPage() {
               disabled={creating}
               className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-bold text-sm px-6 py-2.5 rounded-lg shadow-sm transition-colors cursor-pointer"
             >
-              {creating ? "Creando..." : "+ Crear Trivia"}
+              {creating ? "Creando..." : mode === "poll" ? "+ Crear Encuesta" : "+ Crear Trivia"}
             </button>
           </div>
         </form>
@@ -297,10 +366,21 @@ export default function AdminTriviaListPage() {
                   className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between gap-5"
                 >
                   <div>
-                    <div className="flex items-start justify-between gap-3 mb-2">
-                      <span className="inline-flex items-center gap-1.5 rounded-lg bg-cln-950 text-white font-mono text-xs font-bold px-2.5 py-1 tracking-wider">
-                        SALA: {s.code}
-                      </span>
+                    <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center gap-1.5 rounded-lg bg-cln-950 text-white font-mono text-xs font-bold px-2.5 py-1 tracking-wider">
+                          SALA: {s.code}
+                        </span>
+                        <span
+                          className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                            s.mode === "poll"
+                              ? "bg-sky-100 text-sky-800"
+                              : "bg-orange-100 text-orange-800"
+                          }`}
+                        >
+                          {s.mode === "poll" ? "📊 Encuesta" : "🏆 Trivia"}
+                        </span>
+                      </div>
                       <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${badge.cls}`}>
                         {badge.label}
                       </span>

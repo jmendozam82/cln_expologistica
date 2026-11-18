@@ -5,6 +5,7 @@ import {
   generateRoomCode,
   normalizeRoomCode,
   sanitizeQuestions,
+  type TriviaSessionMode,
 } from "@/lib/trivia";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +18,7 @@ export async function GET() {
       SELECT
         s.id,
         s.code,
+        s.mode,
         s.title,
         s.conference_title,
         s.status,
@@ -34,10 +36,12 @@ export async function GET() {
     `;
 
     const sessions = rows.map((r) => {
-      const questions = sanitizeQuestions(r.questions_json);
+      const mode: TriviaSessionMode = r.mode === "poll" ? "poll" : "trivia";
+      const questions = sanitizeQuestions(r.questions_json, mode);
       return {
         id: Number(r.id),
         code: String(r.code),
+        mode,
         title: String(r.title),
         conferenceTitle: r.conference_title ? String(r.conference_title) : null,
         status: String(r.status),
@@ -70,20 +74,22 @@ export async function POST(req: Request) {
         ? body.conferenceTitle.trim()
         : null;
 
+    const mode: TriviaSessionMode = body.mode === "poll" ? "poll" : "trivia";
+
     let code = typeof body.code === "string" ? normalizeRoomCode(body.code) : "";
     if (!code) {
       code = generateRoomCode();
     }
 
-    const questions = sanitizeQuestions(body.questions);
+    const questions = sanitizeQuestions(body.questions, mode);
 
     // Si hay colisión en el código autogenerado, reintenta una vez
     let insertedId: number | null = null;
     for (let attempt = 0; attempt < 3; attempt += 1) {
       try {
         const res = await sql`
-          INSERT INTO trivia_sessions (code, title, conference_title, questions_json)
-          VALUES (${code}, ${title}, ${conferenceTitle}, ${JSON.stringify(questions)}::jsonb)
+          INSERT INTO trivia_sessions (code, mode, title, conference_title, questions_json)
+          VALUES (${code}, ${mode}, ${title}, ${conferenceTitle}, ${JSON.stringify(questions)}::jsonb)
           RETURNING id
         `;
         insertedId = Number(res.rows[0]?.id);

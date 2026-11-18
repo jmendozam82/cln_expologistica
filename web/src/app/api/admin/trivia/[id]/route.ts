@@ -50,6 +50,8 @@ export async function PATCH(
     }
 
     const body = (await req.json()) as Record<string, unknown>;
+    const mode =
+      body.mode === "poll" || body.mode === "trivia" ? body.mode : existing.mode;
     const title = typeof body.title === "string" && body.title.trim() ? body.title.trim() : existing.title;
     const conferenceTitle =
       body.conferenceTitle === null
@@ -64,11 +66,14 @@ export async function PATCH(
         : existing.code;
 
     const questions =
-      body.questions !== undefined ? sanitizeQuestions(body.questions) : existing.questions;
+      body.questions !== undefined
+        ? sanitizeQuestions(body.questions, mode)
+        : existing.questions;
 
     await sql`
       UPDATE trivia_sessions
       SET
+        mode = ${mode},
         title = ${title},
         conference_title = ${conferenceTitle},
         code = ${code},

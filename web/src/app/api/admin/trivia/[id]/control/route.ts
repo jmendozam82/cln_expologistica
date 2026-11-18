@@ -66,17 +66,31 @@ export async function POST(
           ? body.questionIndex
           : 0;
 
-      // 2 segundos de anticipación para sincronizar los 120 móviles antes de t=0
-      await sql`
-        UPDATE trivia_sessions
-        SET
-          status = 'question',
-          current_question_index = ${targetIndex},
-          question_started_at = CURRENT_TIMESTAMP + INTERVAL '2 seconds',
-          reveal_json = NULL,
-          state_version = state_version + 1
-        WHERE id = ${sessionId}
-      `;
+      if (session.mode === "poll") {
+        // Las encuestas de opinión abren votación de inmediato sin conteo regresivo
+        await sql`
+          UPDATE trivia_sessions
+          SET
+            status = 'question',
+            current_question_index = ${targetIndex},
+            question_started_at = CURRENT_TIMESTAMP,
+            reveal_json = NULL,
+            state_version = state_version + 1
+          WHERE id = ${sessionId}
+        `;
+      } else {
+        // 2 segundos de anticipación para sincronizar los 120 móviles antes de t=0
+        await sql`
+          UPDATE trivia_sessions
+          SET
+            status = 'question',
+            current_question_index = ${targetIndex},
+            question_started_at = CURRENT_TIMESTAMP + INTERVAL '2 seconds',
+            reveal_json = NULL,
+            state_version = state_version + 1
+          WHERE id = ${sessionId}
+        `;
+      }
     } else if (action === "next") {
       const nextIndex = session.currentQuestionIndex + 1;
       if (nextIndex >= session.questions.length) {
@@ -90,6 +104,17 @@ export async function POST(
           SET
             status = 'podium',
             reveal_json = ${JSON.stringify(snapshot)}::jsonb,
+            state_version = state_version + 1
+          WHERE id = ${sessionId}
+        `;
+      } else if (session.mode === "poll") {
+        await sql`
+          UPDATE trivia_sessions
+          SET
+            status = 'question',
+            current_question_index = ${nextIndex},
+            question_started_at = CURRENT_TIMESTAMP,
+            reveal_json = NULL,
             state_version = state_version + 1
           WHERE id = ${sessionId}
         `;

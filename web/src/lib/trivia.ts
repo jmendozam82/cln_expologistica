@@ -2,6 +2,13 @@ import { sql } from "@vercel/postgres";
 
 export type TriviaStatus = "lobby" | "question" | "reveal" | "leaderboard" | "podium";
 export type TriviaQuestionType = "single" | "multiple" | "boolean";
+export type TriviaSessionMode = "trivia" | "poll";
+
+export interface PollLiveStats {
+  questionIndex: number;
+  counts: number[];
+  totalAnswers: number;
+}
 
 export interface TriviaQuestion {
   id: string;
@@ -44,6 +51,7 @@ export interface TriviaRevealSnapshot {
 export interface TriviaSessionRecord {
   id: number;
   code: string;
+  mode: TriviaSessionMode;
   title: string;
   conferenceTitle: string | null;
   status: TriviaStatus;
@@ -103,6 +111,7 @@ export async function ensureTriviaTables(): Promise<void> {
         CREATE TABLE IF NOT EXISTS trivia_sessions (
           id SERIAL PRIMARY KEY,
           code VARCHAR(16) UNIQUE NOT NULL,
+          mode VARCHAR(16) NOT NULL DEFAULT 'trivia',
           title VARCHAR(255) NOT NULL,
           conference_title VARCHAR(255),
           status VARCHAR(32) NOT NULL DEFAULT 'lobby',
@@ -113,6 +122,11 @@ export async function ensureTriviaTables(): Promise<void> {
           reveal_json JSONB,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );
+      `;
+
+      await sql`
+        ALTER TABLE trivia_sessions
+        ADD COLUMN IF NOT EXISTS mode VARCHAR(16) NOT NULL DEFAULT 'trivia';
       `;
 
       await sql`
@@ -286,7 +300,10 @@ export function getRevealCorrectIndices(reveal: TriviaRevealSnapshot | null | un
   return [0];
 }
 
-export function sanitizeQuestions(input: unknown): TriviaQuestion[] {
+export function sanitizeQuestions(
+  input: unknown,
+  mode: TriviaSessionMode = "trivia"
+): TriviaQuestion[] {
   if (!Array.isArray(input)) return [];
   return input
     .map((raw, idx): TriviaQuestion | null => {
@@ -312,6 +329,12 @@ export function sanitizeQuestions(input: unknown): TriviaQuestion[] {
           ? rawOptions[1].trim()
           : "Falso";
         opts = [t0, t1];
+      } else if (mode === "poll") {
+        opts = rawOptions
+          .slice(0, 4)
+          .map((o) => (typeof o === "string" ? o.trim() : ""))
+          .filter(Boolean);
+        if (opts.length < 2) return null;
       } else {
         opts = [
           typeof rawOptions[0] === "string" ? rawOptions[0].trim() : "",
@@ -357,6 +380,7 @@ export async function getSessionByCode(code: string): Promise<TriviaSessionRecor
     SELECT
       id,
       code,
+      mode,
       title,
       conference_title,
       status,
@@ -382,6 +406,7 @@ export async function getSessionById(id: number): Promise<TriviaSessionRecord | 
     SELECT
       id,
       code,
+      mode,
       title,
       conference_title,
       status,
@@ -405,10 +430,12 @@ function mapSessionRow(row: Record<string, unknown>): TriviaSessionRecord {
   const startedMs = row.question_started_at_ms !== null && row.question_started_at_ms !== undefined
     ? Number(row.question_started_at_ms)
     : null;
+  const mode: TriviaSessionMode = row.mode === "poll" ? "poll" : "trivia";
 
   return {
     id: Number(row.id),
     code: String(row.code),
+    mode,
     title: String(row.title),
     conferenceTitle: row.conference_title ? String(row.conference_title) : null,
     status: (String(row.status) as TriviaStatus) || "lobby",
@@ -416,10 +443,44 @@ function mapSessionRow(row: Record<string, unknown>): TriviaSessionRecord {
     questionStartedAtMs: startedMs !== null && Number.isFinite(startedMs) ? Math.round(startedMs) : null,
     serverNowMs: Math.round(Number(row.server_now_ms ?? Date.now())),
     stateVersion: Number(row.state_version ?? 1),
-    questions: sanitizeQuestions(row.questions_json),
+    questions: sanitizeQuestions(row.questions_json, mode),
     reveal: (row.reveal_json as TriviaRevealSnapshot | null) ?? null,
     createdAt: String(row.created_at ?? ""),
   };
+}
+
+function aggregateAnswerCounts(
+  rows: Record<string, unknown>[],
+  optionCount: number
+): { counts: number[]; totalAnswers: number } {
+  const counts = Array.from({ length: optionCount }, () => 0);
+  const totalAnswers = rows.length;
+
+  for (const r of rows) {
+    const rawIndices = Array.isArray(r.option_indices)
+      ? r.option_indices.map(Number)
+      : [Number(r.option_index)];
+    const uniqueSelected = normalizeSelectedIndices(rawIndices, optionCount);
+    for (const idx of uniqueSelected) {
+      counts[idx] += 1;
+    }
+  }
+
+  return { counts, totalAnswers };
+}
+
+export async function getLivePollStats(
+  sessionId: number,
+  questionIndex: number,
+  optionCount: number
+): Promise<PollLiveStats> {
+  const answersRes = await sql`
+    SELECT option_index, option_indices
+    FROM trivia_answers
+    WHERE session_id = ${sessionId} AND question_index = ${questionIndex}
+  `;
+  const { counts, totalAnswers } = aggregateAnswerCounts(answersRes.rows, optionCount);
+  return { questionIndex, counts, totalAnswers };
 }
 
 export async function buildRevealSnapshot(
@@ -450,18 +511,7 @@ export async function buildRevealSnapshot(
     `,
   ]);
 
-  const counts = Array.from({ length: optionCount }, () => 0);
-  const totalAnswers = answersRes.rows.length;
-
-  for (const r of answersRes.rows) {
-    const rawIndices = Array.isArray(r.option_indices)
-      ? r.option_indices.map(Number)
-      : [Number(r.option_index)];
-    const uniqueSelected = normalizeSelectedIndices(rawIndices, optionCount);
-    for (const idx of uniqueSelected) {
-      counts[idx] += 1;
-    }
-  }
+  const { counts, totalAnswers } = aggregateAnswerCounts(answersRes.rows, optionCount);
 
   const totalPlayers = Number(countRes.rows[0]?.total_players ?? 0);
   const leaderboard: TriviaRankingRow[] = rankRes.rows.map((r, i) => ({

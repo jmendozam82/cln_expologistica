@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
-import { getSessionByCode, type TriviaPublicQuestion } from "@/lib/trivia";
+import {
+  getLivePollStats,
+  getSessionByCode,
+  type PollLiveStats,
+  type TriviaPublicQuestion,
+} from "@/lib/trivia";
 
 export const dynamic = "force-dynamic";
 
@@ -36,33 +41,40 @@ export async function GET(req: Request) {
       playerCount: number;
       answerCount: number;
       recentPlayers: string[];
+      pollStats: PollLiveStats | null;
     } | null = null;
 
     if (isPresenter) {
-      const [playersCountRes, recentPlayersRes, answerCountRes] = await Promise.all([
+      const [playersCountRes, recentPlayersRes, answerCountRes, pollStats] = await Promise.all([
         sql`
           SELECT COUNT(*)::int AS total
           FROM trivia_players
           WHERE session_id = ${session.id}
         `,
-        sql`
-          SELECT name
-          FROM trivia_players
-          WHERE session_id = ${session.id}
-          ORDER BY joined_at DESC
-          LIMIT 60
-        `,
+        session.mode === "poll"
+          ? Promise.resolve({ rows: [] as Record<string, unknown>[] })
+          : sql`
+              SELECT name
+              FROM trivia_players
+              WHERE session_id = ${session.id}
+              ORDER BY joined_at DESC
+              LIMIT 60
+            `,
         sql`
           SELECT COUNT(*)::int AS total
           FROM trivia_answers
           WHERE session_id = ${session.id} AND question_index = ${session.currentQuestionIndex}
         `,
+        session.mode === "poll" && session.status === "question" && q
+          ? getLivePollStats(session.id, session.currentQuestionIndex, q.options.length)
+          : Promise.resolve(null),
       ]);
 
       presenterData = {
         playerCount: Number(playersCountRes.rows[0]?.total ?? 0),
         answerCount: Number(answerCountRes.rows[0]?.total ?? 0),
         recentPlayers: recentPlayersRes.rows.map((r) => String(r.name)),
+        pollStats,
       };
     }
 
@@ -167,6 +179,7 @@ export async function GET(req: Request) {
       {
         id: session.id,
         code: session.code,
+        mode: session.mode,
         title: session.title,
         conferenceTitle: session.conferenceTitle,
         status: session.status,

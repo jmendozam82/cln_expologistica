@@ -1,6 +1,14 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import {
@@ -8,6 +16,7 @@ import {
   OPTION_THEMES,
   type TriviaPublicQuestion,
   type TriviaRevealSnapshot,
+  type TriviaSessionMode,
   type TriviaStatus,
 } from "@/lib/trivia";
 import { useSyncedTimer } from "@/lib/useSyncedTimer";
@@ -64,6 +73,7 @@ const XCircle = ({ className }: { className?: string }) => (
 interface PlayerStateResponse {
   id: string;
   code: string;
+  mode: TriviaSessionMode;
   title: string;
   conferenceTitle: string;
   status: TriviaStatus;
@@ -178,21 +188,64 @@ export default function PlayTriviaRoomPage() {
       ? answerErrorState.message
       : null;
 
-  function saveStoredPlayer(next: StoredPlayer | null) {
-    if (next) {
-      window.localStorage.setItem(storageKey, JSON.stringify(next));
-    } else {
-      window.localStorage.removeItem(storageKey);
-    }
-    window.dispatchEvent(new Event(PLAYER_STORAGE_EVENT));
-  }
+  const saveStoredPlayer = useCallback(
+    (next: StoredPlayer | null) => {
+      if (next) {
+        window.localStorage.setItem(storageKey, JSON.stringify(next));
+      } else {
+        window.localStorage.removeItem(storageKey);
+      }
+      window.dispatchEvent(new Event(PLAYER_STORAGE_EVENT));
+    },
+    [storageKey]
+  );
+
+  const isPoll = state?.mode === "poll";
+  const autoJoinedRef = useRef(false);
 
   const timer = useSyncedTimer({
-    enabled: state?.status === "question",
+    enabled: state?.status === "question" && !isPoll,
     questionStartedAtMs: state?.questionStartedAtMs ?? null,
     timeLimitSec: state?.question?.timeLimitSec ?? 20,
     clockOffsetMs,
   });
+
+  const joinAnonymousPoll = useCallback(async () => {
+    setJoining(true);
+    setJoinError(null);
+    try {
+      const res = await fetch("/api/trivia/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setJoinError(data.error || "No se pudo conectar a la encuesta.");
+        autoJoinedRef.current = false;
+        return;
+      }
+      saveStoredPlayer({
+        playerId: data.playerId,
+        name: data.name || "Anónimo",
+      });
+    } catch {
+      setJoinError("Error de conexión al entrar. Toca el botón para reintentar.");
+      autoJoinedRef.current = false;
+    } finally {
+      setJoining(false);
+    }
+  }, [code, saveStoredPlayer]);
+
+  useEffect(() => {
+    if (!hydrated || !isPoll || player) return;
+    if (autoJoinedRef.current) return;
+    autoJoinedRef.current = true;
+    const id = window.setTimeout(() => {
+      void joinAnonymousPoll();
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [hydrated, isPoll, player, joinAnonymousPoll]);
 
   useEffect(() => {
     if (!hydrated || !code) return;
@@ -224,6 +277,7 @@ export default function PlayTriviaRoomPage() {
 
           // If host reset the room, player was cleared on DB -> return to join form cleanly
           if (player && !data.playerExists) {
+            autoJoinedRef.current = false;
             window.localStorage.removeItem(storageKey);
             window.dispatchEvent(new Event(PLAYER_STORAGE_EVENT));
             setLocalSelection(null);
@@ -289,7 +343,7 @@ export default function PlayTriviaRoomPage() {
   async function submitAnswer(optionIndices: number[]) {
     if (!player || !state?.question) return;
     if (hasSubmitted || submitting) return;
-    if (!timer.isActiveWindow) return;
+    if (!isPoll && !timer.isActiveWindow) return;
     if (optionIndices.length === 0) return;
 
     const qIdx = state.currentQuestionIndex;
@@ -383,8 +437,56 @@ export default function PlayTriviaRoomPage() {
     );
   }
 
-  // Step 1: Join screen (Name only)
+  // Step 1: Join screen (Anonymous auto-entry for Poll; Name form for Trivia)
   if (!player) {
+    if (isPoll) {
+      return (
+        <div className="flex min-h-dvh flex-col items-center justify-center bg-cln-950 px-5 py-8 text-white">
+          <div className="w-full max-w-md space-y-5 rounded-3xl border border-white/10 bg-cln-900/90 p-7 text-center shadow-2xl">
+            <div className="mx-auto relative h-12 w-36 overflow-hidden rounded-xl bg-white p-1.5 shadow">
+              <Image
+                src="/logo-horizontal.jpg"
+                alt="CLN Expo Logístico"
+                fill
+                className="object-contain p-1"
+                priority
+              />
+            </div>
+
+            <span className="inline-block rounded-full border border-sky-400/30 bg-sky-500/15 px-3 py-1 font-mono text-xs font-bold tracking-widest text-sky-300">
+              ENCUESTA · SALA {code}
+            </span>
+
+            <h1 className="font-heading text-2xl font-extrabold">
+              {state?.title ?? "Encuesta en Vivo"}
+            </h1>
+
+            {joinError ? (
+              <div className="space-y-4">
+                <p className="rounded-xl border border-rose-500/30 bg-rose-950/60 px-3.5 py-2.5 text-sm text-rose-200">
+                  {joinError}
+                </p>
+                <button
+                  type="button"
+                  disabled={joining}
+                  onClick={() => void joinAnonymousPoll()}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-cln-orange px-5 py-3.5 font-heading text-base font-bold text-white shadow-lg transition hover:bg-orange-600 disabled:opacity-60"
+                >
+                  {joining ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                  Entrar a Votar
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-2.5 py-2 text-sm text-slate-300">
+                <Loader2 className="h-5 w-5 animate-spin text-cln-orange" />
+                Conectando directamente a la encuesta...
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center bg-cln-950 px-5 py-8 text-white">
         <div className="w-full max-w-md space-y-6 rounded-3xl border border-white/10 bg-cln-900/90 p-7 shadow-2xl">
@@ -470,21 +572,25 @@ export default function PlayTriviaRoomPage() {
       <header className="flex items-center justify-between border-b border-white/10 bg-cln-900/90 px-4 py-3">
         <div className="min-w-0">
           <p className="truncate font-heading text-sm font-bold text-white">
-            {player.name}
+            {isPoll ? state?.title || "Encuesta en Vivo" : player.name}
           </p>
-          <p className="font-mono text-[11px] text-slate-400">Sala {code}</p>
+          <p className="font-mono text-[11px] text-slate-400">
+            {isPoll ? `Voto anónimo · Sala ${code}` : `Sala ${code}`}
+          </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          {myRank > 0 && (
-            <span className="rounded-lg border border-white/15 bg-white/10 px-2.5 py-1 text-xs font-bold text-slate-200">
-              #{myRank}
+        {!isPoll && (
+          <div className="flex items-center gap-2">
+            {myRank > 0 && (
+              <span className="rounded-lg border border-white/15 bg-white/10 px-2.5 py-1 text-xs font-bold text-slate-200">
+                #{myRank}
+              </span>
+            )}
+            <span className="rounded-lg bg-cln-orange/20 px-3 py-1 font-heading text-sm font-extrabold tabular-nums text-cln-orange">
+              {myScore.toLocaleString("es-NI")} pts
             </span>
-          )}
-          <span className="rounded-lg bg-cln-orange/20 px-3 py-1 font-heading text-sm font-extrabold tabular-nums text-cln-orange">
-            {myScore.toLocaleString("es-NI")} pts
-          </span>
-        </div>
+          </div>
+        )}
       </header>
 
       <main className="mx-auto flex w-full max-w-lg flex-1 flex-col justify-center px-4 py-6">
@@ -494,15 +600,16 @@ export default function PlayTriviaRoomPage() {
               <CheckCircle2 className="h-9 w-9" />
             </div>
             <h2 className="font-heading text-2xl font-extrabold">
-              ¡Ya estás dentro, {player.name}!
+              {isPoll ? "¡Listo para votar!" : `¡Ya estás dentro, ${player.name}!`}
             </h2>
             <p className="text-sm text-slate-300">
-              Mira la pantalla del auditorio. Cuando el moderador inicie, tus opciones
-              aparecerán aquí automáticamente.
+              {isPoll
+                ? "Mira la pantalla del auditorio. Cuando el moderador abra la primera pregunta, tus opciones aparecerán aquí."
+                : "Mira la pantalla del auditorio. Cuando el moderador inicie, tus opciones aparecerán aquí automáticamente."}
             </p>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs text-slate-300">
               <span className="h-2.5 w-2.5 animate-ping rounded-full bg-cln-orange" />
-              Esperando inicio de la partida...
+              {isPoll ? "Esperando inicio de la encuesta..." : "Esperando inicio de la partida..."}
             </div>
           </div>
         )}
@@ -513,15 +620,21 @@ export default function PlayTriviaRoomPage() {
               <span>
                 Pregunta {state.currentQuestionIndex + 1} de {state.totalQuestions}
               </span>
-              <span className="flex items-center gap-1 text-base font-extrabold tabular-nums text-white">
-                <Clock className="h-4 w-4 text-cln-orange" />
-                {timer.leadRemainingMs > 0
-                  ? `${Math.ceil(timer.leadRemainingMs / 1000)}`
-                  : `${Math.ceil(timer.remainingMs / 1000)}s`}
-              </span>
+              {!isPoll ? (
+                <span className="flex items-center gap-1 text-base font-extrabold tabular-nums text-white">
+                  <Clock className="h-4 w-4 text-cln-orange" />
+                  {timer.leadRemainingMs > 0
+                    ? `${Math.ceil(timer.leadRemainingMs / 1000)}`
+                    : `${Math.ceil(timer.remainingMs / 1000)}s`}
+                </span>
+              ) : (
+                <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
+                  Votación abierta
+                </span>
+              )}
             </div>
 
-            {timer.leadRemainingMs > 0 ? (
+            {!isPoll && timer.leadRemainingMs > 0 ? (
               <div className="rounded-3xl border border-cln-orange/40 bg-cln-900/80 p-10 text-center">
                 <p className="text-xs font-bold uppercase tracking-widest text-cln-orange">
                   Sincronizando...
@@ -535,7 +648,7 @@ export default function PlayTriviaRoomPage() {
               <div className="space-y-4 rounded-3xl border border-emerald-400/30 bg-emerald-950/30 p-8 text-center">
                 <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-400" />
                 <h2 className="font-heading text-2xl font-extrabold">
-                  ¡Respuesta enviada!
+                  {isPoll ? "¡Voto registrado!" : "¡Respuesta enviada!"}
                 </h2>
                 <div className="flex flex-wrap justify-center gap-2">
                   {selectedOptions.map((optIdx) => (
@@ -549,10 +662,12 @@ export default function PlayTriviaRoomPage() {
                   ))}
                 </div>
                 <p className="text-xs text-slate-300">
-                  Esperando que cierre el reloj para ver si acertaste...
+                  {isPoll
+                    ? "Mira el gráfico en vivo en la pantalla del auditorio. Esperando la siguiente pregunta..."
+                    : "Esperando que cierre el reloj para ver si acertaste..."}
                 </p>
               </div>
-            ) : timer.isExpired ? (
+            ) : !isPoll && timer.isExpired ? (
               <div className="space-y-3 rounded-3xl border border-amber-400/30 bg-amber-950/30 p-8 text-center">
                 <Clock className="mx-auto h-11 w-11 text-amber-400" />
                 <h2 className="font-heading text-2xl font-extrabold">
@@ -564,26 +679,30 @@ export default function PlayTriviaRoomPage() {
               </div>
             ) : (
               <>
-                <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/10">
-                  <div
-                    className={`h-full transition-all duration-100 ${
-                      progressPct > 35
-                        ? "bg-emerald-400"
-                        : progressPct > 15
-                        ? "bg-amber-400"
-                        : "bg-rose-500"
-                    }`}
-                    style={{ width: `${progressPct}%` }}
-                  />
-                </div>
+                {!isPoll && (
+                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/10">
+                    <div
+                      className={`h-full transition-all duration-100 ${
+                        progressPct > 35
+                          ? "bg-emerald-400"
+                          : progressPct > 15
+                          ? "bg-amber-400"
+                          : "bg-rose-500"
+                      }`}
+                      style={{ width: `${progressPct}%` }}
+                    />
+                  </div>
+                )}
 
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
                   {state.question.type === "multiple" && (
                     <span className="mb-2 inline-block rounded-full border border-sky-400/40 bg-sky-500/20 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider text-sky-200">
-                      Selección múltiple · Marca todas las correctas
+                      {isPoll
+                        ? "Selección múltiple · Marca una o varias y presiona Enviar"
+                        : "Selección múltiple · Marca todas las correctas"}
                     </span>
                   )}
-                  {state.question.type === "boolean" && (
+                  {state.question.type === "boolean" && !isPoll && (
                     <span className="mb-2 inline-block rounded-full border border-amber-400/40 bg-amber-500/20 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider text-amber-200">
                       Verdadero o Falso
                     </span>
@@ -661,7 +780,17 @@ export default function PlayTriviaRoomPage() {
           </div>
         )}
 
-        {state?.status === "reveal" && state.question && (
+        {state?.status === "reveal" && state.question && isPoll && (
+          <div className="space-y-4 rounded-3xl border border-white/10 bg-cln-900/80 p-8 text-center">
+            <CheckCircle2 className="mx-auto h-12 w-12 text-sky-400" />
+            <h2 className="font-heading text-2xl font-extrabold">Votación cerrada</h2>
+            <p className="text-sm text-slate-300">
+              Mira los resultados finales en la pantalla principal. Esperando la siguiente pregunta...
+            </p>
+          </div>
+        )}
+
+        {state?.status === "reveal" && state.question && !isPoll && (
           <div className="space-y-5 text-center">
             {lastAnswer?.isCorrect ? (
               <div className="space-y-3 rounded-3xl border border-emerald-400/50 bg-emerald-950/50 p-8 shadow-xl">
@@ -772,7 +901,17 @@ export default function PlayTriviaRoomPage() {
           </div>
         )}
 
-        {state?.status === "podium" && state.me && (
+        {state?.status === "podium" && isPoll && (
+          <div className="space-y-4 rounded-3xl border border-emerald-400/40 bg-cln-900/80 p-8 text-center shadow-2xl">
+            <Sparkles className="mx-auto h-12 w-12 text-emerald-400" />
+            <h2 className="font-heading text-3xl font-black">¡Encuesta finalizada!</h2>
+            <p className="text-sm text-slate-300">
+              ¡Gracias por compartir tu opinión en CLN Expo Logístico Nicaragua 2026!
+            </p>
+          </div>
+        )}
+
+        {state?.status === "podium" && !isPoll && state.me && (
           <div
             className={`space-y-5 rounded-3xl border p-8 text-center shadow-2xl ${
               state.me.rank <= 3

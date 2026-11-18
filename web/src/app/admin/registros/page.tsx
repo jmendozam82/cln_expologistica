@@ -44,7 +44,7 @@ export default async function AdminRegistros() {
               href="/admin/trivia"
               className="inline-flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold rounded-lg transition-colors shadow-sm"
             >
-              Trivia en Vivo (QR)
+              Trivia y Encuestas (QR)
             </Link>
             <a 
               href="/admin/export"

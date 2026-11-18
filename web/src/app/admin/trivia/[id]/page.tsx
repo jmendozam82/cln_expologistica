@@ -6,9 +6,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import TriviaQrCode from "@/components/TriviaQrCode";
 import {
   OPTION_THEMES,
+  type PollLiveStats,
   type TriviaQuestion,
   type TriviaQuestionType,
   type TriviaRevealSnapshot,
+  type TriviaSessionMode,
   type TriviaSessionRecord,
   type TriviaStatus,
 } from "@/lib/trivia";
@@ -23,6 +25,7 @@ const QUESTION_TYPE_LABELS: Record<TriviaQuestionType, string> = {
 interface PresenterState {
   id: number;
   code: string;
+  mode: TriviaSessionMode;
   title: string;
   conferenceTitle: string | null;
   status: TriviaStatus;
@@ -36,15 +39,25 @@ interface PresenterState {
     playerCount: number;
     answerCount: number;
     recentPlayers: string[];
+    pollStats: PollLiveStats | null;
   } | null;
 }
 
-function emptyQuestion(index: number, type: TriviaQuestionType = "single"): TriviaQuestion {
+function emptyQuestion(
+  index: number,
+  type: TriviaQuestionType = "single",
+  mode: TriviaSessionMode = "trivia"
+): TriviaQuestion {
   return {
     id: `q-${Date.now()}-${index}`,
     type,
     text: "",
-    options: type === "boolean" ? ["Verdadero", "Falso"] : ["", "", "", ""],
+    options:
+      type === "boolean"
+        ? mode === "poll"
+          ? ["Sí", "No"]
+          : ["Verdadero", "Falso"]
+        : ["", "", "", ""],
     correctIndices: [0],
     timeLimitSec: type === "boolean" ? 15 : 20,
   };
@@ -132,8 +145,10 @@ export default function AdminTriviaDetailPage() {
     return session.questions[idx] ?? null;
   }, [session, live?.currentQuestionIndex]);
 
+  const isPollSession = (live?.mode ?? session?.mode) === "poll";
+
   const timer = useSyncedTimer({
-    enabled: live?.status === "question",
+    enabled: live?.status === "question" && !isPollSession,
     questionStartedAtMs: live?.questionStartedAtMs ?? null,
     timeLimitSec: currentQuestion?.timeLimitSec ?? 20,
     clockOffsetMs,
@@ -167,9 +182,9 @@ export default function AdminTriviaDetailPage() {
     [sessionId, pollState]
   );
 
-  // Auto-revelar cuando expira el temporizador en modo en vivo
+  // Auto-revelar cuando expira el temporizador en modo en vivo (solo Trivia)
   useEffect(() => {
-    if (!autoReveal || live?.status !== "question" || !timer.isExpired) return;
+    if (isPollSession || !autoReveal || live?.status !== "question" || !timer.isExpired) return;
     const key = `${live.stateVersion}-${live.currentQuestionIndex}`;
     if (autoRevealedKeyRef.current === key) return;
     autoRevealedKeyRef.current = key;
@@ -177,7 +192,7 @@ export default function AdminTriviaDetailPage() {
       runControl("reveal");
     }, 900);
     return () => clearTimeout(timeout);
-  }, [autoReveal, live?.status, live?.stateVersion, live?.currentQuestionIndex, timer.isExpired, runControl]);
+  }, [isPollSession, autoReveal, live?.status, live?.stateVersion, live?.currentQuestionIndex, timer.isExpired, runControl]);
 
   const joinUrl = useMemo(() => {
     if (!session?.code) return "";
@@ -201,18 +216,29 @@ export default function AdminTriviaDetailPage() {
     setError("");
     setNotice("");
 
+    const isPoll = session?.mode === "poll";
     const validQuestions = editQuestions.filter((q) => {
-      const expectedLen = q.type === "boolean" ? 2 : 4;
+      if (!q.text.trim()) return false;
+      if (q.type === "boolean") {
+        return q.options.length === 2 && q.options.every((o) => o.trim());
+      }
+      if (isPoll) {
+        const filled = q.options.map((o) => o.trim()).filter(Boolean);
+        return filled.length >= 2;
+      }
       return (
-        q.text.trim() &&
-        q.options.length === expectedLen &&
+        q.options.length === 4 &&
         q.options.every((o) => o.trim()) &&
         q.correctIndices.length > 0
       );
     });
 
     if (validQuestions.length !== editQuestions.length) {
-      setError("Completa el texto, todas las opciones y al menos una respuesta correcta en cada pregunta.");
+      setError(
+        isPoll
+          ? "Completa el texto y al menos 2 opciones en cada pregunta antes de guardar."
+          : "Completa el texto, todas las opciones y al menos una respuesta correcta en cada pregunta."
+      );
       return;
     }
 
@@ -364,11 +390,22 @@ export default function AdminTriviaDetailPage() {
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div>
             <Link href="/admin/trivia" className="text-xs font-bold text-cln-600 hover:underline">
-              ← Todas las trivias
+              ← Todas las trivias y encuestas
             </Link>
-            <h1 className="font-heading font-extrabold text-2xl md:text-3xl text-cln-950 mt-1">
-              {session.title}
-            </h1>
+            <div className="flex flex-wrap items-center gap-2.5 mt-1">
+              <h1 className="font-heading font-extrabold text-2xl md:text-3xl text-cln-950">
+                {session.title}
+              </h1>
+              <span
+                className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                  isPollSession
+                    ? "bg-sky-100 text-sky-800"
+                    : "bg-orange-100 text-orange-800"
+                }`}
+              >
+                {isPollSession ? "📊 Encuesta en Vivo" : "🏆 Trivia Competitiva"}
+              </span>
+            </div>
             {session.conferenceTitle && (
               <p className="text-sm text-gray-500">{session.conferenceTitle}</p>
             )}
@@ -385,14 +422,20 @@ export default function AdminTriviaDetailPage() {
             <button
               type="button"
               onClick={() => {
-                if (confirm("¿Reiniciar la partida? Se borrarán los jugadores y respuestas actuales para empezar desde cero.")) {
+                if (
+                  confirm(
+                    isPollSession
+                      ? "¿Reiniciar la encuesta? Se borrarán los votos actuales para empezar con otro grupo."
+                      : "¿Reiniciar la partida? Se borrarán los jugadores y respuestas actuales para empezar desde cero."
+                  )
+                ) {
                   runControl("reset");
                 }
               }}
               disabled={busyAction !== null}
               className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 text-sm font-bold px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
             >
-              Reiniciar Partida
+              {isPollSession ? "Reiniciar Encuesta" : "Reiniciar Partida"}
             </button>
           </div>
         </div>
@@ -447,31 +490,44 @@ export default function AdminTriviaDetailPage() {
                     </span>
                     <p className="font-heading font-extrabold text-xl text-cln-950 capitalize">
                       {status === "lobby" && "Sala de espera (Lobby)"}
-                      {status === "question" && `Pregunta ${qIndex + 1} de ${totalQ} en curso`}
-                      {status === "reveal" && `Respuesta revelada (${qIndex + 1}/${totalQ})`}
+                      {status === "question" &&
+                        (isPollSession
+                          ? `Pregunta ${qIndex + 1} de ${totalQ} · Votación abierta`
+                          : `Pregunta ${qIndex + 1} de ${totalQ} en curso`)}
+                      {status === "reveal" &&
+                        (isPollSession
+                          ? `Votación cerrada (${qIndex + 1}/${totalQ})`
+                          : `Respuesta revelada (${qIndex + 1}/${totalQ})`)}
                       {status === "leaderboard" && `Tabla de Ranking (${qIndex + 1}/${totalQ})`}
-                      {status === "podium" && "Podio Final — Top 3"}
+                      {status === "podium" &&
+                        (isPollSession ? "Encuesta Finalizada" : "Podio Final — Top 3")}
                     </p>
                   </div>
 
-                  <label className="inline-flex items-center gap-2 text-xs font-semibold text-gray-600 cursor-pointer bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-lg">
-                    <input
-                      type="checkbox"
-                      checked={autoReveal}
-                      onChange={(e) => setAutoReveal(e.target.checked)}
-                    />
-                    Auto-revelar al acabar el tiempo
-                  </label>
+                  {!isPollSession && (
+                    <label className="inline-flex items-center gap-2 text-xs font-semibold text-gray-600 cursor-pointer bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-lg">
+                      <input
+                        type="checkbox"
+                        checked={autoReveal}
+                        onChange={(e) => setAutoReveal(e.target.checked)}
+                      />
+                      Auto-revelar al acabar el tiempo
+                    </label>
+                  )}
                 </div>
 
-                {/* Pregunta actual preview + timer */}
+                {/* Pregunta actual preview + timer / barras en vivo */}
                 {currentQuestion ? (
                   <div className="rounded-xl bg-gray-50 border border-gray-200 p-5 mb-6">
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                       <span className="text-xs font-bold uppercase tracking-wider text-cln-600">
-                        Pregunta {qIndex + 1} de {totalQ} · {QUESTION_TYPE_LABELS[currentQuestion.type]} · {currentQuestion.timeLimitSec}s
+                        Pregunta {qIndex + 1} de {totalQ} ·{" "}
+                        {isPollSession && currentQuestion.type === "boolean"
+                          ? "Sí / No (2 opciones)"
+                          : QUESTION_TYPE_LABELS[currentQuestion.type]}
+                        {!isPollSession ? ` · ${currentQuestion.timeLimitSec}s` : ""}
                       </span>
-                      {status === "question" && (
+                      {!isPollSession && status === "question" && (
                         <span className="font-mono text-sm font-extrabold text-orange-600">
                           {timer.leadRemainingMs > 0
                             ? `Iniciando en ${Math.ceil(timer.leadRemainingMs / 1000)}s...`
@@ -483,35 +539,78 @@ export default function AdminTriviaDetailPage() {
                       {currentQuestion.text}
                     </p>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      {currentQuestion.options.map((opt, idx) => {
-                        const t = OPTION_THEMES[idx];
-                        const isCorrect = currentQuestion.correctIndices.includes(idx);
-                        return (
-                          <div
-                            key={idx}
-                            className={`rounded-lg px-3.5 py-2.5 text-sm font-semibold flex items-center justify-between border ${
-                              isCorrect
-                                ? "bg-emerald-50 border-emerald-300 text-emerald-900"
-                                : "bg-white border-gray-200 text-gray-700"
-                            }`}
-                          >
-                            <span>
-                              <strong className="mr-1.5">{t.letter}.</strong>
-                              {opt}
-                            </span>
-                            {isCorrect && (
-                              <span className="text-xs font-bold text-emerald-700">✓ Correcta</span>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
+                    {isPollSession ? (
+                      <div className="space-y-2.5">
+                        {(() => {
+                          const liveCounts =
+                            status === "question"
+                              ? (live?.presenter?.pollStats?.counts ??
+                                currentQuestion.options.map(() => 0))
+                              : (live?.reveal?.counts ??
+                                currentQuestion.options.map(() => 0));
+                          const totalVotes =
+                            status === "question"
+                              ? (live?.presenter?.pollStats?.totalAnswers ?? answerCount)
+                              : (live?.reveal?.totalAnswers ?? answerCount);
+                          const safeTotal = Math.max(1, totalVotes);
+
+                          return currentQuestion.options.map((opt, idx) => {
+                            const t = OPTION_THEMES[idx] ?? OPTION_THEMES[0];
+                            const c = liveCounts[idx] ?? 0;
+                            const pct = totalVotes > 0 ? Math.round((c / safeTotal) * 100) : 0;
+                            return (
+                              <div key={idx} className="rounded-lg bg-white border border-gray-200 p-2.5">
+                                <div className="flex items-center justify-between text-xs font-bold text-gray-800 mb-1.5">
+                                  <span>
+                                    <strong className="mr-1.5">{t.shape}</strong>
+                                    {opt}
+                                  </span>
+                                  <span className="tabular-nums text-cln-900">
+                                    {c} votos ({pct}%)
+                                  </span>
+                                </div>
+                                <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-100">
+                                  <div
+                                    className={`h-full transition-all duration-500 ${t.bar}`}
+                                    style={{ width: `${pct}%` }}
+                                  />
+                                </div>
+                              </div>
+                            );
+                          });
+                        })()}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        {currentQuestion.options.map((opt, idx) => {
+                          const t = OPTION_THEMES[idx];
+                          const isCorrect = currentQuestion.correctIndices.includes(idx);
+                          return (
+                            <div
+                              key={idx}
+                              className={`rounded-lg px-3.5 py-2.5 text-sm font-semibold flex items-center justify-between border ${
+                                isCorrect
+                                  ? "bg-emerald-50 border-emerald-300 text-emerald-900"
+                                  : "bg-white border-gray-200 text-gray-700"
+                              }`}
+                            >
+                              <span>
+                                <strong className="mr-1.5">{t.letter}.</strong>
+                                {opt}
+                              </span>
+                              {isCorrect && (
+                                <span className="text-xs font-bold text-emerald-700">✓ Correcta</span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
 
                     {/* Barra de respuestas recibidas */}
                     <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between text-xs font-bold text-gray-600">
                       <span>
-                        Respuestas recibidas: {answerCount} / {playerCount}
+                        {isPollSession ? "Votos recibidos" : "Respuestas recibidas"}: {answerCount} / {playerCount}
                       </span>
                       <span>
                         {playerCount > 0 ? Math.round((answerCount / playerCount) * 100) : 0}%
@@ -541,11 +640,38 @@ export default function AdminTriviaDetailPage() {
                       onClick={() => runControl("start", 0)}
                       className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-colors cursor-pointer"
                     >
-                      {busyAction === "start" ? "Iniciando..." : "▶ Iniciar Pregunta 1"}
+                      {busyAction === "start"
+                        ? "Iniciando..."
+                        : isPollSession
+                          ? "▶ Abrir Pregunta 1"
+                          : "▶ Iniciar Pregunta 1"}
                     </button>
                   )}
 
-                  {status === "question" && (
+                  {status === "question" && isPollSession && (
+                    <>
+                      <button
+                        type="button"
+                        disabled={busyAction !== null}
+                        onClick={() => runControl(isLastQuestion ? "podium" : "next")}
+                        className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-colors cursor-pointer"
+                      >
+                        {isLastQuestion
+                          ? "Finalizar Encuesta"
+                          : `▶ Siguiente Pregunta (${qIndex + 2} de ${totalQ})`}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busyAction !== null}
+                        onClick={() => runControl("reveal")}
+                        className="bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white font-bold px-5 py-3 rounded-xl transition-colors cursor-pointer"
+                      >
+                        Cerrar Votación de esta Pregunta
+                      </button>
+                    </>
+                  )}
+
+                  {status === "question" && !isPollSession && (
                     <button
                       type="button"
                       disabled={busyAction !== null}
@@ -556,7 +682,20 @@ export default function AdminTriviaDetailPage() {
                     </button>
                   )}
 
-                  {status === "reveal" && (
+                  {status === "reveal" && isPollSession && (
+                    <button
+                      type="button"
+                      disabled={busyAction !== null}
+                      onClick={() => runControl(isLastQuestion ? "podium" : "next")}
+                      className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-colors cursor-pointer"
+                    >
+                      {isLastQuestion
+                        ? "Finalizar Encuesta"
+                        : `▶ Siguiente Pregunta (${qIndex + 2} de ${totalQ})`}
+                    </button>
+                  )}
+
+                  {status === "reveal" && !isPollSession && (
                     <>
                       <button
                         type="button"
@@ -579,7 +718,7 @@ export default function AdminTriviaDetailPage() {
                     </>
                   )}
 
-                  {status === "leaderboard" && (
+                  {status === "leaderboard" && !isPollSession && (
                     <button
                       type="button"
                       disabled={busyAction !== null}
@@ -599,14 +738,16 @@ export default function AdminTriviaDetailPage() {
                       onClick={() => runControl("reset")}
                       className="bg-cln-950 hover:bg-cln-900 disabled:opacity-50 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-colors cursor-pointer"
                     >
-                      ↻ Reiniciar Partida para Otro Grupo
+                      {isPollSession
+                        ? "↻ Reiniciar Encuesta para Otro Grupo"
+                        : "↻ Reiniciar Partida para Otro Grupo"}
                     </button>
                   )}
                 </div>
               </div>
 
-              {/* Vista rápida del Ranking actual */}
-              {live?.reveal && live.reveal.leaderboard.length > 0 && (
+              {/* Vista rápida del Ranking actual (solo Trivia) */}
+              {!isPollSession && live?.reveal && live.reveal.leaderboard.length > 0 && (
                 <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
                   <h3 className="font-heading font-bold text-lg text-cln-950 mb-4">
                     Tabla de Ranking Actual (Top {Math.min(10, live.reveal.leaderboard.length)})
@@ -680,6 +821,10 @@ export default function AdminTriviaDetailPage() {
                 {playerCount === 0 ? (
                   <p className="text-xs text-gray-400">
                     Esperando que los asistentes escaneen el código QR...
+                  </p>
+                ) : isPollSession ? (
+                  <p className="text-xs text-gray-600 font-medium">
+                    {playerCount} {playerCount === 1 ? "dispositivo conectado" : "dispositivos conectados"} · Votación anónima directa sin registro de nombres.
                   </p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5 max-h-60 overflow-y-auto">
@@ -759,25 +904,33 @@ export default function AdminTriviaDetailPage() {
                       className="rounded-lg border border-gray-300 px-2.5 py-1.5 text-xs font-bold bg-white text-cln-900"
                       aria-label="Tipo de pregunta"
                     >
-                      <option value="single">Selección Única (4 opciones)</option>
-                      <option value="multiple">Selección Múltiple (varias correctas)</option>
-                      <option value="boolean">Verdadero / Falso</option>
+                      <option value="single">
+                        {isPollSession ? "Opción Única (2 a 4)" : "Selección Única (4 opciones)"}
+                      </option>
+                      <option value="multiple">
+                        {isPollSession ? "Selección Múltiple (varias)" : "Selección Múltiple (varias correctas)"}
+                      </option>
+                      <option value="boolean">
+                        {isPollSession ? "Sí / No (2 opciones)" : "Verdadero / Falso"}
+                      </option>
                     </select>
 
-                    <select
-                      value={q.timeLimitSec}
-                      onChange={(e) =>
-                        updateQuestion(qIdx, { timeLimitSec: Number(e.target.value) })
-                      }
-                      className="rounded-lg border border-gray-300 px-2.5 py-1.5 text-xs font-bold bg-white"
-                      aria-label="Tiempo límite"
-                    >
-                      {[10, 15, 20, 30, 45, 60].map((sec) => (
-                        <option key={sec} value={sec}>
-                          {sec} segundos
-                        </option>
-                      ))}
-                    </select>
+                    {!isPollSession && (
+                      <select
+                        value={q.timeLimitSec}
+                        onChange={(e) =>
+                          updateQuestion(qIdx, { timeLimitSec: Number(e.target.value) })
+                        }
+                        className="rounded-lg border border-gray-300 px-2.5 py-1.5 text-xs font-bold bg-white"
+                        aria-label="Tiempo límite"
+                      >
+                        {[10, 15, 20, 30, 45, 60].map((sec) => (
+                          <option key={sec} value={sec}>
+                            {sec} segundos
+                          </option>
+                        ))}
+                      </select>
+                    )}
 
                     <button
                       type="button"
@@ -819,9 +972,12 @@ export default function AdminTriviaDetailPage() {
                 />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {q.options.map((opt, optIdx) => {
+                  {(q.type === "boolean" ? [0, 1] : [0, 1, 2, 3]).map((optIdx) => {
+                    const opt = q.options[optIdx] ?? "";
                     const t = OPTION_THEMES[optIdx];
-                    const isCorrect = q.correctIndices.includes(optIdx);
+                    const isCorrect = !isPollSession && q.correctIndices.includes(optIdx);
+                    const isRequired =
+                      q.type === "boolean" || !isPollSession || optIdx < 2;
                     return (
                       <div
                         key={optIdx}
@@ -831,20 +987,28 @@ export default function AdminTriviaDetailPage() {
                             : "border-gray-200 bg-gray-50"
                         }`}
                       >
-                        <button
-                          type="button"
-                          onClick={() => toggleCorrectOption(qIdx, optIdx)}
-                          className={`w-9 h-9 rounded-lg font-extrabold text-white text-xs flex items-center justify-center flex-shrink-0 cursor-pointer ${
-                            isCorrect ? "bg-emerald-600 ring-2 ring-emerald-300" : t.solid
-                          }`}
-                          title={
-                            q.type === "multiple"
-                              ? "Activar/desactivar como respuesta correcta"
-                              : "Marcar como respuesta correcta"
-                          }
-                        >
-                          {isCorrect ? "✓" : q.type === "boolean" ? (optIdx === 0 ? "V" : "F") : t.letter}
-                        </button>
+                        {isPollSession ? (
+                          <span
+                            className={`w-9 h-9 rounded-lg font-extrabold text-white text-xs flex items-center justify-center flex-shrink-0 ${t.solid}`}
+                          >
+                            {t.shape}
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => toggleCorrectOption(qIdx, optIdx)}
+                            className={`w-9 h-9 rounded-lg font-extrabold text-white text-xs flex items-center justify-center flex-shrink-0 cursor-pointer ${
+                              isCorrect ? "bg-emerald-600 ring-2 ring-emerald-300" : t.solid
+                            }`}
+                            title={
+                              q.type === "multiple"
+                                ? "Activar/desactivar como respuesta correcta"
+                                : "Marcar como respuesta correcta"
+                            }
+                          >
+                            {isCorrect ? "✓" : q.type === "boolean" ? (optIdx === 0 ? "V" : "F") : t.letter}
+                          </button>
+                        )}
                         <input
                           type="text"
                           value={opt}
@@ -852,23 +1016,33 @@ export default function AdminTriviaDetailPage() {
                           placeholder={
                             q.type === "boolean"
                               ? optIdx === 0
-                                ? "Verdadero"
-                                : "Falso"
-                              : `Opción ${t.letter}`
+                                ? isPollSession
+                                  ? "Sí"
+                                  : "Verdadero"
+                                : isPollSession
+                                  ? "No"
+                                  : "Falso"
+                              : isPollSession && optIdx >= 2
+                                ? `Opción ${t.letter} (opcional)`
+                                : `Opción ${t.letter}`
                           }
                           className="flex-1 bg-transparent text-sm px-2 py-1 focus:outline-none"
-                          required
+                          required={isRequired}
                         />
                       </div>
                     );
                   })}
                 </div>
                 <p className="text-[11px] text-gray-400">
-                  {q.type === "multiple"
-                    ? "Selección múltiple: haz clic en A, B, C o D para marcar una o varias respuestas correctas."
-                    : q.type === "boolean"
-                      ? "Verdadero / Falso: marca V o F para definir la respuesta correcta (puedes personalizar las etiquetas si deseas)."
-                      : "Selección única: haz clic en el cuadro de color (A, B, C o D) para marcar la respuesta correcta."}
+                  {isPollSession
+                    ? q.type === "boolean"
+                      ? "Encuesta de 2 opciones: puedes editar los textos (ej. Sí / No, De acuerdo / En desacuerdo)."
+                      : "Encuesta abierta: completa de 2 a 4 opciones (puedes dejar las últimas 2 en blanco si solo necesitas 2 o 3)."
+                    : q.type === "multiple"
+                      ? "Selección múltiple: haz clic en A, B, C o D para marcar una o varias respuestas correctas."
+                      : q.type === "boolean"
+                        ? "Verdadero / Falso: marca V o F para definir la respuesta correcta (puedes personalizar las etiquetas si deseas)."
+                        : "Selección única: haz clic en el cuadro de color (A, B, C o D) para marcar la respuesta correcta."}
                 </p>
               </div>
             ))}
@@ -878,7 +1052,10 @@ export default function AdminTriviaDetailPage() {
                 <button
                   type="button"
                   onClick={() =>
-                    setEditQuestions((prev) => [...prev, emptyQuestion(prev.length, "single")])
+                    setEditQuestions((prev) => [
+                      ...prev,
+                      emptyQuestion(prev.length, "single", session.mode),
+                    ])
                   }
                   className="bg-white border-2 border-dashed border-cln-300 hover:border-cln-500 text-cln-700 font-bold text-sm px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
                 >
@@ -887,7 +1064,10 @@ export default function AdminTriviaDetailPage() {
                 <button
                   type="button"
                   onClick={() =>
-                    setEditQuestions((prev) => [...prev, emptyQuestion(prev.length, "multiple")])
+                    setEditQuestions((prev) => [
+                      ...prev,
+                      emptyQuestion(prev.length, "multiple", session.mode),
+                    ])
                   }
                   className="bg-white border-2 border-dashed border-sky-300 hover:border-sky-500 text-sky-700 font-bold text-sm px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
                 >
@@ -896,11 +1076,14 @@ export default function AdminTriviaDetailPage() {
                 <button
                   type="button"
                   onClick={() =>
-                    setEditQuestions((prev) => [...prev, emptyQuestion(prev.length, "boolean")])
+                    setEditQuestions((prev) => [
+                      ...prev,
+                      emptyQuestion(prev.length, "boolean", session.mode),
+                    ])
                   }
                   className="bg-white border-2 border-dashed border-orange-300 hover:border-orange-500 text-orange-700 font-bold text-sm px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
                 >
-                  + Verdadero / Falso
+                  {isPollSession ? "+ Sí / No (2 opciones)" : "+ Verdadero / Falso"}
                 </button>
               </div>
 

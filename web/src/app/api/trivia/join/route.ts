@@ -15,12 +15,6 @@ export async function POST(req: Request) {
     if (!code.trim()) {
       return NextResponse.json({ error: "Código de sala requerido." }, { status: 400 });
     }
-    if (name.length < 2) {
-      return NextResponse.json(
-        { error: "Ingresa tu nombre (mínimo 2 caracteres)." },
-        { status: 400 }
-      );
-    }
 
     const session = await getSessionByCode(code);
     if (!session) {
@@ -30,16 +24,26 @@ export async function POST(req: Request) {
       );
     }
 
+    if (session.mode !== "poll" && name.length < 2) {
+      return NextResponse.json(
+        { error: "Ingresa tu nombre (mínimo 2 caracteres)." },
+        { status: 400 }
+      );
+    }
+
+    const effectiveName = session.mode === "poll" ? name || "Anónimo" : name;
+
     const playerId = randomUUID();
     await sql`
       INSERT INTO trivia_players (id, session_id, name)
-      VALUES (${playerId}::uuid, ${session.id}, ${name})
+      VALUES (${playerId}::uuid, ${session.id}, ${effectiveName})
     `;
 
     return NextResponse.json({
       playerId,
-      name,
+      name: effectiveName,
       code: session.code,
+      mode: session.mode,
       title: session.title,
     });
   } catch (error) {

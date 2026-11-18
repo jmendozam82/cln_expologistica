@@ -73,30 +73,39 @@ export async function POST(req: Request) {
       );
     }
 
-    const startedAtMs = session.questionStartedAtMs ?? session.serverNowMs;
-    const rawElapsedMs = session.serverNowMs - startedAtMs;
+    const isPoll = session.mode === "poll";
+    let clampedElapsedMs = 0;
+    let isCorrect = false;
+    let points = 0;
 
-    if (rawElapsedMs < -400) {
-      return NextResponse.json(
-        { error: "Espera a que termine el conteo inicial." },
-        { status: 425 }
+    if (!isPoll) {
+      const startedAtMs = session.questionStartedAtMs ?? session.serverNowMs;
+      const rawElapsedMs = session.serverNowMs - startedAtMs;
+
+      if (rawElapsedMs < -400) {
+        return NextResponse.json(
+          { error: "Espera a que termine el conteo inicial." },
+          { status: 425 }
+        );
+      }
+
+      const limitMs = question.timeLimitSec * 1000;
+      if (rawElapsedMs > limitMs + ANSWER_GRACE_MS) {
+        return NextResponse.json(
+          { error: "Tiempo agotado para esta pregunta.", closed: true },
+          { status: 409 }
+        );
+      }
+
+      clampedElapsedMs = Math.min(limitMs, Math.max(0, Math.round(rawElapsedMs)));
+      const evaluated = evaluateAnswerScore(
+        question,
+        finalIndices,
+        clampedElapsedMs
       );
+      isCorrect = evaluated.isCorrect;
+      points = evaluated.points;
     }
-
-    const limitMs = question.timeLimitSec * 1000;
-    if (rawElapsedMs > limitMs + ANSWER_GRACE_MS) {
-      return NextResponse.json(
-        { error: "Tiempo agotado para esta pregunta.", closed: true },
-        { status: 409 }
-      );
-    }
-
-    const clampedElapsedMs = Math.min(limitMs, Math.max(0, Math.round(rawElapsedMs)));
-    const { isCorrect, points } = evaluateAnswerScore(
-      question,
-      finalIndices,
-      clampedElapsedMs
-    );
 
     const insertRes = await sql`
       INSERT INTO trivia_answers (
