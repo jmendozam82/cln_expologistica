@@ -13,6 +13,7 @@ import {
   type TriviaSessionMode,
   type TriviaStatus,
 } from "@/lib/trivia";
+import { useLiveAudio } from "@/lib/useLiveAudio";
 import { useSyncedTimer } from "@/lib/useSyncedTimer";
 
 interface LiveStateResponse {
@@ -75,6 +76,12 @@ const Sparkles = ({ className }: { className?: string }) => (
 );
 const Crown = ({ className }: { className?: string }) => (
   <SvgIcon className={className}><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" /></SvgIcon>
+);
+const Volume2 = ({ className }: { className?: string }) => (
+  <SvgIcon className={className}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></SvgIcon>
+);
+const VolumeX = ({ className }: { className?: string }) => (
+  <SvgIcon className={className}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><line x1="22" x2="16" y1="9" y2="15" /><line x1="16" x2="22" y1="9" y2="15" /></SvgIcon>
 );
 
 export default function LiveProjectorPage() {
@@ -147,12 +154,26 @@ export default function LiveProjectorPage() {
     clockOffsetMs,
   });
 
+  const liveVoteCount = isPoll
+    ? (state?.presenter?.pollStats?.totalAnswers ?? state?.presenter?.answerCount ?? 0)
+    : (state?.presenter?.answerCount ?? 0);
+
+  const isAudioVotingActive =
+    state?.status === "question" && (isPoll || timer.leadRemainingMs <= 0);
+
+  const audio = useLiveAudio({
+    isActive: Boolean(isAudioVotingActive),
+    voteCount: liveVoteCount,
+    questionKey: `${state?.id ?? 0}-${state?.stateVersion ?? 0}-${state?.currentQuestionIndex ?? 0}`,
+  });
+
   const joinUrl = useMemo(() => {
     if (!origin || !code) return "";
     return `${origin}/jugar/${code}`;
   }, [origin, code]);
 
   async function toggleFullscreen() {
+    void audio.unlockAudio();
     try {
       if (!document.fullscreenElement) {
         await document.documentElement.requestFullscreen();
@@ -243,6 +264,42 @@ export default function LiveProjectorPage() {
               {state.code}
             </span>
           </div>
+
+          <button
+            type="button"
+            onClick={() => void audio.toggleSound()}
+            title={
+              !audio.soundEnabled
+                ? "Activar música en vivo"
+                : audio.audioUnlocked
+                  ? "Silenciar música en vivo"
+                  : "Haz clic para habilitar el audio del navegador"
+            }
+            className={`flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-xs font-bold transition cursor-pointer ${
+              !audio.soundEnabled
+                ? "border-white/15 bg-white/5 text-slate-400 hover:bg-white/15"
+                : !audio.audioUnlocked
+                  ? "border-amber-400/50 bg-amber-500/20 text-amber-200 animate-pulse hover:bg-amber-500/30"
+                  : audio.isPlaying
+                    ? "border-emerald-400/50 bg-emerald-500/20 text-emerald-200"
+                    : "border-white/15 bg-white/10 text-slate-200 hover:bg-white/20"
+            }`}
+          >
+            {audio.soundEnabled ? (
+              <Volume2 className="h-4 w-4" />
+            ) : (
+              <VolumeX className="h-4 w-4" />
+            )}
+            <span className="hidden sm:inline">
+              {!audio.soundEnabled
+                ? "Silenciado"
+                : !audio.audioUnlocked
+                  ? "Activar Audio"
+                  : audio.isPlaying
+                    ? "Sonando"
+                    : "Audio Listo"}
+            </span>
+          </button>
 
           <button
             type="button"
