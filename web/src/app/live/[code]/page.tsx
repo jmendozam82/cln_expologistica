@@ -42,6 +42,21 @@ function formatSeconds(ms: number): string {
   return `${(Math.max(0, ms) / 1000).toFixed(2)} s`;
 }
 
+function renderOptionLabel(opt: string) {
+  const colonIdx = opt.indexOf(":");
+  if (colonIdx > 0 && colonIdx <= 55 && colonIdx < opt.length - 1) {
+    const headline = opt.slice(0, colonIdx + 1);
+    const detail = opt.slice(colonIdx + 1).trim();
+    return (
+      <>
+        <span className="font-extrabold text-white">{headline}</span>{" "}
+        <span className="font-medium text-slate-200">{detail}</span>
+      </>
+    );
+  }
+  return <span className="font-bold text-white">{opt}</span>;
+}
+
 function SvgIcon({ className = "h-5 w-5", children }: { className?: string; children: React.ReactNode }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -226,7 +241,7 @@ export default function LiveProjectorPage() {
       </div>
 
       {/* Top Bar */}
-      <header className="relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-cln-900/70 px-6 py-4 backdrop-blur-md">
+      <header className="relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-cln-900/70 px-6 py-3 backdrop-blur-md">
         <div className="flex items-center gap-4">
           <div className="relative h-10 w-32 overflow-hidden rounded-lg bg-white px-2 py-1 shadow">
             <Image
@@ -317,7 +332,7 @@ export default function LiveProjectorPage() {
       </header>
 
       {/* Main Stage */}
-      <main className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-6 py-8">
+      <main className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-6 py-5">
         {state.status === "lobby" && (
           <div className="grid items-center gap-10 lg:grid-cols-12">
             <div className="space-y-6 lg:col-span-7">
@@ -408,7 +423,7 @@ export default function LiveProjectorPage() {
         )}
 
         {isPoll && (state.status === "question" || state.status === "reveal") && state.question && (
-          <div className="mx-auto w-full max-w-5xl space-y-8">
+          <div className="mx-auto w-full max-w-7xl space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm font-bold text-slate-200">
@@ -444,8 +459,14 @@ export default function LiveProjectorPage() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-7 text-center shadow-xl sm:p-9">
-              <h2 className="font-heading text-3xl font-extrabold leading-snug sm:text-4xl">
+            <div className="rounded-3xl border border-white/10 bg-white/5 px-6 py-5 text-center shadow-xl sm:px-9 sm:py-6">
+              <h2
+                className={`font-heading font-extrabold leading-snug ${
+                  state.question.text.length > 110
+                    ? "text-2xl sm:text-3xl"
+                    : "text-3xl sm:text-4xl"
+                }`}
+              >
                 {state.question.text}
               </h2>
             </div>
@@ -530,8 +551,14 @@ export default function LiveProjectorPage() {
                   />
                 </div>
 
-                <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center shadow-xl sm:p-10">
-                  <h2 className="font-heading text-3xl font-extrabold leading-snug sm:text-4xl lg:text-5xl">
+                <div className="rounded-3xl border border-white/10 bg-white/5 px-6 py-6 text-center shadow-xl sm:px-10 sm:py-7">
+                  <h2
+                    className={`font-heading font-extrabold leading-snug ${
+                      state.question.text.length > 110
+                        ? "text-2xl sm:text-3xl lg:text-4xl"
+                        : "text-3xl sm:text-4xl lg:text-5xl"
+                    }`}
+                  >
                     {state.question.text}
                   </h2>
                 </div>
@@ -539,15 +566,20 @@ export default function LiveProjectorPage() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   {state.question.options.map((opt, idx) => {
                     const theme = OPTION_THEMES[idx];
+                    const hasLong = state.question!.options.some((o) => o.length > 65);
                     return (
                       <div
                         key={idx}
-                        className={`flex items-center gap-4 rounded-2xl p-6 shadow-lg ${theme.solid}`}
+                        className={`flex items-start gap-4 rounded-2xl p-5 sm:p-6 shadow-lg ${theme.solid}`}
                       >
-                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-black/25 font-heading text-2xl font-black">
+                        <span className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-black/25 font-heading text-2xl font-black">
                           {theme.shape}
                         </span>
-                        <span className="text-xl font-bold leading-snug sm:text-2xl">
+                        <span
+                          className={`whitespace-normal break-words font-bold leading-snug ${
+                            hasLong ? "text-base sm:text-lg lg:text-xl" : "text-xl sm:text-2xl"
+                          }`}
+                        >
                           {opt}
                         </span>
                       </div>
@@ -595,16 +627,18 @@ export default function LiveProjectorPage() {
                         : "border-white/10 bg-white/5 opacity-70"
                     }`}
                   >
-                    <div className="relative z-10 flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
+                    <div className="relative z-10 flex items-start justify-between gap-4">
+                      <div className="flex min-w-0 items-start gap-3">
                         <span
-                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg font-bold ${theme.solid}`}
+                          className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg font-bold ${theme.solid}`}
                         >
                           {theme.shape}
                         </span>
-                        <span className="text-lg font-bold sm:text-xl">{opt}</span>
+                        <span className="whitespace-normal break-words text-base font-bold leading-snug sm:text-lg">
+                          {opt}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-2 text-right">
+                      <div className="flex shrink-0 items-center gap-2 text-right">
                         {isCorrect && (
                           <CheckCircle2 className="h-7 w-7 text-emerald-400" />
                         )}
@@ -853,44 +887,54 @@ function PollHorizontalBars({
   totalVotes: number;
 }) {
   const safeTotal = Math.max(1, totalVotes);
+  const hasLongOptions = options.some((o) => o.length > 65);
 
   return (
-    <div className="space-y-4 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl sm:p-8">
+    <div className="space-y-3 rounded-3xl border border-white/10 bg-white/[0.04] p-4 shadow-2xl sm:p-6">
       {options.map((opt, idx) => {
         const theme = OPTION_THEMES[idx] ?? OPTION_THEMES[0];
         const count = counts[idx] ?? 0;
         const pct = totalVotes > 0 ? Math.round((count / safeTotal) * 100) : 0;
 
         return (
-          <div key={idx} className="space-y-2">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex min-w-0 items-center gap-3">
+          <div
+            key={idx}
+            className="rounded-2xl border border-white/10 bg-cln-900/55 px-4 py-3 sm:px-5 sm:py-3.5"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex min-w-0 items-start gap-3">
                 <span
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-heading text-base font-black text-white ${theme.solid}`}
+                  className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-heading text-sm font-black text-white shadow ${theme.solid}`}
                 >
                   {theme.shape}
                 </span>
-                <span className="truncate text-lg font-bold text-white sm:text-xl">
-                  {opt}
-                </span>
+                <p
+                  className={`whitespace-normal break-words leading-snug ${
+                    hasLongOptions
+                      ? "text-sm sm:text-base lg:text-lg"
+                      : "text-lg sm:text-xl"
+                  }`}
+                >
+                  {renderOptionLabel(opt)}
+                </p>
               </div>
 
-              <div className="flex shrink-0 items-baseline gap-2.5">
+              <div className="flex shrink-0 items-baseline gap-2 pt-0.5">
                 <span className="font-heading text-xl font-black tabular-nums text-slate-200 sm:text-2xl">
                   {count}
                 </span>
                 <span className="text-xs font-semibold text-slate-400">
                   {count === 1 ? "voto" : "votos"}
                 </span>
-                <span className="min-w-[56px] text-right font-heading text-2xl font-black tabular-nums text-cln-orange sm:text-3xl">
+                <span className="min-w-[54px] text-right font-heading text-2xl font-black tabular-nums text-cln-orange sm:text-3xl">
                   {pct}%
                 </span>
               </div>
             </div>
 
-            <div className="h-8 w-full overflow-hidden rounded-xl bg-black/35 sm:h-10">
+            <div className="mt-2.5 h-4 w-full overflow-hidden rounded-full bg-black/40 sm:h-5">
               <div
-                className={`h-full rounded-xl transition-all duration-700 ease-out ${theme.bar}`}
+                className={`h-full rounded-full transition-all duration-700 ease-out ${theme.bar}`}
                 style={{ width: `${pct}%` }}
               />
             </div>
