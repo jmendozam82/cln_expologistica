@@ -188,7 +188,7 @@ export const SPEAKERS: Speaker[] = [
   {
     id: "miguel",
     name: "Miguel Baltodano",
-    role: "Gerente en Entrenamiento de Cadena de Suministro",
+    role: "Gerente de Análisis y Proyectos para Cadena de Suministros",
     company: "Compañía Cervecera de Nicaragua S.A.",
     country: "Nicaragua",
     countryCode: "NI",
