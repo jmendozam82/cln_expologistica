@@ -200,12 +200,20 @@ export default function AdminTriviaListPage() {
             </p>
           </div>
 
-          <Link
-            href="/admin/registros"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-colors"
-          >
-            ← Ver Registros del Congreso
-          </Link>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Link
+              href="/admin/rifas"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-cln-950 hover:bg-cln-900 text-sm font-bold text-white transition-colors"
+            >
+              🎡 Rifa en Vivo (Ruleta)
+            </Link>
+            <Link
+              href="/admin/registros"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              ← Ver Registros del Congreso
+            </Link>
+          </div>
         </div>
 
         {/* Crear nueva trivia */}

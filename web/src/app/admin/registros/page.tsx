@@ -41,6 +41,12 @@ export default async function AdminRegistros() {
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <Link
+              href="/admin/rifas"
+              className="inline-flex items-center px-4 py-2 bg-cln-950 hover:bg-cln-900 text-white text-sm font-bold rounded-lg transition-colors shadow-sm"
+            >
+              Rifa en Vivo (Ruleta)
+            </Link>
+            <Link
               href="/admin/trivia"
               className="inline-flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold rounded-lg transition-colors shadow-sm"
             >
